@@ -1,0 +1,481 @@
+package com.ee.vampirkoylu.ui.screens
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.ee.vampirkoylu.R
+import com.ee.vampirkoylu.model.GameSettings
+import com.ee.vampirkoylu.ui.component.PixelArtButton
+import com.ee.vampirkoylu.ui.component.WarningBanner
+import com.ee.vampirkoylu.ui.navigation.Screen
+import com.ee.vampirkoylu.ui.theme.Beige
+import com.ee.vampirkoylu.ui.theme.Gold
+import com.ee.vampirkoylu.ui.theme.PixelFont
+import com.ee.vampirkoylu.ui.theme.dark_gold
+import com.ee.vampirkoylu.viewmodel.GameViewModel
+import kotlinx.coroutines.delay
+
+@Composable
+fun GameSetupScreen(
+    settings: GameSettings,
+    navController: NavController,
+    onSettingsChange: (Int, Int) -> Unit,
+    onStartGame: (List<String>) -> Unit,
+    viewModel: GameViewModel = viewModel()
+) {
+    // State'leri viewModel değerlerine göre başlat
+    var playerCount by remember { mutableStateOf(settings.playerCount) }
+    var vampireCount by remember { mutableStateOf(settings.vampireCount) }
+    val playerNames = remember { mutableStateListOf<String>().apply { 
+        repeat(settings.playerCount) { add("") }
+    }}
+    
+    // Maksimum vampir sayısı hesapla
+    val maxVampireCount = calculateMaxVampires(playerCount)
+
+    var showWarning by remember { mutableStateOf(false) }
+    var warningMessage by remember { mutableStateOf("") }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Arka plan resmi
+        Image(
+            painter = painterResource(id = R.drawable.night_bg),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(6.dp),
+            color = Color.Transparent
+        ) {
+
+            // İçerik
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(14.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 36.dp, bottom = 12.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.new_game),
+                        fontSize = 28.sp,
+                        fontFamily = PixelFont,
+                        color = dark_gold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(Alignment.CenterVertically)
+                    )
+                }
+                // Başlık
+
+
+                // Oyun ayarları
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF1A1A2E).copy(alpha = 0.05f) // Hafif şeffaf
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Oyuncu sayısı
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.player_count),
+                                fontSize = 14.sp,
+                                fontFamily = PixelFont,
+                                color = Beige
+                            )
+
+                            Row(
+                                Modifier.padding(start = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+
+                                IconButton(
+                                    onClick = {
+                                        if (playerCount > 4) {
+                                            // Oyuncu sayısını azalt
+                                            val newPlayerCount = playerCount - 1
+                                            
+                                            // Vampir sayısını kontrol et ve gerekirse güncelle
+                                            val newMaxVampires = calculateMaxVampires(newPlayerCount)
+                                            val newVampireCount = minOf(vampireCount, newMaxVampires)
+                                            
+                                            // State ve ViewModel'i güncelle
+                                            playerCount = newPlayerCount
+                                            vampireCount = newVampireCount
+                                            onSettingsChange(newPlayerCount, newVampireCount)
+                                            
+                                            // Oyuncu listesini güncelle
+                                            while (playerNames.size > newPlayerCount) {
+                                                playerNames.removeAt(playerNames.lastIndex)
+                                            }
+                                        } else {
+                                            // Minimum oyuncu sayısına ulaşıldığında uyarı göster
+                                            warningMessage = "Oyuncu sayısı en az 4 olmalıdır!"
+                                            showWarning = true
+                                        }
+                                    },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Image(
+                                        painterResource(R.drawable.text_block),
+                                        contentScale = ContentScale.FillBounds,
+                                        modifier = Modifier.wrapContentSize(),
+                                        contentDescription = "Oyuncu sayısı azaltma",
+                                    )
+
+                                    Text(
+                                        text = "-",
+                                        fontSize = 18.sp,
+                                        color = Gold,
+                                    )
+                                }
+
+                                Text(
+                                    text = playerCount.toString(),
+                                    fontSize = 16.sp,
+                                    fontFamily = PixelFont,
+                                    color = Gold,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+
+                                IconButton(
+                                    onClick = {
+                                        if (playerCount < 15) {
+                                            // Oyuncu sayısını artır
+                                            val newPlayerCount = playerCount + 1
+                                            
+                                            // State ve ViewModel'i güncelle
+                                            playerCount = newPlayerCount
+                                            onSettingsChange(newPlayerCount, vampireCount)
+                                            
+                                            // Oyuncu listesini güncelle
+                                            if (playerNames.size < newPlayerCount) {
+                                                playerNames.add("")
+                                            }
+                                        } else {
+                                            // Maksimum oyuncu sayısına ulaşıldığında uyarı göster
+                                            warningMessage = "Oyuncu sayısı en fazla 15 olabilir!"
+                                            showWarning = true
+                                        }
+                                    },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+
+                                    Image(
+                                        painterResource(R.drawable.text_block),
+                                        contentScale = ContentScale.FillBounds,
+                                        modifier = Modifier.wrapContentSize(),
+                                        contentDescription = "Oyuncu sayısı azaltma",
+                                    )
+
+                                    Text(
+                                        text = "+",
+                                        fontSize = 18.sp,
+                                        color = Gold
+                                    )
+                                }
+                            }
+
+
+                        }
+
+                        // Vampir sayısı
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.vampire_count),
+                                fontSize = 14.sp,
+                                fontFamily = PixelFont,
+                                color = Beige
+                            )
+
+                            Row(
+                                Modifier.padding(start = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+
+                                IconButton(
+                                    onClick = {
+                                        if (vampireCount > 1) {
+                                            val newVampireCount = vampireCount - 1
+                                            vampireCount = newVampireCount
+                                            onSettingsChange(playerCount, newVampireCount)
+                                        } else {
+                                            // Minimum vampir sayısına ulaşıldığında uyarı göster
+                                            warningMessage = "En az 1 vampir olmalıdır!"
+                                            showWarning = true
+                                        }
+                                    },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Image(
+                                        painterResource(R.drawable.text_block),
+                                        contentScale = ContentScale.FillBounds,
+                                        modifier = Modifier.wrapContentSize(),
+                                        contentDescription = "Oyuncu sayısı azaltma",
+                                    )
+
+                                    Text(
+                                        text = "-",
+                                        fontSize = 18.sp,
+                                        color = if (vampireCount > 1) Gold else Gold.copy(alpha = 0.5f)
+                                    )
+                                }
+
+                                Text(
+                                    text = vampireCount.toString(),
+                                    fontSize = 20.sp,
+                                    fontFamily = PixelFont,
+                                    color = Gold,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+
+                                IconButton(
+                                    onClick = {
+                                        if (vampireCount < maxVampireCount) {
+                                            val newVampireCount = vampireCount + 1
+                                            vampireCount = newVampireCount
+                                            onSettingsChange(playerCount, newVampireCount)
+                                        } else {
+                                            // Maksimum vampir sayısına ulaşıldığında uyarı göster
+                                            warningMessage = "Maksimum vampir sayısına ulaşıldı! (Max: $maxVampireCount)"
+                                            showWarning = true
+                                        }
+                                    },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+
+                                    Image(
+                                        painterResource(R.drawable.text_block),
+                                        contentScale = ContentScale.FillBounds,
+                                        modifier = Modifier.wrapContentSize(),
+                                        contentDescription = "Oyuncu sayısı azaltma",
+                                    )
+
+                                    Text(
+                                        text = "+",
+                                        fontSize = 18.sp,
+                                        color = if (vampireCount < maxVampireCount) Gold else Gold.copy(alpha = 0.5f)
+                                    )
+                                }
+                            }
+                        }
+
+                        // Vampir sayısı açıklaması
+                        Text(
+                            text = "Max: $maxVampireCount",
+                            fontSize = 14.sp,
+                            fontFamily = PixelFont,
+                            color = Gold.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                        )
+                    }
+                }
+
+                // Oyuncu isimleri girişi
+                Text(
+                    text = stringResource(id = R.string.enter_names),
+                    fontSize = 20.sp,
+                    fontFamily = PixelFont,
+                    color = dark_gold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 4.dp)
+                )
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .background(
+                            Color(0xFF1A1A2E).copy(alpha = 0.01f),
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    contentPadding = PaddingValues(vertical = 4.dp)
+                ) {
+                    itemsIndexed(playerNames) { index, name ->
+                        PlayerNameInput(
+                            name = name,
+                            index = index + 1,
+                            onNameChange = { newName ->
+                                playerNames[index] = newName
+                            }
+                        )
+                    }
+                }
+
+                // Butonlar
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Geri butonu
+                    PixelArtButton(
+                        text = stringResource(id = R.string.back_to_menu),
+                        onClick = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Home.route) { inclusive = true }
+                            }
+                        },
+                        color = Beige,
+                        imageId = R.drawable.button_brown,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp),
+                        fontSize = 12.sp
+                    )
+
+                    // Başlat butonu
+                    val allNamesEntered = playerNames.all { it.isNotBlank() }
+
+                    PixelArtButton(
+                        text = stringResource(id = R.string.start),
+                        onClick = {
+                            if (allNamesEntered) {
+                                onStartGame(playerNames.toList())
+                            } else {
+                                warningMessage = "Tüm oyuncuların isimlerini girmelisiniz!"
+                                showWarning = true
+                            }
+                        },
+                        color = Beige,
+                        imageId = R.drawable.button_brown,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp),
+                        fontSize = 16.sp
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = showWarning,
+                    enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                    exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+                ) {
+                    WarningBanner(warningMessage)
+                }
+
+                if (showWarning) {
+                    LaunchedEffect(Unit) {
+                        delay(3000)
+                        showWarning = false
+                    }
+                }
+            }
+
+        }
+
+    }
+}
+
+// Maksimum vampir sayısı hesaplama fonksiyonu
+private fun calculateMaxVampires(playerCount: Int): Int {
+    return maxOf(1, playerCount / 3)
+}
+
+@Composable
+fun PlayerNameInput(
+    name: String,
+    index: Int,
+    onNameChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = name,
+        onValueChange = onNameChange,
+        label = {
+            Text(
+                text = "Oyuncu $index",
+                fontFamily = PixelFont,
+                fontSize = 16.sp,
+                color = Beige
+            )
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Words,
+            imeAction = ImeAction.Next
+        ),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Gold,
+            unfocusedTextColor = Gold.copy(alpha = 0.8f),
+            cursorColor = Gold,
+            focusedBorderColor = Gold,
+            unfocusedBorderColor = Gold.copy(alpha = 0.7f),
+            focusedContainerColor = Color(0xFF1A1A2E),
+            unfocusedContainerColor = Color(0xFF1A1A2E),
+            unfocusedLabelColor = Gold.copy(alpha = 0.7f),
+            focusedLabelColor = Gold
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GameSetupScreenPreview() {
+    val navController = rememberNavController()
+    GameSetupScreen(
+        settings = GameSettings(6, 1),
+        navController = navController,
+        onSettingsChange = { _, _ -> },
+        onStartGame = { _ -> }
+    )
+}

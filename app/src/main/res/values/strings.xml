@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">VampirKoylu</string>
+    
+    <!-- Ana Menü -->
+    <string name="game_title">VAMPİR KÖYLÜ</string>
+    <string name="start_game">OYUNA BAŞLA</string>
+    <string name="rules">KURALLAR</string>
+    <string name="developer">GELİŞTİRİCİ</string>
+    
+    <!-- Oyun Hazırlık Ekranı -->
+    <string name="new_game">YENİ OYUN</string>
+    <string name="enter_names">İSİMLERİ GİRİN</string>
+    <string name="player_count">OYNAYAN SAYISI</string>
+    <string name="vampire_count">VAMPİR SAYISI</string>
+    <string name="start">BAŞLAT</string>
+    
+    <!-- Oyun İçi -->
+    <string name="night">GECE OLDU</string>
+    <string name="day">GÜNDÜZ OLDU</string>
+    <string name="pass_to">TELEFONU %1$s\'A VER</string>
+    <string name="your_role">ROLÜN</string>
+    <string name="vampire">VAMPİR</string>
+    <string name="villager">KÖYLÜ</string>
+    <string name="done">TAMAM</string>
+    <string name="choose_target">HEDEF SEÇ</string>
+    <string name="voting">OYLAMA</string>
+    <string name="vote_result">OYLAMA SONUCU</string>
+    <string name="eliminated">ELENEN</string>
+    <string name="continue_game">DEVAM ET</string>
+    <string name="game_over">OYUN BİTTİ</string>
+    <string name="vampires_win">VAMPİRLER KAZANDI</string>
+    <string name="villagers_win">KÖYLÜLER KAZANDI</string>
+    <string name="back_to_menu">ANA MENÜYE DÖN</string>
+    
+    <!-- Kurallar -->
+    <string name="rules_title">KURALLAR</string>
+    <string name="rules_text">Bu oyun, klasik Vampir-Köylü oyununun dijital versiyonudur.\n\n
+        • Oyunculara rastgele roller dağıtılır (Vampir veya Köylü).\n
+        • Gece vakti, Vampirler bir köylüyü öldürmek için seçer.\n
+        • Gündüz vakti, tüm oyuncular kimin Vampir olduğunu tahmin etmek için tartışır ve oylama yapar.\n
+        • Tüm vampirler elenirse Köylüler, tüm köylüler ölürse Vampirler kazanır.\n\n
+        Not: Uygulama tüm süreci yönetir, moderatöre gerek yoktur.
+    </string>
+</resources>
