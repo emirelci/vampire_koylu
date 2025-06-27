@@ -6,8 +6,20 @@ import androidx.compose.runtime.Immutable
  * Oyuncunun rolünü temsil eden enum sınıfı
  */
 enum class PlayerRole {
-    VAMPIRE, // Vampir
-    VILLAGER // Köylü
+    VAMPIRE,     // Vampir
+    VILLAGER,    // Köylü  
+    SHERIFF,     // Şerif
+    WATCHER,     // Gözcü
+    SERIAL_KILLER, // Seri Katil
+    DOCTOR       // Doktor
+}
+
+/**
+ * Suçluluk durumunu temsil eden enum sınıfı
+ */
+enum class GuiltStatus {
+    GUILTY,      // Suçlu (Vampir, Seri Katil)
+    INNOCENT     // Masum (Köylü, Şerif, Gözcü, Doktor)
 }
 
 /**
@@ -35,6 +47,34 @@ data class Player(
 )
 
 /**
+ * Gece ziyareti bilgisi
+ * Kimin kimi ziyaret ettiği bilgisini tutar
+ */
+@Immutable
+data class NightVisit(
+    val visitorId: Int,    // Ziyaret eden oyuncunun ID'si
+    val targetId: Int      // Ziyaret edilen oyuncunun ID'si
+)
+
+/**
+ * Şerif inceleme sonucu
+ */
+@Immutable
+data class SheriffInvestigation(
+    val targetId: Int,         // İncelenen kişinin ID'si
+    val result: GuiltStatus    // İnceleme sonucu (Suçlu/Masum)
+)
+
+/**
+ * Gözcü izleme sonucu
+ */
+@Immutable
+data class WatcherObservation(
+    val targetId: Int,             // İzlenen kişinin ID'si
+    val visitorIds: List<Int>      // Ziyaretçilerin ID'leri
+)
+
+/**
  * Oyun durumunu temsil eden data class
  */
 @Immutable
@@ -43,6 +83,13 @@ data class GameState(
     val currentPhase: GamePhase = GamePhase.SETUP,
     val currentDay: Int = 1,
     val nightTarget: Int? = null, // Gece hedef seçilen oyuncu ID'si
+    val doctorTarget: Int? = null, // Doktorun koruduğu oyuncu ID'si
+    val serialKillerTarget: Int? = null, // Seri katilin hedefi
+    val sheriffTarget: Int? = null, // Şerifin incelediği kişi
+    val watcherTarget: Int? = null, // Gözcünün izlediği kişi
+    val nightVisits: List<NightVisit> = emptyList(), // Gece ziyaretleri
+    val sheriffResults: List<SheriffInvestigation> = emptyList(), // Şerif sonuçları
+    val watcherResults: List<WatcherObservation> = emptyList(), // Gözcü sonuçları
     val votingResults: Map<Int, Int> = emptyMap(), // Key: Oy verilen ID, Value: Oy sayısı
     val lastEliminated: Int? = null, // Son elenen oyuncu ID'si
     val gameResult: GameResult? = null // Oyun sonucu
@@ -63,5 +110,9 @@ data class GameResult(
 @Immutable
 data class GameSettings(
     val playerCount: Int = 4,
-    val vampireCount: Int = 1
+    val vampireCount: Int = 1,
+    val sheriffCount: Int = 0,
+    val watcherCount: Int = 0,
+    val serialKillerCount: Int = 0,
+    val doctorCount: Int = 0
 ) 

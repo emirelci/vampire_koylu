@@ -30,11 +30,22 @@ class GameViewModel : ViewModel() {
     /**
      * Oyun ayarlarını günceller
      */
-    fun updateSettings(playerCount: Int, vampireCount: Int) {
+    fun updateSettings(
+        playerCount: Int,
+        vampireCount: Int,
+        sheriffCount: Int = 0,
+        watcherCount: Int = 0,
+        serialKillerCount: Int = 0,
+        doctorCount: Int = 0
+    ) {
         _settings.update { 
             it.copy(
                 playerCount = playerCount.coerceIn(4, 15), // Min 4, max 15 oyuncu
-                vampireCount = vampireCount.coerceIn(1, playerCount / 3) // En fazla oyuncu sayısının 1/3'ü kadar vampir
+                vampireCount = vampireCount.coerceIn(1, playerCount / 3), // En fazla oyuncu sayısının 1/3'ü kadar vampir
+                sheriffCount = sheriffCount.coerceIn(0, 1), // En fazla 1 şerif
+                watcherCount = watcherCount.coerceIn(0, 1), // En fazla 1 gözcü
+                serialKillerCount = serialKillerCount.coerceIn(0, 1), // En fazla 1 seri katil
+                doctorCount = doctorCount.coerceIn(0, 1) // En fazla 1 doktor
             )
         }
     }
@@ -85,16 +96,94 @@ class GameViewModel : ViewModel() {
             return
         }
         
-        _gameState.update { 
-            it.copy(nightTarget = targetId)
-        }
+        val activePlayer = _activePlayer.value ?: return
         
-        // Tüm vampirler hedef seçtiyse gündüz fazına geç
-        if (allVampiresActed()) {
-            proceedToDay()
-        } else {
-            // Sıradaki vampire geç
-            nextVampire()
+        // Aktif oyuncunun rolüne göre hedefi ayarla
+        when (activePlayer.role) {
+            PlayerRole.VAMPIRE -> {
+                _gameState.update { 
+                    it.copy(nightTarget = targetId)
+                }
+                
+                // Ziyareti kaydet
+                val visit = NightVisit(activePlayer.id, targetId)
+                addNightVisit(visit)
+                
+                // Sıradaki vampire geç veya fazı tamamla
+                if (allVampiresActed()) {
+                    // Seri katil, Şerif, Gözcü veya Doktor var mı kontrol et
+                    checkNextSpecialRole()
+                } else {
+                    nextVampire()
+                }
+            }
+            PlayerRole.SERIAL_KILLER -> {
+                _gameState.update { 
+                    it.copy(serialKillerTarget = targetId)
+                }
+                
+                // Ziyareti kaydet
+                val visit = NightVisit(activePlayer.id, targetId)
+                addNightVisit(visit)
+                
+                // Şerif, Gözcü veya Doktor var mı kontrol et
+                checkNextSpecialRole()
+            }
+            PlayerRole.SHERIFF -> {
+                _gameState.update { 
+                    it.copy(sheriffTarget = targetId)
+                }
+                
+                // Ziyareti kaydet
+                val visit = NightVisit(activePlayer.id, targetId)
+                addNightVisit(visit)
+                
+                // Suçlu olup olmadığını kontrol et
+                val targetPlayer = _players.value.find { it.id == targetId }
+                if (targetPlayer != null) {
+                    val isGuilty = targetPlayer.role == PlayerRole.VAMPIRE || 
+                                   targetPlayer.role == PlayerRole.SERIAL_KILLER
+                    
+                    val investigation = SheriffInvestigation(
+                        targetId = targetId,
+                        result = if (isGuilty) GuiltStatus.GUILTY else GuiltStatus.INNOCENT
+                    )
+                    
+                    _gameState.update { 
+                        it.copy(sheriffResults = it.sheriffResults + investigation)
+                    }
+                }
+                
+                // Gözcü veya Doktor var mı kontrol et
+                checkNextSpecialRole()
+            }
+            PlayerRole.WATCHER -> {
+                _gameState.update { 
+                    it.copy(watcherTarget = targetId)
+                }
+                
+                // Ziyaret kaydet - Gözcü konumdan izlediği için ziyaret etmiş sayılmaz
+                
+                // Gözcü sonucunu gece sonunda oluşturacağız
+                
+                // Doktor var mı kontrol et
+                checkNextSpecialRole()
+            }
+            PlayerRole.DOCTOR -> {
+                _gameState.update { 
+                    it.copy(doctorTarget = targetId)
+                }
+                
+                // Ziyareti kaydet
+                val visit = NightVisit(activePlayer.id, targetId)
+                addNightVisit(visit)
+                
+                // Gece fazını tamamla
+                finishNightPhase()
+            }
+            else -> {
+                // Diğer roller için bir işlem yapılmaz
+            }
         }
     }
     
@@ -157,7 +246,14 @@ class GameViewModel : ViewModel() {
     /**
      * Rolleri oluştur ve karıştır
      */
-    private fun createRoles(playerCount: Int, vampireCount: Int): List<PlayerRole> {
+    private fun createRoles(
+        playerCount: Int, 
+        vampireCount: Int, 
+        sheriffCount: Int = _settings.value.sheriffCount, 
+        watcherCount: Int = _settings.value.watcherCount, 
+        serialKillerCount: Int = _settings.value.serialKillerCount, 
+        doctorCount: Int = _settings.value.doctorCount
+    ): List<PlayerRole> {
         val roles = mutableListOf<PlayerRole>()
         
         // Vampir rollerini ekle
@@ -165,8 +261,26 @@ class GameViewModel : ViewModel() {
             roles.add(PlayerRole.VAMPIRE)
         }
         
-        // Köylü rollerini ekle
-        repeat(playerCount - vampireCount) {
+        // Özel rolleri ekle
+        repeat(sheriffCount) {
+            roles.add(PlayerRole.SHERIFF)
+        }
+        
+        repeat(watcherCount) {
+            roles.add(PlayerRole.WATCHER)
+        }
+        
+        repeat(serialKillerCount) {
+            roles.add(PlayerRole.SERIAL_KILLER)
+        }
+        
+        repeat(doctorCount) {
+            roles.add(PlayerRole.DOCTOR)
+        }
+        
+        // Kalan oyuncular için köylü rollerini ekle
+        val specialRoleCount = vampireCount + sheriffCount + watcherCount + serialKillerCount + doctorCount
+        repeat(playerCount - specialRoleCount) {
             roles.add(PlayerRole.VILLAGER)
         }
         
@@ -178,17 +292,17 @@ class GameViewModel : ViewModel() {
      * Gece fazından gündüz fazına geç
      */
     private fun proceedToDay() {
-        // Gece hedefinin durumunu güncelle
-        val targetId = _gameState.value.nightTarget
-        if (targetId != null) {
-            updatePlayerStatus(targetId, isAlive = false)
-        }
-        
         _gameState.update { 
             it.copy(
                 currentPhase = GamePhase.DAY,
-                lastEliminated = targetId,
-                nightTarget = null
+                lastEliminated = null,  // Artık birden fazla ölüm olabileceği için
+                // Gece hedeflerini temizle
+                nightTarget = null,
+                doctorTarget = null,
+                serialKillerTarget = null,
+                sheriffTarget = null,
+                watcherTarget = null,
+                nightVisits = emptyList() // Ziyaretleri sıfırla
             )
         }
         
@@ -252,18 +366,31 @@ class GameViewModel : ViewModel() {
         }
         
         // İlk vampiri aktif yap
-        _activePlayer.value = _players.value.find { it.isAlive && it.role == PlayerRole.VAMPIRE }
+        val vampire = _players.value.find { it.isAlive && it.role == PlayerRole.VAMPIRE }
+        
+        if (vampire != null) {
+            _activePlayer.value = vampire
+        } else {
+            // Vampir yoksa seri katil, şerif, gözcü veya doktor var mı kontrol et
+            checkNextSpecialRole()
+        }
     }
     
     /**
      * Oyun bitişine geç
      */
     private fun proceedToGameOver() {
-        val vampiresWin = _players.value.none { it.isAlive && it.role == PlayerRole.VILLAGER }
-        val villagersWin = _players.value.none { it.isAlive && it.role == PlayerRole.VAMPIRE }
+        val vampiresWin = _players.value.none { it.isAlive && (it.role == PlayerRole.VILLAGER || it.role == PlayerRole.SHERIFF || it.role == PlayerRole.WATCHER || it.role == PlayerRole.DOCTOR) }
+        val villagersWin = _players.value.none { it.isAlive && (it.role == PlayerRole.VAMPIRE || it.role == PlayerRole.SERIAL_KILLER) }
+        val serialKillerWin = _players.value.count { it.isAlive } == 1 && _players.value.any { it.isAlive && it.role == PlayerRole.SERIAL_KILLER }
         
-        if (vampiresWin || villagersWin) {
-            val winningRole = if (vampiresWin) PlayerRole.VAMPIRE else PlayerRole.VILLAGER
+        if (vampiresWin || villagersWin || serialKillerWin) {
+            val winningRole = when {
+                serialKillerWin -> PlayerRole.SERIAL_KILLER
+                vampiresWin -> PlayerRole.VAMPIRE
+                else -> PlayerRole.VILLAGER
+            }
+            
             val gameResult = GameResult(
                 winningRole = winningRole,
                 alivePlayers = _players.value.filter { it.isAlive }
@@ -340,9 +467,116 @@ class GameViewModel : ViewModel() {
      * Oyun bitti mi kontrol et
      */
     private fun checkGameOver(): Boolean {
-        val noVampires = _players.value.none { it.isAlive && it.role == PlayerRole.VAMPIRE }
-        val noVillagers = _players.value.none { it.isAlive && it.role == PlayerRole.VILLAGER }
+        // Köylü takımında kimse kalmadı mı? (Köylü, Şerif, Gözcü, Doktor)
+        val noVillageTeam = _players.value.none { 
+            it.isAlive && (it.role == PlayerRole.VILLAGER || it.role == PlayerRole.SHERIFF || 
+                          it.role == PlayerRole.WATCHER || it.role == PlayerRole.DOCTOR)
+        }
         
-        return noVampires || noVillagers
+        // Vampir kalmadı mı?
+        val noVampires = _players.value.none { it.isAlive && it.role == PlayerRole.VAMPIRE }
+        
+        // Seri katil kazanma durumu: Sadece bir kişi hayatta ve o seri katil
+        val serialKillerWin = _players.value.count { it.isAlive } == 1 && 
+                             _players.value.any { it.isAlive && it.role == PlayerRole.SERIAL_KILLER }
+        
+        return noVillageTeam || noVampires || serialKillerWin
+    }
+    
+    // Ziyareti kaydeden yardımcı fonksiyon
+    private fun addNightVisit(visit: NightVisit) {
+        _gameState.update { 
+            it.copy(nightVisits = it.nightVisits + visit)
+        }
+    }
+    
+    // Sonraki özel rolü kontrol eder
+    private fun checkNextSpecialRole() {
+        val alivePlayers = _players.value.filter { it.isAlive }
+        
+        // Seri katil
+        if (_gameState.value.serialKillerTarget == null) {
+            val serialKiller = alivePlayers.find { it.role == PlayerRole.SERIAL_KILLER }
+            if (serialKiller != null) {
+                _activePlayer.value = serialKiller
+                return
+            }
+        }
+        
+        // Şerif
+        if (_gameState.value.sheriffTarget == null) {
+            val sheriff = alivePlayers.find { it.role == PlayerRole.SHERIFF }
+            if (sheriff != null) {
+                _activePlayer.value = sheriff
+                return
+            }
+        }
+        
+        // Gözcü
+        if (_gameState.value.watcherTarget == null) {
+            val watcher = alivePlayers.find { it.role == PlayerRole.WATCHER }
+            if (watcher != null) {
+                _activePlayer.value = watcher
+                return
+            }
+        }
+        
+        // Doktor
+        if (_gameState.value.doctorTarget == null) {
+            val doctor = alivePlayers.find { it.role == PlayerRole.DOCTOR }
+            if (doctor != null) {
+                _activePlayer.value = doctor
+                return
+            }
+        }
+        
+        // Tüm özel roller tamamlandı, gece fazını bitir
+        finishNightPhase()
+    }
+    
+    // Gece fazını tamamlayıp sonuçları hesaplar
+    private fun finishNightPhase() {
+        // Gözcü sonuçlarını hesapla
+        val watcherTarget = _gameState.value.watcherTarget
+        if (watcherTarget != null) {
+            // Hedef eve gelen ziyaretçileri bul
+            val visitors = _gameState.value.nightVisits
+                .filter { it.targetId == watcherTarget }
+                .map { it.visitorId }
+                
+            if (visitors.isNotEmpty()) {
+                val observation = WatcherObservation(
+                    targetId = watcherTarget,
+                    visitorIds = visitors
+                )
+                
+                _gameState.update { 
+                    it.copy(watcherResults = it.watcherResults + observation)
+                }
+            }
+        }
+        
+        // Ölümleri hesapla
+        processNightKills()
+        
+        // Gündüz fazına geç
+        proceedToDay()
+    }
+    
+    // Gece ölümlerini hesapla
+    private fun processNightKills() {
+        val vampireTarget = _gameState.value.nightTarget
+        val doctorTarget = _gameState.value.doctorTarget
+        val serialKillerTarget = _gameState.value.serialKillerTarget
+        
+        // Vampir kurbanı
+        if (vampireTarget != null && vampireTarget != doctorTarget) {
+            updatePlayerStatus(vampireTarget, isAlive = false)
+        }
+        
+        // Seri katil kurbanı
+        if (serialKillerTarget != null && serialKillerTarget != doctorTarget) {
+            updatePlayerStatus(serialKillerTarget, isAlive = false)
+        }
     }
 } 

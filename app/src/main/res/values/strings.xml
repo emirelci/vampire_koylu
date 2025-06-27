@@ -17,11 +17,30 @@
     <!-- Oyun İçi -->
     <string name="night">GECE OLDU</string>
     <string name="day">GÜNDÜZ OLDU</string>
-    <string name="pass_to">TELEFONU %1$s\'A VER</string>
+    <string name="pass_to">Telefonu %1$s\'e uzatın.\nRolünü yalnızca o görebilecek.</string>
+    <string name="pass_to_header">SIRA:%1$s</string>
+    <string name="pass_to_info">Rolünü yalnızca o görebilecek.</string>
+    <string name="pass_warning">Hazır olmadan kimse bakmasın!</string>
+    <string name="pass_continue">Devam etmek için butona basın.</string>
     <string name="your_role">ROLÜN</string>
     <string name="vampire">VAMPİR</string>
     <string name="villager">KÖYLÜ</string>
+    <string name="sheriff">ŞERİF</string>
+    <string name="watcher">GÖZCÜ</string>
+    <string name="serial_killer">SERİ KATİL</string>
+    <string name="doctor">DOKTOR</string>
+    
+    <!-- Rol Açıklamaları -->
+    <string name="role_info">ROL BİLGİSİ</string>
+    <string name="vampire_info">Her gece bir köylüyü öldürme hakkınız var. Amacınız tüm köylüleri öldürmek. Kimliğinizi gizleyin ve suçsuz görünmeye çalışın.</string>
+    <string name="villager_info">Amacınız vampirleri bulmak ve oylamada eleyerek köyü kurtarmak. Gündüzleri tartışın ve ipuçlarını değerlendirin.</string>
+    <string name="sheriff_info">Bir köylüsün, ancak güçlü sezgilerin var. Her gece bir oyuncunun suçlu mu masum mu olduğunu öğrenebilirsin. Vampir ve Seri Katil suçlu, diğer tüm roller masumu gösterir.</string>
+    <string name="watcher_info">Her gece bir oyuncunun evini izlersin. O oyuncunun gecesinde kimlerin onun evine girdiğini öğrenirsin. Ancak neden girdiklerini (öldürmek mi korumak mı?) öğrenemezsin. Örnek: \"Zeynep\'in evine Emir ve Hakan girdi.\"</string>
+    <string name="serial_killer_info">Tek başına hareket eden bir katilsin. Her gece bir kişiyi öldürebilirsin. Amacın hayatta kalan son kişi olmak.</string>
+    <string name="doctor_info">Her gece bir kişiyi vampir saldırısından koruyabilirsin. Eğer vampirler senin koruduğun kişiyi seçerse, o kişi hayatta kalır.</string>
+    
     <string name="done">TAMAM</string>
+    <string name="show_role">HAZIRIM\n>ROLÜMÜ GÖSTER</string>
     <string name="choose_target">HEDEF SEÇ</string>
     <string name="voting">OYLAMA</string>
     <string name="vote_result">OYLAMA SONUCU</string>
@@ -31,6 +50,13 @@
     <string name="vampires_win">VAMPİRLER KAZANDI</string>
     <string name="villagers_win">KÖYLÜLER KAZANDI</string>
     <string name="back_to_menu">ANA MENÜYE DÖN</string>
+    
+    <!-- Rol Ayarları -->
+    <string name="role_settings">ROL AYARLARI</string>
+    <string name="sheriff_count">ŞERİF SAYISI</string>
+    <string name="watcher_count">GÖZCÜ SAYISI</string>
+    <string name="serial_killer_count">SERİ KATİL SAYISI</string>
+    <string name="doctor_count">DOKTOR SAYISI</string>
     
     <!-- Kurallar -->
     <string name="rules_title">KURALLAR</string>

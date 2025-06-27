@@ -54,7 +54,8 @@ fun PixelArtButton(
             fontFamily = PixelFont,
             color = color,
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            lineHeight = 24.sp
         )
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 val DarkBlue = Color(0xFF0A0A1E) // Arka plan rengi
 val Red = Color(0xAAC13131) // Ana buton rengi
 val Gold = Color(0xFFF0E68C) // Başlık ve metin rengi
+val shine_gold = Color(0xFFECA313) // Başlık ve metin rengi
 val dark_gold = Color(0xFFAC8839)
 val Beige = Color(0xFFC9BFA2)
 val BrownDark = Color(0xFF3C2A21) // Koyu kahverengi (buton)
