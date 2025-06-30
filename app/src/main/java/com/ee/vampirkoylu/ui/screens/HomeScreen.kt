@@ -16,6 +16,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.ee.vampirkoylu.ui.theme.LocalWindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.navigation.compose.rememberNavController
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.component.PixelArtButton
@@ -44,21 +46,43 @@ fun MainScreenBackground(content: @Composable () -> Unit) {
 
 @Composable
 fun HomeScreen(navController: NavController) {
+    val widthSizeClass = LocalWindowWidthSizeClass.current
+    if (widthSizeClass == WindowWidthSizeClass.Compact) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            HomeScreenContent(navController)
+        }
+    } else {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            horizontalArrangement = Arrangement.spacedBy(32.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            HomeScreenContent(navController, horizontal = true)
+        }
+    }
+}
+
+@Composable
+private fun HomeScreenContent(navController: NavController, horizontal: Boolean = false) {
+    val containerModifier = if (horizontal) Modifier.weight(1f) else Modifier.fillMaxSize()
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(4.dp),
+        modifier = containerModifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Spacer(modifier = Modifier.height(30.dp))
-        
+
         // Logo ve Başlık
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(modifier = Modifier.fillMaxWidth())
-            {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 Image(
                     painter = painterResource(id = R.drawable.vampir_logo),
                     contentDescription = "Vampir İkonu",
