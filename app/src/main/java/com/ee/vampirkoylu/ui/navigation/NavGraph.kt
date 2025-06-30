@@ -26,6 +26,8 @@ import com.ee.vampirkoylu.ui.screens.GameSetupScreen
 import com.ee.vampirkoylu.ui.screens.HomeScreen
 import com.ee.vampirkoylu.ui.screens.MainScreenBackground
 import com.ee.vampirkoylu.ui.screens.MeetingDayScreen
+import com.ee.vampirkoylu.ui.screens.DayVoteResultScreen
+import com.ee.vampirkoylu.ui.screens.JudgementScreen
 import com.ee.vampirkoylu.ui.screens.NightActionScreen
 import com.ee.vampirkoylu.ui.screens.NightResultsScreen
 import com.ee.vampirkoylu.ui.screens.RoleRevealScreen
@@ -189,7 +191,7 @@ object NavGraph {
                                 players = players,
                                 onVote = { targetId ->
                                     gameViewModel.vote(targetId)
-                                    
+
                                     // Oylama fazı değiştiyse sonuçlara git
                                     if (gameState.currentPhase == GamePhase.VOTE_RESULT) {
                                         navController.navigate(Screen.MeetingDay.route) {
@@ -199,7 +201,7 @@ object NavGraph {
                                 },
                                 onSkipVote = {
                                     gameViewModel.skipVote()
-                                    
+
                                     // Oylama fazı değiştiyse sonuçlara git
                                     if (gameState.currentPhase == GamePhase.VOTE_RESULT) {
                                         navController.navigate(Screen.MeetingDay.route) {
@@ -212,6 +214,30 @@ object NavGraph {
                             "Oylama bekleniyor...",
                             color = Color.White
                         )
+                    }
+                    GamePhase.DAY_VOTE_RESULT -> {
+                        val accused = players.find { it.id == gameState.accusedId }
+                        DayVoteResultScreen(
+                            accusedPlayer = accused,
+                            onFinish = { gameViewModel.startJudgement() }
+                        )
+                    }
+                    GamePhase.JUDGEMENT -> {
+                        val accused = players.find { it.id == gameState.accusedId }
+                        if (accused != null && activePlayer != null) {
+                            JudgementScreen(
+                                activePlayer = activePlayer,
+                                accusedPlayer = accused,
+                                onVote = { choice ->
+                                    gameViewModel.submitJudgementVote(choice)
+                                    if (gameState.currentPhase == GamePhase.VOTE_RESULT) {
+                                        navController.navigate(Screen.MeetingDay.route) {
+                                            popUpTo(Screen.Game.route) { inclusive = true }
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                     else -> {
                         // Diğer fazlar için gece aksiyonu gösterme

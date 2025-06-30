@@ -370,15 +370,13 @@ class GameViewModel : ViewModel() {
             proceedToNight()
             return
         }
-        
+
         val mostVoted = votes.maxByOrNull { it.value }?.key
         if (mostVoted != null) {
-            updatePlayerStatus(mostVoted, isAlive = false)
-            
-            _gameState.update { 
+            _gameState.update {
                 it.copy(
-                    currentPhase = GamePhase.VOTE_RESULT,
-                    lastEliminated = mostVoted,
+                    currentPhase = GamePhase.DAY_VOTE_RESULT,
+                    accusedId = mostVoted,
                     votingResults = emptyMap()
                 )
             }
@@ -629,10 +627,68 @@ class GameViewModel : ViewModel() {
     fun skipVote() {
         // Sıradaki oyuncuya geç
         nextPlayer()
-        
+
         // Tüm oyuncular oy verdiyse sonuç fazına geç
         if (allPlayersVoted()) {
             proceedToVoteResult()
+        }
+    }
+
+    /**
+     * 3 dakikalık geri sayım sonrası yargılama aşamasına geçer
+     */
+    fun startJudgement() {
+        _gameState.update {
+            it.copy(
+                currentPhase = GamePhase.JUDGEMENT,
+                judgementVotes = emptyMap()
+            )
+        }
+
+        // İlk oylayan oyuncuyu ata (suçlanan hariç)
+        val accused = _gameState.value.accusedId
+        val first = _players.value.firstOrNull { it.isAlive && !it.isDying && it.id != accused }
+        _activePlayer.value = first
+    }
+
+    /**
+     * Oyuncuların suçlu/masum kararını kaydeder
+     */
+    fun submitJudgementVote(isGuilty: Boolean) {
+        val accusedId = _gameState.value.accusedId ?: return
+        val active = _activePlayer.value ?: return
+
+        _gameState.update {
+            it.copy(judgementVotes = it.judgementVotes + (active.id to isGuilty))
+        }
+
+        val voters = _players.value.filter { it.isAlive && !it.isDying && it.id != accusedId }
+        val currentIndex = voters.indexOfFirst { it.id == active.id }
+        if (currentIndex < voters.size - 1) {
+            _activePlayer.value = voters[currentIndex + 1]
+        } else {
+            finalizeJudgement()
+        }
+    }
+
+    // Yargılamayı sonuçlandırır
+    private fun finalizeJudgement() {
+        val accusedId = _gameState.value.accusedId ?: return
+        val votes = _gameState.value.judgementVotes
+        val guiltyCount = votes.values.count { it }
+        val guilty = guiltyCount > votes.size / 2
+
+        if (guilty) {
+            updatePlayerStatus(accusedId, isAlive = false)
+            _gameState.update { it.copy(lastEliminated = accusedId) }
+        }
+
+        _gameState.update {
+            it.copy(
+                currentPhase = GamePhase.VOTE_RESULT,
+                accusedId = null,
+                judgementVotes = emptyMap()
+            )
         }
     }
 } 

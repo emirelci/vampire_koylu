@@ -108,4 +108,14 @@
     <string name="voting_phase">OYLAMA</string>
     <string name="voting_instruction">Kimin idam edilmesini istiyorsun?</string>
     <string name="skip_vote">OY VERME</string>
+
+    <!-- Gündüz Oylama Sonucu -->
+    <string name="day_vote_result_title">OYLAMA SONUCU</string>
+    <string name="accused_player">Suçlanan: %1$s</string>
+    <string name="start_judgement">YARGILAMAYA GEÇ</string>
+
+    <!-- Yargılama Ekranı -->
+    <string name="judgement_title">YARGILAMA</string>
+    <string name="vote_guilty">SUÇLU</string>
+    <string name="vote_innocent">MASUM</string>
 </resources>
