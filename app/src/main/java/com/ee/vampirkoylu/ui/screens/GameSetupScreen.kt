@@ -32,7 +32,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.model.GameSettings
+import com.ee.vampirkoylu.ui.component.IncreaseDecreaseCount
 import com.ee.vampirkoylu.ui.component.PixelArtButton
+import com.ee.vampirkoylu.ui.component.RoleCountSelector
 import com.ee.vampirkoylu.ui.component.WarningBanner
 import com.ee.vampirkoylu.ui.navigation.Screen
 import com.ee.vampirkoylu.ui.theme.Beige
@@ -140,98 +142,41 @@ fun GameSetupScreen(
                                 color = Beige
                             )
 
-                            Row(
-                                Modifier.padding(start = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
+                            IncreaseDecreaseCount(
+                                count = playerCount,
+                                onIncrease = {
+                                    val newPlayerCount = playerCount + 1
+                                    playerCount = newPlayerCount
+                                    onSettingsChange(newPlayerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                    if (playerNames.size < newPlayerCount) {
+                                        playerNames.add("")
+                                    }
+                                },
+                                onDecrease = {
+                                    val newPlayerCount = playerCount - 1
+                                    val newMaxVampires = calculateMaxVampires(newPlayerCount)
+                                    val newVampireCount = minOf(vampireCount, newMaxVampires)
 
-                                IconButton(
-                                    onClick = {
-                                        if (playerCount > 4) {
-                                            // Oyuncu sayısını azalt
-                                            val newPlayerCount = playerCount - 1
-                                            
-                                            // Vampir sayısını kontrol et ve gerekirse güncelle
-                                            val newMaxVampires = calculateMaxVampires(newPlayerCount)
-                                            val newVampireCount = minOf(vampireCount, newMaxVampires)
-                                            
-                                            // State ve ViewModel'i güncelle
-                                            playerCount = newPlayerCount
-                                            vampireCount = newVampireCount
-                                            onSettingsChange(newPlayerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
-                                            
-                                            // Oyuncu listesini güncelle
-                                            while (playerNames.size > newPlayerCount) {
-                                                playerNames.removeAt(playerNames.lastIndex)
-                                            }
-                                        } else {
-                                            // Minimum oyuncu sayısına ulaşıldığında uyarı göster
-                                            warningMessage = "Oyuncu sayısı en az 4 olmalıdır!"
-                                            showWarning = true
-                                        }
-                                    },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Image(
-                                        painterResource(R.drawable.text_block),
-                                        contentScale = ContentScale.FillBounds,
-                                        modifier = Modifier.wrapContentSize(),
-                                        contentDescription = "Oyuncu sayısı azaltma",
-                                    )
+                                    playerCount = newPlayerCount
+                                    vampireCount = newVampireCount
+                                    onSettingsChange(newPlayerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
 
-                                    Text(
-                                        text = "-",
-                                        fontSize = 18.sp,
-                                        color = Gold,
-                                    )
-                                }
-
-                                Text(
-                                    text = playerCount.toString(),
-                                    fontSize = 16.sp,
-                                    fontFamily = PixelFont,
-                                    color = Gold,
-                                    modifier = Modifier.padding(horizontal = 8.dp)
-                                )
-
-                                IconButton(
-                                    onClick = {
-                                        if (playerCount < 15) {
-                                            // Oyuncu sayısını artır
-                                            val newPlayerCount = playerCount + 1
-                                            
-                                            // State ve ViewModel'i güncelle
-                                            playerCount = newPlayerCount
-                                            onSettingsChange(newPlayerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
-                                            
-                                            // Oyuncu listesini güncelle
-                                            if (playerNames.size < newPlayerCount) {
-                                                playerNames.add("")
-                                            }
-                                        } else {
-                                            // Maksimum oyuncu sayısına ulaşıldığında uyarı göster
-                                            warningMessage = "Oyuncu sayısı en fazla 15 olabilir!"
-                                            showWarning = true
-                                        }
-                                    },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-
-                                    Image(
-                                        painterResource(R.drawable.text_block),
-                                        contentScale = ContentScale.FillBounds,
-                                        modifier = Modifier.wrapContentSize(),
-                                        contentDescription = "Oyuncu sayısı azaltma",
-                                    )
-
-                                    Text(
-                                        text = "+",
-                                        fontSize = 18.sp,
-                                        color = Gold
-                                    )
-                                }
-                            }
+                                    while (playerNames.size > newPlayerCount) {
+                                        playerNames.removeAt(playerNames.lastIndex)
+                                    }
+                                },
+                                canIncrease = playerCount < 15,
+                                canDecrease = playerCount > 4,
+                                showWarningOnIncrease = {
+                                    warningMessage = "Oyuncu sayısı en fazla 15 olabilir!"
+                                    showWarning = true
+                                },
+                                showWarningOnDecrease = {
+                                    warningMessage = "Oyuncu sayısı en az 4 olmalıdır!"
+                                    showWarning = true
+                                },
+                                modifier = Modifier.padding(start = 6.dp)
+                            )
 
 
                         }
@@ -250,77 +195,31 @@ fun GameSetupScreen(
                                 color = Beige
                             )
 
-                            Row(
-                                Modifier.padding(start = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-
-                                IconButton(
-                                    onClick = {
-                                        if (vampireCount > 1) {
-                                            val newVampireCount = vampireCount - 1
-                                            vampireCount = newVampireCount
-                                            onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
-                                        } else {
-                                            // Minimum vampir sayısına ulaşıldığında uyarı göster
-                                            warningMessage = "En az 1 vampir olmalıdır!"
-                                            showWarning = true
-                                        }
-                                    },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Image(
-                                        painterResource(R.drawable.text_block),
-                                        contentScale = ContentScale.FillBounds,
-                                        modifier = Modifier.wrapContentSize(),
-                                        contentDescription = "Oyuncu sayısı azaltma",
-                                    )
-
-                                    Text(
-                                        text = "-",
-                                        fontSize = 18.sp,
-                                        color = if (vampireCount > 1) Gold else Gold.copy(alpha = 0.5f)
-                                    )
-                                }
-
-                                Text(
-                                    text = vampireCount.toString(),
-                                    fontSize = 20.sp,
-                                    fontFamily = PixelFont,
-                                    color = Gold,
-                                    modifier = Modifier.padding(horizontal = 8.dp)
-                                )
-
-                                IconButton(
-                                    onClick = {
-                                        if (vampireCount < maxVampireCount) {
-                                            val newVampireCount = vampireCount + 1
-                                            vampireCount = newVampireCount
-                                            onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
-                                        } else {
-                                            // Maksimum vampir sayısına ulaşıldığında uyarı göster
-                                            warningMessage = "Maksimum vampir sayısına ulaşıldı! (Max: $maxVampireCount)"
-                                            showWarning = true
-                                        }
-                                    },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-
-                                    Image(
-                                        painterResource(R.drawable.text_block),
-                                        contentScale = ContentScale.FillBounds,
-                                        modifier = Modifier.wrapContentSize(),
-                                        contentDescription = "Oyuncu sayısı azaltma",
-                                    )
-
-                                    Text(
-                                        text = "+",
-                                        fontSize = 18.sp,
-                                        color = if (vampireCount < maxVampireCount) Gold else Gold.copy(alpha = 0.5f)
-                                    )
-                                }
-                            }
+                            IncreaseDecreaseCount(
+                                count = vampireCount,
+                                onIncrease = {
+                                    val newVampireCount = vampireCount + 1
+                                    vampireCount = newVampireCount
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                },
+                                onDecrease = {
+                                    val newVampireCount = vampireCount - 1
+                                    vampireCount = newVampireCount
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                },
+                                canIncrease = vampireCount < maxVampireCount,
+                                canDecrease = vampireCount > 1,
+                                fontSize = 20.sp,
+                                showWarningOnIncrease = {
+                                    warningMessage = "Maksimum vampir sayısına ulaşıldı! (Max: $maxVampireCount)"
+                                    showWarning = true
+                                },
+                                showWarningOnDecrease = {
+                                    warningMessage = "En az 1 vampir olmalıdır!"
+                                    showWarning = true
+                                },
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
                         }
 
                         // Vampir sayısı açıklaması
@@ -580,79 +479,6 @@ fun PlayerNameInput(
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     )
-}
-
-@Composable
-fun RoleCountSelector(
-    title: String,
-    count: Int,
-    maxCount: Int,
-    onIncrease: () -> Unit,
-    onDecrease: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            fontSize = 14.sp,
-            fontFamily = PixelFont,
-            color = Beige
-        )
-
-        Row(
-            Modifier.padding(start = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            IconButton(
-                onClick = onDecrease,
-                modifier = Modifier.size(28.dp)
-            ) {
-                Image(
-                    painterResource(R.drawable.text_block),
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.wrapContentSize(),
-                    contentDescription = "Rol sayısı azaltma",
-                )
-
-                Text(
-                    text = "-",
-                    fontSize = 18.sp,
-                    color = if (count > 0) Gold else Gold.copy(alpha = 0.5f)
-                )
-            }
-
-            Text(
-                text = count.toString(),
-                fontSize = 16.sp,
-                fontFamily = PixelFont,
-                color = Gold,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-
-            IconButton(
-                onClick = onIncrease,
-                modifier = Modifier.size(28.dp)
-            ) {
-                Image(
-                    painterResource(R.drawable.text_block),
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.wrapContentSize(),
-                    contentDescription = "Rol sayısı arttırma",
-                )
-
-                Text(
-                    text = "+",
-                    fontSize = 18.sp,
-                    color = if (count < maxCount) Gold else Gold.copy(alpha = 0.5f)
-                )
-            }
-        }
-    }
 }
 
 @Preview(showBackground = true)

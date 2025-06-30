@@ -224,19 +224,21 @@ object NavGraph {
                     }
                     GamePhase.JUDGEMENT -> {
                         val accused = players.find { it.id == gameState.accusedId }
-                        if (accused != null && activePlayer != null) {
-                            JudgementScreen(
-                                activePlayer = activePlayer,
-                                accusedPlayer = accused,
-                                onVote = { choice ->
-                                    gameViewModel.submitJudgementVote(choice)
-                                    if (gameState.currentPhase == GamePhase.VOTE_RESULT) {
-                                        navController.navigate(Screen.MeetingDay.route) {
-                                            popUpTo(Screen.Game.route) { inclusive = true }
+                        if (accused != null) {
+                            activePlayer?.let { currentPlayer ->
+                                JudgementScreen(
+                                    activePlayer = currentPlayer,
+                                    accusedPlayer = accused,
+                                    onVote = { choice ->
+                                        gameViewModel.submitJudgementVote(choice)
+                                        if (gameState.currentPhase == GamePhase.VOTE_RESULT) {
+                                            navController.navigate(Screen.MeetingDay.route) {
+                                                popUpTo(Screen.Game.route) { inclusive = true }
+                                            }
                                         }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                     else -> {

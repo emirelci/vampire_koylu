@@ -76,6 +76,8 @@ dependencies {
     //Coroutine
     implementation(libs.kotlinx.coroutines.android)
 
+    implementation(libs.androidx.adaptive)
+
     //Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)

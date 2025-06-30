@@ -1,4 +1,5 @@
 [versions]
+adaptive = "1.2.0-alpha07"
 agp = "8.11.0"
 hiltAndroid = "2.51.1"
 hiltNavigationCompose = "1.2.0"
@@ -14,6 +15,7 @@ composeBom = "2025.06.01"
 navigationCompose = "2.9.0"
 
 [libraries]
+androidx-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltNavigationCompose" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }

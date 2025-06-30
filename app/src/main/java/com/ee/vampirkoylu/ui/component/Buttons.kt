@@ -3,6 +3,7 @@ package com.ee.vampirkoylu.ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.theme.PixelFont
-
+/*
 @Composable
 fun PixelArtButton(
     text: String,
@@ -57,5 +58,54 @@ fun PixelArtButton(
             fontWeight = FontWeight.Bold,
             lineHeight = 24.sp
         )
+    }
+}
+
+ */
+
+
+@Composable
+fun PixelArtButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    fontSize: TextUnit = 24.sp,
+    imageId: Int = R.drawable.button_brown, // arka plan görseli
+    color: Color = Color(0xFFF0E68C)
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .width(260.dp)
+            .height(80.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = color
+        ),
+        contentPadding = PaddingValues(8.dp),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = imageId),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds
+            )
+
+            Text(
+                text = text,
+                fontSize = fontSize,
+                fontFamily = PixelFont,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 24.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
