@@ -11,13 +11,15 @@ import com.ee.vampirkoylu.ui.navigation.NavGraph
 import com.ee.vampirkoylu.ui.screens.HomeScreen
 import com.ee.vampirkoylu.ui.screens.MainScreenBackground
 import com.ee.vampirkoylu.ui.theme.VampirKoyluTheme
+import com.ee.vampirkoylu.util.rememberWindowWidthSizeClass
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            VampirKoyluTheme {
+            val widthSizeClass = rememberWindowWidthSizeClass()
+            VampirKoyluTheme(widthSizeClass = widthSizeClass) {
                 val navController = rememberNavController()
                 NavGraph.SetupNavGraph(navController = navController)
             }
@@ -28,9 +30,9 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    VampirKoyluTheme {
+    VampirKoyluTheme(widthSizeClass = androidx.compose.material3.windowsizeclass.WindowWidthSizeClass.Compact) {
         MainScreenBackground {
-            HomeScreen(rememberNavController())
+            HomeScreen(navController = rememberNavController())
         }
     }
 }
