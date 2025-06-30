@@ -28,6 +28,7 @@ enum class GuiltStatus {
 enum class GamePhase {
     SETUP,       // Oyun kurulumu
     NIGHT,       // Gece fazı
+    NIGHT_RESULT, // Gece sonucu fazı
     DAY,         // Gündüz fazı
     VOTING,      // Oylama fazı
     VOTE_RESULT, // Oylama sonucu
@@ -43,6 +44,7 @@ data class Player(
     val name: String,
     val role: PlayerRole,
     val isAlive: Boolean = true,
+    val isDying: Boolean = false,  // Bu turda öldürüldü ama sonuçlar fazında hala aktif
     val isRevealed: Boolean = false // Rolü açığa çıktı mı?
 )
 

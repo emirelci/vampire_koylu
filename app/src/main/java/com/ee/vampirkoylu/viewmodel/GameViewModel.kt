@@ -27,6 +27,10 @@ class GameViewModel : ViewModel() {
     private val _activePlayer = MutableStateFlow<Player?>(null)
     val activePlayer: StateFlow<Player?> = _activePlayer.asStateFlow()
     
+    // Son turda öldürülen oyuncular
+    private val _deadPlayers = MutableStateFlow<List<Player>>(emptyList())
+    val deadPlayers: StateFlow<List<Player>> = _deadPlayers.asStateFlow()
+    
     /**
      * Oyun ayarlarını günceller
      */
@@ -109,13 +113,8 @@ class GameViewModel : ViewModel() {
                 val visit = NightVisit(activePlayer.id, targetId)
                 addNightVisit(visit)
                 
-                // Sıradaki vampire geç veya fazı tamamla
-                if (allVampiresActed()) {
-                    // Seri katil, Şerif, Gözcü veya Doktor var mı kontrol et
-                    checkNextSpecialRole()
-                } else {
-                    nextVampire()
-                }
+                // Sıradaki oyuncuya geç
+                checkNextSpecialRole()
             }
             PlayerRole.SERIAL_KILLER -> {
                 _gameState.update { 
@@ -126,7 +125,7 @@ class GameViewModel : ViewModel() {
                 val visit = NightVisit(activePlayer.id, targetId)
                 addNightVisit(visit)
                 
-                // Şerif, Gözcü veya Doktor var mı kontrol et
+                // Sıradaki oyuncuya geç
                 checkNextSpecialRole()
             }
             PlayerRole.SHERIFF -> {
@@ -179,7 +178,11 @@ class GameViewModel : ViewModel() {
                 addNightVisit(visit)
                 
                 // Gece fazını tamamla
-                finishNightPhase()
+                checkNextSpecialRole()
+            }
+            PlayerRole.VILLAGER -> {
+                // Köylü için özel bir hedef seçimi yok, sadece bir sonraki role geç
+                checkNextSpecialRole()
             }
             else -> {
                 // Diğer roller için bir işlem yapılmaz
@@ -191,8 +194,17 @@ class GameViewModel : ViewModel() {
      * Gündüz fazında oyuncu oyu
      */
     fun vote(targetId: Int) {
+        // Aktif oyuncuyu kontrol et
+        val activePlayer = _activePlayer.value ?: return
+        
+        // Ölmekte olan veya ölü oyuncular oy veremez
+        if (!activePlayer.isAlive || activePlayer.isDying) {
+            nextPlayer()
+            return
+        }
+        
         // Kendine oy veremez
-        if (targetId == _activePlayer.value?.id) {
+        if (targetId == activePlayer.id) {
             return
         }
         
@@ -292,9 +304,26 @@ class GameViewModel : ViewModel() {
      * Gece fazından gündüz fazına geç
      */
     private fun proceedToDay() {
+        // Ölmekte olan oyuncuları belirle (deadPlayers listesini güncelle)
+        val dyingPlayers = _players.value.filter { it.isDying }
+        _deadPlayers.value = dyingPlayers
+        
+        // isDying olan oyuncuları ölü olarak işaretle
+        val updatedPlayers = _players.value.map { player ->
+            if (player.isDying) {
+                player.copy(isAlive = false, isDying = false)
+            } else {
+                player
+            }
+        }
+        
+        _players.value = updatedPlayers
+        
         _gameState.update { 
             it.copy(
+                players = updatedPlayers,
                 currentPhase = GamePhase.DAY,
+                currentDay = it.currentDay + 1,
                 lastEliminated = null,  // Artık birden fazla ölüm olabileceği için
                 // Gece hedeflerini temizle
                 nightTarget = null,
@@ -305,7 +334,7 @@ class GameViewModel : ViewModel() {
                 nightVisits = emptyList() // Ziyaretleri sıfırla
             )
         }
-        
+
         // Oyun bitti mi kontrol et
         if (checkGameOver()) {
             proceedToGameOver()
@@ -315,7 +344,7 @@ class GameViewModel : ViewModel() {
     /**
      * Gündüz fazından oylama fazına geç
      */
-    private fun proceedToVoting() {
+    fun proceedToVoting() {
         _gameState.update { 
             it.copy(
                 currentPhase = GamePhase.VOTING,
@@ -324,7 +353,10 @@ class GameViewModel : ViewModel() {
         }
         
         // İlk canlı oyuncuyu aktif yap
-        _activePlayer.value = _players.value.find { it.isAlive }
+        val firstAlivePlayer = _players.value.find { it.isAlive && !it.isDying }
+        if (firstAlivePlayer != null) {
+            _activePlayer.value = firstAlivePlayer
+        }
     }
     
     /**
@@ -408,10 +440,10 @@ class GameViewModel : ViewModel() {
     /**
      * Oyuncu durumunu güncelle
      */
-    private fun updatePlayerStatus(playerId: Int, isAlive: Boolean) {
+    private fun updatePlayerStatus(playerId: Int, isAlive: Boolean, isDying: Boolean = false) {
         val updatedPlayers = _players.value.map { player ->
             if (player.id == playerId) {
-                player.copy(isAlive = isAlive, isRevealed = true)
+                player.copy(isAlive = isAlive, isDying = isDying, isRevealed = !isAlive || isDying)
             } else {
                 player
             }
@@ -422,6 +454,7 @@ class GameViewModel : ViewModel() {
             it.copy(players = updatedPlayers)
         }
     }
+
     
     /**
      * Sıradaki vampire geç
@@ -439,11 +472,12 @@ class GameViewModel : ViewModel() {
      * Sıradaki oyuncuya geç
      */
     private fun nextPlayer() {
-        val alivePlayers = _players.value.filter { it.isAlive }
-        val currentIndex = alivePlayers.indexOfFirst { it.id == _activePlayer.value?.id }
+        // Sadece hayatta olan ve ölmekte olmayan oyuncuları al
+        val activePlayers = _players.value.filter { it.isAlive && !it.isDying }
+        val currentIndex = activePlayers.indexOfFirst { it.id == _activePlayer.value?.id }
         
-        if (currentIndex < alivePlayers.size - 1) {
-            _activePlayer.value = alivePlayers[currentIndex + 1]
+        if (currentIndex < activePlayers.size - 1) {
+            _activePlayer.value = activePlayers[currentIndex + 1]
         }
     }
     
@@ -459,8 +493,9 @@ class GameViewModel : ViewModel() {
      * Tüm oyuncular oy verdi mi?
      */
     private fun allPlayersVoted(): Boolean {
-        val alivePlayerCount = _players.value.count { it.isAlive }
-        return _gameState.value.votingResults.values.sum() >= alivePlayerCount
+        // Sadece hayatta olan ve ölmekte olmayan oyuncuların oy vermesini bekle
+        val activePlayerCount = _players.value.count { it.isAlive && !it.isDying }
+        return _gameState.value.votingResults.values.sum() >= activePlayerCount
     }
     
     /**
@@ -492,45 +527,22 @@ class GameViewModel : ViewModel() {
     
     // Sonraki özel rolü kontrol eder
     private fun checkNextSpecialRole() {
-        val alivePlayers = _players.value.filter { it.isAlive }
-        
-        // Seri katil
-        if (_gameState.value.serialKillerTarget == null) {
-            val serialKiller = alivePlayers.find { it.role == PlayerRole.SERIAL_KILLER }
-            if (serialKiller != null) {
-                _activePlayer.value = serialKiller
-                return
-            }
+        // Sadece canlı ve ölmekte olmayan oyuncular
+        val activePlayers = _players.value.filter { it.isAlive && !it.isDying }
+        val currentPlayerId = _activePlayer.value?.id ?: -1
+        println("DEBUG: checkNextSpecialRole - Mevcut oyuncu ID: $currentPlayerId")
+        // Oyuncu listesinde sıradaki oyuncuyu bul
+        val nextPlayer = activePlayers.find { it.id > currentPlayerId }
+
+        if (nextPlayer != null) {
+            println("DEBUG: checkNextSpecialRole - Sıradaki oyuncu: ${nextPlayer.name} (${nextPlayer.role}) - ID: ${nextPlayer.id}")
+            // Sıradaki oyuncuyu aktif yap
+            _activePlayer.value = nextPlayer
+            return
         }
+        println("DEBUG: checkNextSpecialRole - Sıradaki oyuncu bulunamadı, gece fazı tamamlanıyor")
         
-        // Şerif
-        if (_gameState.value.sheriffTarget == null) {
-            val sheriff = alivePlayers.find { it.role == PlayerRole.SHERIFF }
-            if (sheriff != null) {
-                _activePlayer.value = sheriff
-                return
-            }
-        }
-        
-        // Gözcü
-        if (_gameState.value.watcherTarget == null) {
-            val watcher = alivePlayers.find { it.role == PlayerRole.WATCHER }
-            if (watcher != null) {
-                _activePlayer.value = watcher
-                return
-            }
-        }
-        
-        // Doktor
-        if (_gameState.value.doctorTarget == null) {
-            val doctor = alivePlayers.find { it.role == PlayerRole.DOCTOR }
-            if (doctor != null) {
-                _activePlayer.value = doctor
-                return
-            }
-        }
-        
-        // Tüm özel roller tamamlandı, gece fazını bitir
+        // Eğer sıradaki oyuncu yoksa (son oyuncuya gelinmişse), gece fazını tamamla
         finishNightPhase()
     }
     
@@ -558,11 +570,40 @@ class GameViewModel : ViewModel() {
         
         // Ölümleri hesapla
         processNightKills()
-        
-        // Gündüz fazına geç
-        proceedToDay()
+
+        // Gece sonuçları fazına geç
+        proceedToNightResults()
     }
     
+    // Gece sonuçları fazına geç
+    private fun proceedToNightResults() {
+        _gameState.update { 
+            it.copy(currentPhase = GamePhase.NIGHT_RESULT)
+        }
+        
+        // İlk oyuncuyu aktif yap (gece sonuçlarını göstermek için)
+        // Tüm oyuncular (canlı veya ölü) arasından ilkini seç
+        val alivePlayers = _players.value.filter { it.isAlive }
+
+        if (alivePlayers != null) {
+            _activePlayer.value = alivePlayers.firstOrNull()
+        }
+    }
+
+    fun proceedToNextNightResult() {
+        val allPlayers = _players.value.filter { it.isAlive }
+        println("allPlayers:$allPlayers")
+        val currentIndex = allPlayers.indexOfFirst { it.id == _activePlayer.value?.id }
+        println("CurrentIndex: $currentIndex")
+        if (currentIndex < allPlayers.size - 1) {
+            // Sıradaki oyuncuyu aktif yap (ölü oyuncular dahil)
+            _activePlayer.value = allPlayers[currentIndex + 1]
+        } else {
+            // Tüm oyuncular gece sonuçlarını görmüşse gündüz fazına geç
+            proceedToDay()
+        }
+    }
+
     // Gece ölümlerini hesapla
     private fun processNightKills() {
         val vampireTarget = _gameState.value.nightTarget
@@ -571,12 +612,27 @@ class GameViewModel : ViewModel() {
         
         // Vampir kurbanı
         if (vampireTarget != null && vampireTarget != doctorTarget) {
-            updatePlayerStatus(vampireTarget, isAlive = false)
+            // Öldürülecek oyuncuyu isDying olarak işaretle
+            updatePlayerStatus(vampireTarget, isAlive = true, isDying = true)
         }
         
         // Seri katil kurbanı
         if (serialKillerTarget != null && serialKillerTarget != doctorTarget) {
-            updatePlayerStatus(serialKillerTarget, isAlive = false)
+            // Öldürülecek oyuncuyu isDying olarak işaretle
+            updatePlayerStatus(serialKillerTarget, isAlive = true, isDying = true)
+        }
+    }
+
+    /**
+     * Oylamayı atla (hiç kimseye oy vermeden geç)
+     */
+    fun skipVote() {
+        // Sıradaki oyuncuya geç
+        nextPlayer()
+        
+        // Tüm oyuncular oy verdiyse sonuç fazına geç
+        if (allPlayersVoted()) {
+            proceedToVoteResult()
         }
     }
 } 

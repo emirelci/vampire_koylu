@@ -4,6 +4,7 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Setup : Screen("setup")
     object Game : Screen("game")
+    object MeetingDay : Screen("meeting_day")
     object Rules : Screen("rules")
     object RoleReveal : Screen("reveal/{index}") {
         fun createRoute(index: Int) = "reveal/$index"
