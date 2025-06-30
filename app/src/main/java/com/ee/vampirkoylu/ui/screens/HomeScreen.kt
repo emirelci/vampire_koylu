@@ -72,9 +72,9 @@ fun HomeScreen(navController: NavController) {
 
 @Composable
 private fun HomeScreenContent(navController: NavController, horizontal: Boolean = false) {
-    val containerModifier = if (horizontal) Modifier.weight(1f) else Modifier.fillMaxSize()
+    //val containerModifier = if (horizontal) Modifier.weight(1f) else Modifier.fillMaxSize()
     Column(
-        modifier = containerModifier,
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
