@@ -31,6 +31,8 @@ enum class GamePhase {
     NIGHT_RESULT, // Gece sonucu fazı
     DAY,         // Gündüz fazı
     VOTING,      // Oylama fazı
+    DAY_VOTE_RESULT, // Gündüz oylama sonucu
+    JUDGEMENT,   // Yargılama fazı
     VOTE_RESULT, // Oylama sonucu
     GAME_OVER    // Oyun sonu
 }
@@ -94,6 +96,8 @@ data class GameState(
     val watcherResults: List<WatcherObservation> = emptyList(), // Gözcü sonuçları
     val votingResults: Map<Int, Int> = emptyMap(), // Key: Oy verilen ID, Value: Oy sayısı
     val lastEliminated: Int? = null, // Son elenen oyuncu ID'si
+    val accusedId: Int? = null, // Oylama sonucunda suçlanan oyuncu
+    val judgementVotes: Map<Int, Boolean> = emptyMap(), // Yargılama oyları
     val gameResult: GameResult? = null // Oyun sonucu
 )
 
