@@ -12,10 +12,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.model.Player
+import com.ee.vampirkoylu.model.PlayerRole
 import com.ee.vampirkoylu.ui.component.PixelArtButton
 import com.ee.vampirkoylu.ui.theme.PixelFont
 import com.ee.vampirkoylu.ui.theme.shine_gold
@@ -84,6 +86,7 @@ fun MeetingDayScreen(
                         fontSize = 28.sp,
                         fontFamily = PixelFont,
                         color = shine_gold,
+                        lineHeight = 36.sp,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
@@ -119,6 +122,7 @@ fun MeetingDayScreen(
                         text = stringResource(id = R.string.day_started),
                         fontSize = 28.sp,
                         fontFamily = PixelFont,
+                        lineHeight = 36.sp,
                         color = shine_gold,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -168,8 +172,6 @@ fun MeetingDayScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))
-
                     // Oylamaya geç butonu
                     PixelArtButton(
                         text = stringResource(id = R.string.proceed_to_voting),
@@ -185,4 +187,20 @@ fun MeetingDayScreen(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun previewBoxx(){
+    val players = listOf(
+        Player(id = 1, name = "Emir", role = PlayerRole.VILLAGER, isAlive = true),
+        Player(id = 2, name = "Ayşe", role = PlayerRole.SHERIFF, isAlive = true),
+        Player(id = 3, name = "Mehmet", role = PlayerRole.VAMPIRE, isAlive = false),
+    )
+    MeetingDayScreen(
+        {},
+        players,
+        currentDay = 1,
+    )
+
 }

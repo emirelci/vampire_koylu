@@ -79,51 +79,9 @@ fun VotingScreen(
             verticalArrangement = Arrangement.Center
         ) {
             if (!revealed) {
-                // İlk ekran - Oyuncu adını göster ve hazırım butonu
-                BasicText(
-                    text = stringResource(R.string.pass_to_header, activePlayer.name),
-                    autoSize = TextAutoSize.StepBased(),
-                    maxLines = 1,
-                    style = TextStyle(
-                        fontFamily = PixelFont,
-                        color = shine_gold,
-                        textAlign = TextAlign.Center
-                    ),
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-
-                BasicText(
-                    text = stringResource(id = R.string.pass_to, activePlayer.name),
-                    modifier = Modifier
-                        .padding(bottom = 64.dp, top = 12.dp)
-                        .fillMaxWidth(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontFamily = PixelFont,
-                        color = Beige,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 24.sp
-                    )
-                )
-
-                PixelArtButton(
-                    text = stringResource(id = R.string.show_role),
-                    onClick = { revealed = true },
-                    imageId = R.drawable.button_orange,
-                    fontSize = 14.sp,
-                    color = DarkBlue
-                )
-
-                Text(
-                    text = stringResource(id = R.string.pass_warning),
-                    fontSize = 10.sp,
-                    fontFamily = PixelFont,
-                    color = Beige,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 16.dp),
+                PassDeviceScreen(
+                    playerName = activePlayer.name,
+                    onReady = { revealed = true }
                 )
             } else {
                 // Ana oylama ekranı

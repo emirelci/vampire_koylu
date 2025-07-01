@@ -65,14 +65,17 @@ fun HomeScreen(navController: NavController) {
             horizontalArrangement = Arrangement.spacedBy(32.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            HomeScreenContent(navController, horizontal = true)
+            HomeScreenContent(navController, Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-private fun HomeScreenContent(navController: NavController, horizontal: Boolean = false) {
-    //val containerModifier = if (horizontal) Modifier.weight(1f) else Modifier.fillMaxSize()
+private fun HomeScreenContent(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    val containerModifier = modifier.fillMaxSize()
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,

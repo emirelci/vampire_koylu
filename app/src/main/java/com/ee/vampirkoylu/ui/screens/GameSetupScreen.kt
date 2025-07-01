@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.BasicTextField
@@ -133,13 +134,15 @@ fun GameSetupScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
                                 text = stringResource(id = R.string.player_count),
                                 fontSize = 14.sp,
                                 fontFamily = PixelFont,
-                                color = Beige
+                                color = Beige,
+                                modifier = Modifier.weight(1f)
                             )
 
                             IncreaseDecreaseCount(
@@ -186,13 +189,15 @@ fun GameSetupScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
                                 text = stringResource(id = R.string.vampire_count),
                                 fontSize = 14.sp,
                                 fontFamily = PixelFont,
-                                color = Beige
+                                color = Beige,
+                                modifier = Modifier.weight(1f)
                             )
 
                             IncreaseDecreaseCount(

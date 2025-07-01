@@ -10,8 +10,8 @@
     <!-- Oyun Hazırlık Ekranı -->
     <string name="new_game">YENİ OYUN</string>
     <string name="enter_names">İSİMLERİ GİRİN</string>
-    <string name="player_count">OYNAYAN SAYISI</string>
-    <string name="vampire_count">VAMPİR SAYISI</string>
+    <string name="player_count">OYNAYAN OYUNCU</string>
+    <string name="vampire_count">VAMPİR</string>
     <string name="start">BAŞLAT</string>
     
     <!-- Oyun İçi -->
@@ -35,7 +35,7 @@
     <string name="vampire_info">Her gece bir köylüyü öldürme hakkınız var. Amacınız tüm köylüleri öldürmek. Kimliğinizi gizleyin ve suçsuz görünmeye çalışın.</string>
     <string name="villager_info">Amacınız vampirleri bulmak ve oylamada eleyerek köyü kurtarmak. Gündüzleri tartışın ve ipuçlarını değerlendirin.</string>
     <string name="sheriff_info">Bir köylüsün, ancak güçlü sezgilerin var. Her gece bir oyuncunun suçlu mu masum mu olduğunu öğrenebilirsin. Vampir ve Seri Katil suçlu, diğer tüm roller masumu gösterir.</string>
-    <string name="watcher_info">Her gece bir oyuncunun evini izlersin. O oyuncunun gecesinde kimlerin onun evine girdiğini öğrenirsin. Ancak neden girdiklerini (öldürmek mi korumak mı?) öğrenemezsin. Örnek: \"Zeynep\'in evine Emir ve Hakan girdi.\"</string>
+    <string name="watcher_info">Her gece bir oyuncunun evini izlersin. O oyuncunun gecesinde kimlerin onun evine girdiğini öğrenirsin. Ancak neden girdiklerini öğrenemezsin."</string>
     <string name="serial_killer_info">Tek başına hareket eden bir katilsin. Her gece bir kişiyi öldürebilirsin. Amacın hayatta kalan son kişi olmak.</string>
     <string name="doctor_info">Her gece bir kişiyi vampir saldırısından koruyabilirsin. Eğer vampirler senin koruduğun kişiyi seçerse, o kişi hayatta kalır.</string>
 
@@ -51,10 +51,10 @@
     <!-- Gece Sonuçları Ekranı -->
     <string name="night_results">GECE SONUCU</string>
     <string name="night_results_villager">Gece bitti, yeni güne hazır mısın?</string>
-    <string name="night_results_sheriff">İnceleme Sonucun: %1$s %2$s</string>
+    <string name="night_results_sheriff">İnceleme Sonucun %1$s %2$s</string>
     <string name="sheriff_result_innocent">MASUM</string>
     <string name="sheriff_result_guilty">SUÇLU</string>
-    <string name="night_results_watcher">%1$s\'in evini izledin ve şunları gördün:</string>
+    <string name="night_results_watcher">%1$s\'in evini izledin ve şunları gördün</string>
     <string name="night_results_watcher_novisit">Kimse ziyarete gelmedi</string>
     <string name="night_results_watcher_visit">%1$s ziyarete geldi</string>
     <string name="night_results_watcher_visits">%1$s kişi ziyarete geldi: %2$s</string>
@@ -81,10 +81,10 @@
     
     <!-- Rol Ayarları -->
     <string name="role_settings">ROL AYARLARI</string>
-    <string name="sheriff_count">ŞERİF SAYISI</string>
-    <string name="watcher_count">GÖZCÜ SAYISI</string>
-    <string name="serial_killer_count">SERİ KATİL SAYISI</string>
-    <string name="doctor_count">DOKTOR SAYISI</string>
+    <string name="sheriff_count">ŞERİF</string>
+    <string name="watcher_count">GÖZCÜ</string>
+    <string name="serial_killer_count">SERİ KATİL</string>
+    <string name="doctor_count">DOKTOR</string>
     
     <!-- Kurallar -->
     <string name="rules_title">KURALLAR</string>
@@ -113,9 +113,14 @@
     <string name="day_vote_result_title">OYLAMA SONUCU</string>
     <string name="accused_player">Suçlanan: %1$s</string>
     <string name="start_judgement">YARGILAMAYA GEÇ</string>
+    <string name="no_accused_player">Kimse suçlanmadı</string>
+    <string name="proceed_to_night">GECEYE GEÇ</string>
 
     <!-- Yargılama Ekranı -->
     <string name="judgement_title">YARGILAMA</string>
     <string name="vote_guilty">SUÇLU</string>
     <string name="vote_innocent">MASUM</string>
+    <string name="judgement_result_title">YARGILAMA SONUCU</string>
+    <string name="judgement_result_guilty">%1$s suçlu bulundu ve asıldı</string>
+    <string name="judgement_result_innocent">%1$s masum bulundu, yaşamasına izin verildi</string>
 </resources>

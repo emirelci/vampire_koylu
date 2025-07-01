@@ -27,6 +27,7 @@ import com.ee.vampirkoylu.ui.screens.HomeScreen
 import com.ee.vampirkoylu.ui.screens.MainScreenBackground
 import com.ee.vampirkoylu.ui.screens.MeetingDayScreen
 import com.ee.vampirkoylu.ui.screens.DayVoteResultScreen
+import com.ee.vampirkoylu.ui.screens.JudgementResultScreen
 import com.ee.vampirkoylu.ui.screens.JudgementScreen
 import com.ee.vampirkoylu.ui.screens.NightActionScreen
 import com.ee.vampirkoylu.ui.screens.NightResultsScreen
@@ -219,7 +220,13 @@ object NavGraph {
                         val accused = players.find { it.id == gameState.accusedId }
                         DayVoteResultScreen(
                             accusedPlayer = accused,
-                            onFinish = { gameViewModel.startJudgement() }
+                            onFinish = {
+                                if (accused == null) {
+                                    gameViewModel.skipAccusation()
+                                } else {
+                                    gameViewModel.startJudgement()
+                                }
+                            }
                         )
                     }
                     GamePhase.JUDGEMENT -> {
@@ -231,15 +238,24 @@ object NavGraph {
                                     accusedPlayer = accused,
                                     onVote = { choice ->
                                         gameViewModel.submitJudgementVote(choice)
-                                        if (gameState.currentPhase == GamePhase.VOTE_RESULT) {
-                                            navController.navigate(Screen.MeetingDay.route) {
-                                                popUpTo(Screen.Game.route) { inclusive = true }
-                                            }
-                                        }
                                     }
                                 )
                             }
                         }
+                    }
+                    GamePhase.VOTE_RESULT ->{
+                        val accused = players.find { it.id == gameState.accusedId }
+                        println("accused: suçlanan $accused")
+                        JudgementResultScreen(
+                            accusedPlayer = accused,
+                            eliminated = gameState.lastEliminated == gameState.accusedId,
+                            onContinue = {
+                                gameViewModel.proceed()
+                                navController.navigate(Screen.Game.route) {
+                                    popUpTo(Screen.Game.route) { inclusive = true }
+                                }
+                            }
+                        )
                     }
                     else -> {
                         // Diğer fazlar için gece aksiyonu gösterme

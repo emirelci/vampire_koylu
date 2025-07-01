@@ -1,5 +1,6 @@
 package com.ee.vampirkoylu.ui.component
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,13 +25,15 @@ fun RoleCountSelector(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = title,
             fontSize = 14.sp,
             fontFamily = PixelFont,
-            color = Beige
+            color = Beige,
+            modifier = Modifier.weight(1f)
         )
 
         IncreaseDecreaseCount(

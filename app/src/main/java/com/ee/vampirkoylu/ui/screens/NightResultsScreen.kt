@@ -72,50 +72,9 @@ fun NightResultsScreen(
         ) {
             if (!revealed) {
                 // İlk ekran - Oyuncu adını göster ve hazırım butonu
-                BasicText(
-                    text = stringResource(R.string.pass_to_header, player.name),
-                    autoSize = TextAutoSize.StepBased(),
-                    maxLines = 1,
-                    style = TextStyle(
-                        fontFamily = PixelFont,
-                        color = shine_gold,
-                        textAlign = TextAlign.Center
-                    ),
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-
-                BasicText(
-                    text = stringResource(id = R.string.pass_to, player.name),
-                    modifier = Modifier
-                        .padding(bottom = 64.dp, top = 12.dp)
-                        .fillMaxWidth(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontFamily = PixelFont,
-                        color = Beige,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 24.sp
-                    )
-                )
-
-                PixelArtButton(
-                    text = stringResource(id = R.string.show_role),
-                    onClick = { revealed = true },
-                    imageId = R.drawable.button_orange,
-                    fontSize = 14.sp,
-                    color = DarkBlue
-                )
-
-                Text(
-                    text = stringResource(id = R.string.pass_warning),
-                    fontSize = 10.sp,
-                    fontFamily = PixelFont,
-                    color = Beige,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 16.dp),
+                PassDeviceScreen(
+                    playerName = player.name,
+                    onReady = { revealed = true }
                 )
             } else {
                 // Gece Sonuçları Ekranı
@@ -129,10 +88,10 @@ fun NightResultsScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(16.dp, top = 68.dp)
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 // Oyuncu ölü veya ölmekte mi kontrolü
                 if (!player.isAlive || player.isDying) {
@@ -155,7 +114,7 @@ fun NightResultsScreen(
                                 fontFamily = PixelFont,
                                 color = Beige,
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(bottom = 48.dp)
+                                modifier = Modifier.padding(top = 48.dp)
                             )
                         }
                     }
@@ -169,7 +128,8 @@ fun NightResultsScreen(
                     onClick = handleContinue,
                     imageId = R.drawable.button_orange,
                     fontSize = 14.sp,
-                    color = DarkBlue
+                    color = DarkBlue,
+                    modifier = Modifier.padding(bottom = 24.dp)
                 )
             }
         }
@@ -236,9 +196,10 @@ fun DisplaySheriffResults(
                 ),
                 fontSize = 16.sp,
                 fontFamily = PixelFont,
+                lineHeight = 24.sp,
                 color = if (latestResult.result == GuiltStatus.GUILTY) shine_gold else Beige,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 48.dp)
+                modifier = Modifier.padding(top =  48.dp)
             )
         }
     }
@@ -316,7 +277,7 @@ fun DisplayWatcherResults(
 @Preview(showBackground = true)
 @Composable
 fun NightResultsScreenPreview() {
-    val player = Player(0, "Emir", PlayerRole.SHERIFF)
+    val player = Player(0, "Emir", PlayerRole.VILLAGER)
     val allPlayers = listOf(
         player,
         Player(1, "Ahmet", PlayerRole.VAMPIRE),

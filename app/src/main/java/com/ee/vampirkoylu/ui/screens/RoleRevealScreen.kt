@@ -3,9 +3,11 @@ package com.ee.vampirkoylu.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -51,58 +53,15 @@ fun RoleRevealScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
-                .padding(bottom = 64.dp),
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             if (!revealed) {
 
-                BasicText(
-                    text = stringResource(R.string.pass_to_header, playerName),
-                    autoSize = TextAutoSize.StepBased(),
-                    maxLines = 1,
-                    style = TextStyle(
-                        fontFamily = PixelFont,
-                        color = shine_gold,
-                        textAlign = TextAlign.Center
-                    ),
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-
-                BasicText(
-                    text = stringResource(id = R.string.pass_to, playerName),
-                    modifier = Modifier
-                        .padding(bottom = 64.dp, top = 12.dp)
-                        .fillMaxWidth(), // Merkezleyebilmek için gerekli
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontFamily = PixelFont,
-                        color = Beige,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 24.sp
-                    )
-                )
-
-
-                PixelArtButton(
-                    text = stringResource(id = R.string.show_role),
-                    onClick = { revealed = true },
-                    imageId = R.drawable.button_orange,
-                    fontSize = 14.sp,
-                    color = DarkBlue
-                )
-
-                Text(
-                    text = stringResource(id = R.string.pass_warning),
-                    fontSize = 10.sp,
-                    fontFamily = PixelFont,
-                    color = Beige,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 16.dp),
+                PassDeviceScreen(
+                    playerName = playerName,
+                    onReady = { revealed = true }
                 )
 
             } else {
@@ -145,7 +104,7 @@ fun RoleRevealScreen(
                     color = Color(0xFF1A1A2E).copy(alpha = 0.8f)
                 ) {
                     Column(
-                        modifier = Modifier.padding(12.dp),
+                        modifier = Modifier.padding(12.dp).size(136.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
@@ -164,7 +123,10 @@ fun RoleRevealScreen(
                             color = Beige,
                             textAlign = TextAlign.Center,
                             lineHeight = 16.sp,
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                            overflow = TextOverflow.Visible,
+                            modifier = Modifier
+                                .verticalScroll(rememberScrollState())
+                                .padding(horizontal = 4.dp)
                         )
                     }
                 }
@@ -198,7 +160,7 @@ private fun getRoleInfo(role: PlayerRole): String {
 @Preview(showSystemUi = true, showBackground = true, device = PIXEL_4)
 @Composable
 fun previewScreen() {
-    RoleRevealScreen("Emir", PlayerRole.VILLAGER) {
+    RoleRevealScreen("Emir", PlayerRole.DOCTOR) {
 
     }
 }

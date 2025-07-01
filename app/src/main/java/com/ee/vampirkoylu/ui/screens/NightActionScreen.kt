@@ -75,52 +75,10 @@ fun NightActionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (!revealed) {
-                // İlk ekran - Oyuncu adını göster ve hazırım butonu
-                BasicText(
-                    text = stringResource(R.string.pass_to_header, activePlayer.name),
-                    autoSize = TextAutoSize.StepBased(),
-                    maxLines = 1,
-                    style = TextStyle(
-                        fontFamily = PixelFont,
-                        color = shine_gold,
-                        textAlign = TextAlign.Center
-                    ),
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-
-                BasicText(
-                    text = stringResource(id = R.string.pass_to, activePlayer.name),
-                    modifier = Modifier
-                        .padding(bottom = 64.dp, top = 12.dp)
-                        .fillMaxWidth(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontFamily = PixelFont,
-                        color = Beige,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 24.sp
-                    )
-                )
-
-                PixelArtButton(
-                    text = stringResource(id = R.string.show_role),
-                    onClick = { revealed = true },
-                    imageId = R.drawable.button_orange,
-                    fontSize = 14.sp,
-                    color = DarkBlue
-                )
-
-                Text(
-                    text = stringResource(id = R.string.pass_warning),
-                    fontSize = 10.sp,
-                    fontFamily = PixelFont,
-                    color = Beige,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 16.dp),
+            if (revealed) {
+                PassDeviceScreen(
+                    playerName = activePlayer.name,
+                    onReady = { revealed = true }
                 )
             } else {
                 // Ana gece aksiyon ekranı - Oyuncu seçimi
@@ -140,6 +98,7 @@ fun NightActionScreen(
                     fontSize = 16.sp,
                     fontFamily = PixelFont,
                     color = shine_gold,
+                    lineHeight = 20.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -147,27 +106,13 @@ fun NightActionScreen(
                 if (activePlayer.role == PlayerRole.VILLAGER) {
                     // Köylü için görünüm - Grid gösterme, sadece devam et butonu göster
                     Spacer(modifier = Modifier.weight(1f))
-                    
-                    // Bilgilendirme metni
-                    Text(
-                        text = stringResource(id = R.string.villager_night_tip),
-                        fontSize = 18.sp,
-                        fontFamily = PixelFont,
-                        color = shine_gold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 32.dp)
-                    )
-                    
                     // Devam et butonu
                     PixelArtButton(
                         text = stringResource(id = R.string.continue_game),
                         onClick = { handleTargetSelected(-1) }, // Köylüler için -1 gönder
                         imageId = R.drawable.button_red,
-                        modifier = Modifier.padding(top = 24.dp),
                         fontSize = 20.sp
                     )
-                    
-                    Spacer(modifier = Modifier.weight(1f))
                 } else {
                     // Diğer roller için oyuncu grid'i göster
                     LazyVerticalGrid(
@@ -231,14 +176,14 @@ fun NightActionScreenPreview() {
     val previewPlayers = listOf(
         Player(0, "Emir", PlayerRole.VAMPIRE),
         Player(1, "Hakan", PlayerRole.VILLAGER),
-        Player(2, "Zeynep", PlayerRole.VILLAGER),
-        Player(3, "Cem", PlayerRole.VILLAGER),
+        Player(2, "Zeynep", PlayerRole.WATCHER),
+        Player(3, "Cem", PlayerRole.SHERIFF),
         Player(4, "Umut", PlayerRole.VILLAGER),
         Player(5, "Emir", PlayerRole.VILLAGER, isAlive = false)
     )
     
     NightActionScreen(
-        activePlayer = previewPlayers[0],
+        activePlayer = previewPlayers[1],
         players = previewPlayers,
         onTargetSelected = {}
     )

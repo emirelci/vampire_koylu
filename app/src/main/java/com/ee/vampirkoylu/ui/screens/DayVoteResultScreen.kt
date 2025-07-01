@@ -11,10 +11,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.model.Player
+import com.ee.vampirkoylu.model.PlayerRole
 import com.ee.vampirkoylu.ui.component.PixelArtButton
 import com.ee.vampirkoylu.ui.theme.PixelFont
 import com.ee.vampirkoylu.ui.theme.shine_gold
@@ -27,12 +30,14 @@ fun DayVoteResultScreen(
 ) {
     var timeLeft by remember { mutableStateOf(180) }
 
-    LaunchedEffect(Unit) {
-        while (timeLeft > 0) {
-            delay(1000)
-            timeLeft--
+    if (accusedPlayer != null) {
+        LaunchedEffect(Unit) {
+            while (timeLeft > 0) {
+                delay(1000)
+                timeLeft--
+            }
+            onFinish()
         }
-        onFinish()
     }
 
     fun formatTime(seconds: Int): String {
@@ -65,33 +70,64 @@ fun DayVoteResultScreen(
                     text = stringResource(id = R.string.day_vote_result_title),
                     fontSize = 28.sp,
                     fontFamily = PixelFont,
+                    lineHeight = 36.sp,
                     color = shine_gold,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                accusedPlayer?.let {
+                if (accusedPlayer != null) {
                     Text(
-                        text = stringResource(id = R.string.accused_player, it.name),
+                        text = stringResource(id = R.string.accused_player, accusedPlayer.name),
                         fontSize = 20.sp,
                         fontFamily = PixelFont,
                         color = shine_gold,
                         modifier = Modifier.padding(bottom = 24.dp)
                     )
+                    Text(
+                        text = formatTime(timeLeft),
+                        fontSize = 36.sp,
+                        fontFamily = PixelFont,
+                        color = shine_gold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                    PixelArtButton(
+                        text = stringResource(id = R.string.start_judgement),
+                        onClick = { onFinish() },
+                        imageId = R.drawable.button_brown,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 264.dp)
+                    )
+                } else {
+                    Text(
+                        text = stringResource(id = R.string.no_accused_player),
+                        fontSize = 20.sp,
+                        fontFamily = PixelFont,
+                        color = shine_gold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    )
+
+                    PixelArtButton(
+                        text = stringResource(id = R.string.proceed_to_night),
+                        onClick = { onFinish() },
+                        imageId = R.drawable.button_brown,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 24.dp)
+                    )
                 }
-                Text(
-                    text = formatTime(timeLeft),
-                    fontSize = 36.sp,
-                    fontFamily = PixelFont,
-                    color = shine_gold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-                PixelArtButton(
-                    text = stringResource(id = R.string.start_judgement),
-                    onClick = { onFinish() },
-                    imageId = R.drawable.button_brown,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(top = 24.dp)
-                )
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun previewBoxss(){
+    val player = Player(0, "Emir", PlayerRole.SHERIFF)
+
+    DayVoteResultScreen(
+        player,
+        {}
+    )
+
 }

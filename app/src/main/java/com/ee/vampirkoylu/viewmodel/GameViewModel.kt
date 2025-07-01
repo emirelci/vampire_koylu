@@ -30,7 +30,9 @@ class GameViewModel : ViewModel() {
     // Son turda öldürülen oyuncular
     private val _deadPlayers = MutableStateFlow<List<Player>>(emptyList())
     val deadPlayers: StateFlow<List<Player>> = _deadPlayers.asStateFlow()
-    
+
+    private val votedPlayers = mutableSetOf<Int>()
+
     /**
      * Oyun ayarlarını günceller
      */
@@ -215,7 +217,9 @@ class GameViewModel : ViewModel() {
         _gameState.update { 
             it.copy(votingResults = currentVotes)
         }
-        
+
+        votedPlayers.add(activePlayer.id)
+
         // Tüm oyuncular oy verdiyse sonuç fazına geç
         if (allPlayersVoted()) {
             proceedToVoteResult()
@@ -229,13 +233,17 @@ class GameViewModel : ViewModel() {
      * Sonraki aşamaya geç
      */
     fun proceed() {
+        println("GameState: " + _gameState.value.currentPhase)
+
         when (_gameState.value.currentPhase) {
             GamePhase.DAY -> proceedToVoting()
             GamePhase.VOTE_RESULT -> {
                 // Oyun bitti mi kontrol et
                 if (checkGameOver()) {
+                    println("proceedToGameOver()")
                     proceedToGameOver()
                 } else {
+                    println("proceedToNight()")
                     proceedToNight()
                 }
             }
@@ -251,6 +259,7 @@ class GameViewModel : ViewModel() {
         _gameState.value = GameState()
         _players.value = emptyList()
         _activePlayer.value = null
+        votedPlayers.clear()
     }
     
     // ---- Yardımcı Metodlar ----
@@ -351,7 +360,9 @@ class GameViewModel : ViewModel() {
                 votingResults = emptyMap()
             )
         }
-        
+
+        votedPlayers.clear()
+
         // İlk canlı oyuncuyu aktif yap
         val firstAlivePlayer = _players.value.find { it.isAlive && !it.isDying }
         if (firstAlivePlayer != null) {
@@ -365,22 +376,35 @@ class GameViewModel : ViewModel() {
     private fun proceedToVoteResult() {
         // En çok oy alanı bul
         val votes = _gameState.value.votingResults
-        if (votes.isEmpty()) {
-            // Hiç oy yoksa sonraki güne geç
-            proceedToNight()
-            return
-        }
 
-        val mostVoted = votes.maxByOrNull { it.value }?.key
-        if (mostVoted != null) {
+        if (votes.isEmpty()) {
             _gameState.update {
                 it.copy(
                     currentPhase = GamePhase.DAY_VOTE_RESULT,
-                    accusedId = mostVoted,
+                    accusedId = null,
                     votingResults = emptyMap()
                 )
             }
+            // Hiç oy yoksa sonraki güne geç
+            return
         }
+
+        val maxVotes = votes.values.maxOrNull()
+        val topCandidates = votes.filter { it.value == maxVotes }.keys
+        val accused = if (topCandidates.size == 1) topCandidates.first() else null
+
+        _gameState.update {
+            it.copy(
+                currentPhase = GamePhase.DAY_VOTE_RESULT,
+                accusedId = accused,
+                votingResults = emptyMap()
+            )
+        }
+
+    }
+
+    fun skipAccusation() {
+        proceedToNight()
     }
     
     /**
@@ -391,15 +415,18 @@ class GameViewModel : ViewModel() {
             it.copy(
                 currentPhase = GamePhase.NIGHT,
                 currentDay = it.currentDay + 1,
-                lastEliminated = null
+                lastEliminated = null,
+                accusedId = null
             )
         }
-        
+
+        votedPlayers.clear()
+
         // İlk vampiri aktif yap
-        val vampire = _players.value.find { it.isAlive && it.role == PlayerRole.VAMPIRE }
-        
-        if (vampire != null) {
-            _activePlayer.value = vampire
+        val firstAlivePlayer = _players.value.firstOrNull { it.isAlive }
+
+        if (firstAlivePlayer != null) {
+            _activePlayer.value = firstAlivePlayer
         } else {
             // Vampir yoksa seri katil, şerif, gözcü veya doktor var mı kontrol et
             checkNextSpecialRole()
@@ -493,7 +520,8 @@ class GameViewModel : ViewModel() {
     private fun allPlayersVoted(): Boolean {
         // Sadece hayatta olan ve ölmekte olmayan oyuncuların oy vermesini bekle
         val activePlayerCount = _players.value.count { it.isAlive && !it.isDying }
-        return _gameState.value.votingResults.values.sum() >= activePlayerCount
+        println("ActivePlayerCount: " + activePlayerCount + " votedPlayers.size: " + votedPlayers.size)
+        return votedPlayers.size >= activePlayerCount
     }
     
     /**
@@ -625,6 +653,11 @@ class GameViewModel : ViewModel() {
      * Oylamayı atla (hiç kimseye oy vermeden geç)
      */
     fun skipVote() {
+        val active = _activePlayer.value ?: return
+
+        // Oy kullanmayan oyuncuyu kaydet
+        votedPlayers.add(active.id)
+
         // Sıradaki oyuncuya geç
         nextPlayer()
 
@@ -686,7 +719,6 @@ class GameViewModel : ViewModel() {
         _gameState.update {
             it.copy(
                 currentPhase = GamePhase.VOTE_RESULT,
-                accusedId = null,
                 judgementVotes = emptyMap()
             )
         }
