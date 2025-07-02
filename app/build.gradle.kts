@@ -81,7 +81,9 @@ dependencies {
 
     //Google Play Billing
 
-    implementation(libs.billing)
+    //implementation(libs.billing)
+    implementation("com.android.billingclient:billing-ktx:7.0.0")
+    implementation(libs.androidx.datastore.preferences)
 
 
     //Hilt
