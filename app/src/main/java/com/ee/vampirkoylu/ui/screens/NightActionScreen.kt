@@ -75,7 +75,7 @@ fun NightActionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (revealed) {
+            if (!revealed) {
                 PassDeviceScreen(
                     playerName = activePlayer.name,
                     onReady = { revealed = true }

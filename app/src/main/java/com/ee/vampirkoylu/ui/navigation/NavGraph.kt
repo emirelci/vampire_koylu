@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import com.ee.vampirkoylu.ui.screens.HomeScreen
 import com.ee.vampirkoylu.ui.screens.MainScreenBackground
 import com.ee.vampirkoylu.ui.screens.MeetingDayScreen
 import com.ee.vampirkoylu.ui.screens.DayVoteResultScreen
+import com.ee.vampirkoylu.ui.screens.GameOverScreen
 import com.ee.vampirkoylu.ui.screens.JudgementResultScreen
 import com.ee.vampirkoylu.ui.screens.JudgementScreen
 import com.ee.vampirkoylu.ui.screens.NightActionScreen
@@ -41,7 +43,7 @@ import com.ee.vampirkoylu.ui.theme.shine_gold
 import com.ee.vampirkoylu.viewmodel.GameViewModel
 
 object NavGraph {
-    
+
     @Composable
     fun SetupNavGraph(
         navController: NavHostController,
@@ -56,7 +58,7 @@ object NavGraph {
                     HomeScreen(navController = navController)
                 }
             }
-            
+
             composable(Screen.Setup.route) {
                 val settings by gameViewModel.settings.collectAsState()
                 GameSetupScreen(
@@ -64,11 +66,11 @@ object NavGraph {
                     navController = navController,
                     onSettingsChange = { playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount ->
                         gameViewModel.updateSettings(
-                            playerCount, 
-                            vampireCount, 
-                            sheriffCount, 
-                            watcherCount, 
-                            serialKillerCount, 
+                            playerCount,
+                            vampireCount,
+                            sheriffCount,
+                            watcherCount,
+                            serialKillerCount,
                             doctorCount
                         )
                     },
@@ -83,7 +85,9 @@ object NavGraph {
 
             composable(
                 route = Screen.RoleReveal.route,
-                arguments = listOf(androidx.navigation.navArgument("index") { type = androidx.navigation.NavType.IntType })
+                arguments = listOf(androidx.navigation.navArgument("index") {
+                    type = androidx.navigation.NavType.IntType
+                })
             ) { backStackEntry ->
                 val index = backStackEntry.arguments?.getInt("index") ?: 0
                 val players by gameViewModel.players.collectAsState()
@@ -95,11 +99,15 @@ object NavGraph {
                         onNext = {
                             if (index + 1 < players.size) {
                                 navController.navigate(Screen.RoleReveal.createRoute(index + 1)) {
-                                    popUpTo(Screen.RoleReveal.createRoute(index)) { inclusive = true }
+                                    popUpTo(Screen.RoleReveal.createRoute(index)) {
+                                        inclusive = true
+                                    }
                                 }
                             } else {
                                 navController.navigate(Screen.MeetingDay.route) {
-                                    popUpTo(Screen.RoleReveal.createRoute(index)) { inclusive = true }
+                                    popUpTo(Screen.RoleReveal.createRoute(index)) {
+                                        inclusive = true
+                                    }
                                 }
                             }
                         }
@@ -111,7 +119,7 @@ object NavGraph {
                 val players by gameViewModel.players.collectAsState()
                 val gameState by gameViewModel.gameState.collectAsState()
                 val deadPlayers by gameViewModel.deadPlayers.collectAsState()
-                
+
                 MeetingDayScreen(
                     onFinish = {
                         // İlk gün için direkt gece fazına geç
@@ -135,12 +143,12 @@ object NavGraph {
                     deadPlayers = deadPlayers
                 )
             }
-            
+
             composable(Screen.Game.route) {
                 val activePlayer by gameViewModel.activePlayer.collectAsState()
                 val players by gameViewModel.players.collectAsState()
                 val gameState by gameViewModel.gameState.collectAsState()
-                
+
                 // Oyun fazına göre farklı ekranlar göster
                 when (gameState.currentPhase) {
                     GamePhase.NIGHT -> {
@@ -159,6 +167,7 @@ object NavGraph {
                             color = Color.White
                         )
                     }
+
                     GamePhase.NIGHT_RESULT -> {
                         // Gece sonuçları gösteriliyor
                         activePlayer?.let { currentPlayer ->
@@ -169,7 +178,7 @@ object NavGraph {
                                 onContinue = {
                                     // Sıradaki oyuncuya geç veya gündüz fazına geç
                                     gameViewModel.proceedToNextNightResult()
-                                    
+
                                     // Faz değişimini tekrar kontrol et - lazy state collection
                                     val updatedGameState = gameViewModel.gameState.value
                                     if (updatedGameState.currentPhase == GamePhase.DAY) {
@@ -184,6 +193,7 @@ object NavGraph {
                             color = Color.White
                         )
                     }
+
                     GamePhase.VOTING -> {
                         // Oylama ekranı
                         activePlayer?.let { currentPlayer ->
@@ -216,6 +226,7 @@ object NavGraph {
                             color = Color.White
                         )
                     }
+
                     GamePhase.DAY_VOTE_RESULT -> {
                         val accused = players.find { it.id == gameState.accusedId }
                         DayVoteResultScreen(
@@ -229,6 +240,7 @@ object NavGraph {
                             }
                         )
                     }
+
                     GamePhase.JUDGEMENT -> {
                         val accused = players.find { it.id == gameState.accusedId }
                         if (accused != null) {
@@ -243,7 +255,8 @@ object NavGraph {
                             }
                         }
                     }
-                    GamePhase.VOTE_RESULT ->{
+
+                    GamePhase.VOTE_RESULT -> {
                         val accused = players.find { it.id == gameState.accusedId }
                         println("accused: suçlanan $accused")
                         JudgementResultScreen(
@@ -257,6 +270,15 @@ object NavGraph {
                             }
                         )
                     }
+
+                    GamePhase.GAME_OVER -> {
+                        LaunchedEffect(Unit) {
+                            navController.navigate(Screen.GameOver.route) {
+                                popUpTo(Screen.Game.route) { inclusive = true }
+                            }
+                        }
+                    }
+
                     else -> {
                         // Diğer fazlar için gece aksiyonu gösterme
                         Text(
@@ -266,13 +288,29 @@ object NavGraph {
                     }
                 }
             }
-            
+
             composable(Screen.Rules.route) {
                 // Kurallar ekranı
                 MainScreenBackground {
                     RuleScreen(navController)
                 }
             }
+
+            composable(Screen.GameOver.route) {
+                val gameState by gameViewModel.gameState.collectAsState()
+                gameState.gameResult?.let { result ->
+                    GameOverScreen(
+                        gameResult = result,
+                        onBackToMenu = {
+                            gameViewModel.resetGame()
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Home.route) { inclusive = true }
+                            }
+                        }
+                    )
+                }
+            }
+
         }
     }
 } 

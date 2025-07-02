@@ -8,6 +8,7 @@ sealed class Screen(val route: String) {
     object DayVoteResult : Screen("day_vote_result")
     object Judgement : Screen("judgement")
     object Rules : Screen("rules")
+    object GameOver : Screen("game_over")
     object RoleReveal : Screen("reveal/{index}") {
         fun createRoute(index: Int) = "reveal/$index"
     }

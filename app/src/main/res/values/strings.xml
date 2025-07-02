@@ -78,6 +78,8 @@
     <string name="vampires_win">VAMPİRLER KAZANDI</string>
     <string name="villagers_win">KÖYLÜLER KAZANDI</string>
     <string name="back_to_menu">ANA MENÜYE DÖN</string>
+    <string name="serial_killer_win">SERİ KATİL KAZANDI</string>
+    <string name="surviving_players">HAYATTA KALANLAR: %1$s</string>
     
     <!-- Rol Ayarları -->
     <string name="role_settings">ROL AYARLARI</string>

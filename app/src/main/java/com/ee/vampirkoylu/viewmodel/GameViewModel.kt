@@ -414,7 +414,7 @@ class GameViewModel : ViewModel() {
         _gameState.update { 
             it.copy(
                 currentPhase = GamePhase.NIGHT,
-                currentDay = it.currentDay + 1,
+               // currentDay = it.currentDay + 1, geri alınabilir..
                 lastEliminated = null,
                 accusedId = null
             )

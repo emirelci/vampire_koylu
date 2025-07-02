@@ -79,6 +79,10 @@ dependencies {
     implementation(libs.androidx.adaptive)
     implementation(libs.androidx.material3.window.size.class1)
 
+    //Google Play Billing
+
+    implementation(libs.billing)
+
 
     //Hilt
     implementation(libs.hilt.android)
