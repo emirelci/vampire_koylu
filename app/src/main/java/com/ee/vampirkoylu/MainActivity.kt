@@ -1,5 +1,6 @@
 package com.ee.vampirkoylu
 
+import BillingClientWrapper
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.rememberNavController
+import com.ee.vampirkoylu.ui.navigation.NavGraph
 import com.ee.vampirkoylu.ui.theme.VampirKoyluTheme
 import kotlinx.coroutines.launch
 
@@ -28,16 +31,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        billingClientWrapper = BillingClientWrapper(this, lifecycleScope)
+        // StoreManager'ı önce oluştur
         storeManager = StoreManager(this)
 
-        lifecycleScope.launch {
-            billingClientWrapper.isPlusUser.collect { isPlusUser ->
-                if (isPlusUser) {
-                    storeManager.setPlusUser(true)
-                }
-            }
-        }
+        // BillingClientWrapper'ı storeManager ile birlikte oluştur
+        billingClientWrapper = BillingClientWrapper(this, lifecycleScope, storeManager)
 
         setContent {
             VampirKoyluTheme {
@@ -45,10 +43,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(
+                    val navController = rememberNavController()
+
+                    // NavGraph'ı kullan
+                    NavGraph.SetupNavGraph(
+                        navController = navController,
                         billingClientWrapper = billingClientWrapper,
                         storeManager = storeManager,
-                        activity = this
+                        activity = this@MainActivity
                     )
                 }
             }
@@ -57,7 +59,16 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        billingClientWrapper.startConnection()
+        // Bağlantı NavGraph'ta otomatik olarak yönetiliyor
+        // Ama yine de manuel olarak da başlatabilirsiniz
+        if (!billingClientWrapper.isConnected.value) {
+            billingClientWrapper.startConnection()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        billingClientWrapper.disconnect()
     }
 }
 

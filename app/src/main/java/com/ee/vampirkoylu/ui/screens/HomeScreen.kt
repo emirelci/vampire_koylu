@@ -1,5 +1,6 @@
 package com.ee.vampirkoylu.ui.screens
 
+import BillingClientWrapper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import android.app.Activity
@@ -8,7 +9,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.compose.runtime.collectAsState
-import com.ee.vampirkoylu.BillingClientWrapper
 import com.ee.vampirkoylu.StoreManager
 import com.ee.vampirkoylu.ui.theme.LocalWindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.ui.Alignment
 import androidx.navigation.compose.rememberNavController
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.component.PixelArtButton
@@ -111,6 +111,21 @@ private fun HomeScreenContent(
 
         // Logo ve Başlık
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            val isPlusUser by storeManager.isPlusUser.collectAsState(initial = false)
+            var showPremiumDialog by remember { mutableStateOf(false) }
+
+            if (!isPlusUser) {
+                PixelArtButton(
+                    text = stringResource(id = R.string.premium),
+                    onClick = { showPremiumDialog = true },
+                    fontSize = 12.sp,
+                    imageId = R.drawable.button_orange,
+                    width = 110.dp,
+                    height = 40.dp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+
             Row(modifier = Modifier.fillMaxWidth()) {
                 Image(
                     painter = painterResource(id = R.drawable.vampir_logo),
@@ -130,20 +145,8 @@ private fun HomeScreenContent(
                 )
 
                 val products by billingClientWrapper.products.collectAsState()
-                val isPlusUser by storeManager.isPlusUser.collectAsState(initial = false)
-                var showPremiumDialog by remember { mutableStateOf(false) }
 
-                if (!isPlusUser) {
-                    PixelArtButton(
-                        text = stringResource(id = R.string.premium),
-                        onClick = { showPremiumDialog = true },
-                        fontSize = 12.sp,
-                        imageId = R.drawable.button_orange,
-                        width = 110.dp,
-                        height = 40.dp,
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
-                }
+
 
                 if (showPremiumDialog) {
                     AlertDialog(

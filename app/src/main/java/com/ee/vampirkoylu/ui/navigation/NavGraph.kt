@@ -1,6 +1,7 @@
 package com.ee.vampirkoylu.ui.navigation
 
 
+import BillingClientWrapper
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,7 +23,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.model.GamePhase
-import com.ee.vampirkoylu.BillingClientWrapper
 import com.ee.vampirkoylu.StoreManager
 import com.ee.vampirkoylu.ui.component.PixelArtButton
 import com.ee.vampirkoylu.ui.screens.GameSetupScreen
@@ -44,6 +44,10 @@ import com.ee.vampirkoylu.ui.theme.PixelFont
 import com.ee.vampirkoylu.ui.theme.shine_gold
 import com.ee.vampirkoylu.viewmodel.GameViewModel
 import android.app.Activity
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 object NavGraph {
 
@@ -55,6 +59,35 @@ object NavGraph {
         activity: Activity,
         gameViewModel: GameViewModel = viewModel()
     ) {
+
+        LaunchedEffect(Unit) {
+            billingClientWrapper.startConnection()
+        }
+
+        val lifecycleOwner = LocalLifecycleOwner.current
+        DisposableEffect(lifecycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_START -> {
+                        if (!billingClientWrapper.isConnected.value) {
+                            billingClientWrapper.startConnection()
+                        }
+                    }
+
+                    Lifecycle.Event.ON_DESTROY -> {
+                        billingClientWrapper.disconnect()
+                    }
+
+                    else -> {}
+                }
+            }
+
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route
