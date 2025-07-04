@@ -22,6 +22,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.model.GamePhase
+import com.ee.vampirkoylu.BillingClientWrapper
+import com.ee.vampirkoylu.StoreManager
 import com.ee.vampirkoylu.ui.component.PixelArtButton
 import com.ee.vampirkoylu.ui.screens.GameSetupScreen
 import com.ee.vampirkoylu.ui.screens.HomeScreen
@@ -41,12 +43,16 @@ import com.ee.vampirkoylu.ui.theme.DarkBlue
 import com.ee.vampirkoylu.ui.theme.PixelFont
 import com.ee.vampirkoylu.ui.theme.shine_gold
 import com.ee.vampirkoylu.viewmodel.GameViewModel
+import android.app.Activity
 
 object NavGraph {
 
     @Composable
     fun SetupNavGraph(
         navController: NavHostController,
+        billingClientWrapper: BillingClientWrapper,
+        storeManager: StoreManager,
+        activity: Activity,
         gameViewModel: GameViewModel = viewModel()
     ) {
         NavHost(
@@ -55,7 +61,12 @@ object NavGraph {
         ) {
             composable(Screen.Home.route) {
                 MainScreenBackground {
-                    HomeScreen(navController = navController)
+                    HomeScreen(
+                        navController = navController,
+                        billingClientWrapper = billingClientWrapper,
+                        storeManager = storeManager,
+                        activity = activity
+                    )
                 }
             }
 

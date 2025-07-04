@@ -80,9 +80,7 @@ dependencies {
     implementation(libs.androidx.material3.window.size.class1)
 
     //Google Play Billing
-
-    //implementation(libs.billing)
-    implementation("com.android.billingclient:billing-ktx:7.0.0")
+    implementation(libs.billing)
     implementation(libs.androidx.datastore.preferences)
 
 
