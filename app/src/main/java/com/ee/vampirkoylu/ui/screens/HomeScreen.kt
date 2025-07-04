@@ -4,6 +4,8 @@ import BillingClientWrapper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import android.app.Activity
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +27,7 @@ import com.ee.vampirkoylu.StoreManager
 import com.ee.vampirkoylu.ui.theme.LocalWindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.compose.rememberNavController
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.component.PixelArtButton
@@ -35,9 +38,9 @@ import com.ee.vampirkoylu.ui.theme.PixelFont
 fun MainScreenBackground(content: @Composable () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.main_screen_bg), 
-            contentDescription = null, 
-            contentScale = ContentScale.Crop, 
+            painter = painterResource(id = R.drawable.main_screen_bg),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
         Surface(
@@ -94,6 +97,40 @@ fun HomeScreen(
 }
 
 @Composable
+private fun RoleInfoItem(imageRes: Int, nameRes: Int, descRes: Int) {
+    Row(
+        modifier = Modifier
+            .padding(8.dp)
+            .width(250.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = imageRes),
+            contentDescription = null,
+            modifier = Modifier.size(120.dp),
+            contentScale = ContentScale.Fit,
+            alignment = Alignment.Center
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(modifier = Modifier.widthIn(max = 150.dp)) {
+            Text(
+                text = stringResource(id = nameRes),
+                fontFamily = PixelFont,
+                color = Color(0xFFF0E68C),
+                fontSize = 14.sp
+            )
+            Text(
+                text = stringResource(id = descRes),
+                color = Color.White,
+                fontSize = 12.sp,
+                lineHeight = 14.sp
+            )
+        }
+    }
+}
+
+
+@Composable
 private fun HomeScreenContent(
     navController: NavController,
     modifier: Modifier = Modifier,
@@ -101,7 +138,6 @@ private fun HomeScreenContent(
     storeManager: StoreManager,
     activity: Activity
 ) {
-    val containerModifier = modifier.fillMaxSize()
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -118,11 +154,11 @@ private fun HomeScreenContent(
                 PixelArtButton(
                     text = stringResource(id = R.string.premium),
                     onClick = { showPremiumDialog = true },
-                    fontSize = 12.sp,
+                    fontSize = 10.sp,
                     imageId = R.drawable.button_orange,
-                    width = 110.dp,
-                    height = 40.dp,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    width = 240.dp,
+                    height = 80.dp,
+                    modifier = Modifier.align(Alignment.End)
                 )
             }
 
@@ -149,30 +185,95 @@ private fun HomeScreenContent(
 
 
                 if (showPremiumDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showPremiumDialog = false },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                showPremiumDialog = false
-                                products.find { it.productId == "plus_package" }?.let {
-                                    billingClientWrapper.launchPurchaseFlow(activity, it)
+                    Dialog(onDismissRequest = { showPremiumDialog = false }) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Image(
+                                painter = painterResource(id = R.drawable.alert_bg),
+                                contentDescription = null,
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier.fillMaxWidth().heightIn(350.dp,450.dp)
+                            )
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.premium_title), // "PLUS PAKETİ"
+                                    fontFamily = PixelFont,
+                                    color = Color(0xFFF0E68C),
+                                    fontSize = 20.sp
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                // Rol kaydırmalı alan
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .horizontalScroll(rememberScrollState()),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RoleInfoItem(
+                                        R.drawable.sheriff1,
+                                        R.string.sheriff,
+                                        R.string.sheriff_info
+                                    )
+                                    RoleInfoItem(
+                                        R.drawable.watcher1,
+                                        R.string.watcher,
+                                        R.string.watcher_info
+                                    )
+                                    RoleInfoItem(
+                                        R.drawable.serial_killer1,
+                                        R.string.serial_killer,
+                                        R.string.serial_killer_info
+                                    )
+                                    RoleInfoItem(
+                                        R.drawable.doctor1,
+                                        R.string.doctor,
+                                        R.string.doctor_info
+                                    )
+                                    RoleInfoItem(
+                                        R.drawable.villager1,
+                                        R.string.vampire,
+                                        R.string.vampire_info
+                                    )
                                 }
-                            }) {
-                                Text(text = stringResource(id = R.string.upgrade))
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Butonlar
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    PixelArtButton(
+                                        text = stringResource(id = R.string.upgrade),
+                                        onClick = {
+                                            showPremiumDialog = false
+                                            products.find { it.productId == "plus_package" }?.let {
+                                                billingClientWrapper.launchPurchaseFlow(activity, it)
+                                            }
+                                        },
+                                        imageId = R.drawable.button_red,
+                                        fontSize = 10.sp,
+                                        width = 140.dp,
+                                        height = 56.dp
+                                    )
+
+                                    PixelArtButton(
+                                        text = stringResource(id = R.string.not_now),
+                                        onClick = { showPremiumDialog = false },
+                                        imageId = R.drawable.button_gray,
+                                        fontSize = 10.sp,
+                                        width = 140.dp,
+                                        height = 56.dp
+                                    )
+                                }
                             }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showPremiumDialog = false }) {
-                                Text(text = stringResource(id = R.string.not_now))
-                            }
-                        },
-                        title = { Text(text = stringResource(id = R.string.premium_title)) },
-                        text = { Text(text = stringResource(id = R.string.premium_description)) }
-                    )
+                        }
+                    }
                 }
             }
         }
-        
+
         // Butonlar
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -195,7 +296,7 @@ private fun HomeScreenContent(
                 imageId = R.drawable.button_gray
             )
         }
-        
+
         // Geliştirici bilgisi
         Text(
             text = stringResource(id = R.string.developer),
@@ -204,4 +305,4 @@ private fun HomeScreenContent(
             modifier = Modifier.padding(bottom = 8.dp)
         )
     }
-} 
+}
