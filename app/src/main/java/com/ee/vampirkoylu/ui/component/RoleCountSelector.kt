@@ -20,7 +20,9 @@ fun RoleCountSelector(
     maxCount: Int,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
-    editable: Boolean = true
+    editable: Boolean = true,
+    showWarningOnIncrease: (() -> Unit)? = null,
+    showWarningOnDecrease: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
@@ -43,6 +45,8 @@ fun RoleCountSelector(
             onDecrease = onDecrease,
             canIncrease = editable && count < maxCount,
             canDecrease = editable && count > 0,
+            showWarningOnIncrease = showWarningOnIncrease,
+            showWarningOnDecrease = showWarningOnDecrease,
             modifier = Modifier.padding(start = 12.dp)
         )
     }
