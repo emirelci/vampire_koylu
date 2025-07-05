@@ -112,6 +112,13 @@ fun PlayerAvatar(
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
                         }
+                        PlayerRole.VOTE_SABOTEUR, PlayerRole.AUTOPSIR, PlayerRole.VETERAN, PlayerRole.MADMAN, PlayerRole.WIZARD -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.villager4),
+                                contentDescription = stringResource(id = R.string.villager),
+                                modifier = Modifier.fillMaxSize(0.8f)
+                            )
+                        }
                     }
                 }
             }
@@ -126,6 +133,11 @@ fun PlayerAvatar(
                         PlayerRole.WATCHER -> stringResource(id = R.string.watcher)
                         PlayerRole.SERIAL_KILLER -> stringResource(id = R.string.serial_killer)
                         PlayerRole.DOCTOR -> stringResource(id = R.string.doctor)
+                        PlayerRole.VOTE_SABOTEUR -> stringResource(id = R.string.vote_saboteur)
+                        PlayerRole.AUTOPSIR -> stringResource(id = R.string.autopsir)
+                        PlayerRole.VETERAN -> stringResource(id = R.string.veteran)
+                        PlayerRole.MADMAN -> stringResource(id = R.string.madman)
+                        PlayerRole.WIZARD -> stringResource(id = R.string.wizard)
                     },
                     fontFamily = PixelFont,
                     fontSize = 20.sp,

@@ -29,6 +29,11 @@
     <string name="watcher">GÖZCÜ</string>
     <string name="serial_killer">SERİ KATİL</string>
     <string name="doctor">DOKTOR</string>
+    <string name="vote_saboteur">SAHTEKAR</string>
+    <string name="autopsir">OTOPSİR</string>
+    <string name="veteran">NÖBETÇİ</string>
+    <string name="madman">DELİ</string>
+    <string name="wizard">BÜYÜCÜ</string>
     
     <!-- Rol Açıklamaları -->
     <string name="role_info">ROL BİLGİSİ</string>
@@ -38,6 +43,11 @@
     <string name="watcher_info">Her gece bir oyuncunun evini izlersin. O oyuncunun gecesinde kimlerin onun evine girdiğini öğrenirsin. Ancak neden girdiklerini öğrenemezsin."</string>
     <string name="serial_killer_info">Tek başına hareket eden bir katilsin. Her gece bir kişiyi öldürebilirsin. Amacın hayatta kalan son kişi olmak.</string>
     <string name="doctor_info">Her gece bir kişiyi vampir saldırısından koruyabilirsin. Eğer vampirler senin koruduğun kişiyi seçerse, o kişi hayatta kalır.</string>
+    <string name="vote_saboteur_info">Gündüz oylamasında bir oyuncunun oyunu geçersiz kılabilir.</string>
+    <string name="autopsir_info">Ölen herhangi bir oyuncunun rolünü öğrenir.</string>
+    <string name="veteran_info">Gece kendisine gelenleri öldürür.</string>
+    <string name="madman_info">Masum bir rolü olduğunu sanır fakat kimseye yardımı olmaz.</string>
+    <string name="wizard_info">Gece iki oyuncunun yerini değiştirir.</string>
 
     <!-- Night action tips -->
     <string name="villager_night_tip">Telefonu hızlı teslim etmeyin ki sanki bir role sahipmişsiniz gibi davranabilirsiniz.</string>
@@ -47,6 +57,11 @@
     <string name="watcher_night_tip">Bu gece kimin evini izlemek istersiniz? Seçiminizi yapın.</string>
     <string name="serial_killer_night_tip">Bu gece kimi öldürmek istersiniz? Seçiminizi yapın.</string>
     <string name="doctor_night_tip">Bu gece kimi korumak istersiniz? Seçiminizi yapın.</string>
+    <string name="vote_saboteur_night_tip">Bu gece kimin oyunu sabote etmek istersin?</string>
+    <string name="autopsir_night_tip">Gece ölenlerin rollerini gözlemle.</string>
+    <string name="veteran_night_tip">Uyanık kal ve gelenleri vur.</string>
+    <string name="madman_night_tip">Masum olduğunu düşün ve rolünü oyna.</string>
+    <string name="wizard_night_tip">Bu gece iki kişinin yerini değiştir.</string>
 
     <!-- Gece Sonuçları Ekranı -->
     <string name="night_results">GECE SONUCU</string>
@@ -87,7 +102,12 @@
     <string name="watcher_count">GÖZCÜ</string>
     <string name="serial_killer_count">SERİ KATİL</string>
     <string name="doctor_count">DOKTOR</string>
-    
+    <string name="vote_saboteur_count">SAHTEKAR</string>
+    <string name="autopsir_count">OTOPSİR</string>
+    <string name="veteran_count">NÖBETÇİ</string>
+    <string name="madman_count">DELİ</string>
+    <string name="wizard_count">BÜYÜCÜ</string>
+
     <!-- Kurallar -->
     <string name="rules_title">KURALLAR</string>
     <string name="rules_text">Bu oyun, klasik Vampir-Köylü oyununun dijital versiyonudur.\n\n
@@ -129,7 +149,7 @@
     <!-- Premium Package -->
     <string name="premium">DAHA FAZLA\nROL İÇİN</string>
     <string name="premium_title">PLUS PAKETİ</string>
-    <string name="premium_description">Bu pakette Şerif, Gözcü, Seri Katil ve Doktor rolleri mevcuttur.</string>
+    <string name="premium_description">Bu pakette ek olarak Sahtekar, Otopsir, Nöbetçi, Deli ve Büyücü rolleri mevcuttur.</string>
     <string name="upgrade">YÜKSELT</string>
     <string name="not_now">DAHA SONRA</string>
 </resources>

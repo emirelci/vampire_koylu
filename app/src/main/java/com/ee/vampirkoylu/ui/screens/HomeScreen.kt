@@ -214,29 +214,29 @@ private fun HomeScreenContent(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     RoleInfoItem(
-                                        R.drawable.sheriff1,
-                                        R.string.sheriff,
-                                        R.string.sheriff_info
+                                        R.drawable.sahtekar,
+                                        R.string.vote_saboteur,
+                                        R.string.vote_saboteur_info
                                     )
                                     RoleInfoItem(
-                                        R.drawable.watcher1,
-                                        R.string.watcher,
-                                        R.string.watcher_info
+                                        R.drawable.kahin,
+                                        R.string.autopsir,
+                                        R.string.autopsir_info
                                     )
                                     RoleInfoItem(
-                                        R.drawable.serial_killer1,
-                                        R.string.serial_killer,
-                                        R.string.serial_killer_info
+                                        R.drawable.nobetci,
+                                        R.string.veteran,
+                                        R.string.veteran_info
                                     )
                                     RoleInfoItem(
-                                        R.drawable.doctor1,
-                                        R.string.doctor,
-                                        R.string.doctor_info
+                                        R.drawable.deli,
+                                        R.string.madman,
+                                        R.string.madman_info
                                     )
                                     RoleInfoItem(
-                                        R.drawable.villager1,
-                                        R.string.vampire,
-                                        R.string.vampire_info
+                                        R.drawable.transporter,
+                                        R.string.wizard,
+                                        R.string.wizard_info
                                     )
                                 }
 

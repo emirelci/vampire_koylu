@@ -153,6 +153,11 @@ private fun getRoleInfo(role: PlayerRole): String {
             PlayerRole.WATCHER -> R.string.watcher_info
             PlayerRole.SERIAL_KILLER -> R.string.serial_killer_info
             PlayerRole.DOCTOR -> R.string.doctor_info
+            PlayerRole.VOTE_SABOTEUR -> R.string.vote_saboteur_info
+            PlayerRole.AUTOPSIR -> R.string.autopsir_info
+            PlayerRole.VETERAN -> R.string.veteran_info
+            PlayerRole.MADMAN -> R.string.madman_info
+            PlayerRole.WIZARD -> R.string.wizard_info
         }
     )
 }

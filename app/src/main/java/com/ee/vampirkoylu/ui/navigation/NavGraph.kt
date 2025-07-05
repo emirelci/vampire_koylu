@@ -90,17 +90,25 @@ object NavGraph {
 
             composable(Screen.Setup.route) {
                 val settings by gameViewModel.settings.collectAsState()
+                val isPlusUser by storeManager.isPlusUser.collectAsState(initial = false)
+
                 GameSetupScreen(
                     settings = settings,
                     navController = navController,
-                    onSettingsChange = { playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount ->
+                    isPlusUser = isPlusUser,
+                    onSettingsChange = { playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount ->
                         gameViewModel.updateSettings(
                             playerCount,
                             vampireCount,
                             sheriffCount,
                             watcherCount,
                             serialKillerCount,
-                            doctorCount
+                            doctorCount,
+                            saboteurCount,
+                            autopsirCount,
+                            veteranCount,
+                            madmanCount,
+                            wizardCount
                         )
                     },
                     onStartGame = { playerNames ->

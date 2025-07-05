@@ -46,7 +46,12 @@ class GameViewModel : ViewModel() {
         sheriffCount: Int = 0,
         watcherCount: Int = 0,
         serialKillerCount: Int = 0,
-        doctorCount: Int = 0
+        doctorCount: Int = 0,
+        voteSaboteurCount: Int = 0,
+        autopsirCount: Int = 0,
+        veteranCount: Int = 0,
+        madmanCount: Int = 0,
+        wizardCount: Int = 0
     ) {
         _settings.update {
             it.copy(
@@ -58,7 +63,12 @@ class GameViewModel : ViewModel() {
                 sheriffCount = sheriffCount.coerceIn(0, 1), // En fazla 1 şerif
                 watcherCount = watcherCount.coerceIn(0, 1), // En fazla 1 gözcü
                 serialKillerCount = serialKillerCount.coerceIn(0, 1), // En fazla 1 seri katil
-                doctorCount = doctorCount.coerceIn(0, 1) // En fazla 1 doktor
+                doctorCount = doctorCount.coerceIn(0, 1), // En fazla 1 doktor
+                voteSaboteurCount = voteSaboteurCount.coerceIn(0, 1),
+                autopsirCount = autopsirCount.coerceIn(0, 1),
+                veteranCount = veteranCount.coerceIn(0, 1),
+                madmanCount = madmanCount.coerceIn(0, 1),
+                wizardCount = wizardCount.coerceIn(0, 1)
             )
         }
     }
@@ -74,8 +84,19 @@ class GameViewModel : ViewModel() {
             }
 
             // Rolleri karıştır ve dağıt
-            val shuffledRoles =
-                createRoles(_settings.value.playerCount, _settings.value.vampireCount)
+            val shuffledRoles = createRoles(
+                _settings.value.playerCount,
+                _settings.value.vampireCount,
+                _settings.value.sheriffCount,
+                _settings.value.watcherCount,
+                _settings.value.serialKillerCount,
+                _settings.value.doctorCount,
+                _settings.value.voteSaboteurCount,
+                _settings.value.autopsirCount,
+                _settings.value.veteranCount,
+                _settings.value.madmanCount,
+                _settings.value.wizardCount
+            )
 
             // Oyuncuları oluştur
             val newPlayers =
@@ -117,12 +138,14 @@ class GameViewModel : ViewModel() {
             PlayerRole.VAMPIRE -> {
                 setTargetWithVisit(targetId, activePlayer) { it.copy(nightTarget = targetId) }
             }
+
             PlayerRole.SERIAL_KILLER -> {
                 setTargetWithVisit(
                     targetId,
                     activePlayer
                 ) { it.copy(serialKillerTarget = targetId) }
             }
+
             PlayerRole.SHERIFF -> {
                 setTargetWithVisit(targetId, activePlayer) { it.copy(sheriffTarget = targetId) }
 
@@ -144,16 +167,29 @@ class GameViewModel : ViewModel() {
                 }
                 // Gözcü veya Doktor var mı kontrol et
             }
+
             PlayerRole.WATCHER -> {
                 setTarget(targetId) { it.copy(watcherTarget = targetId) }
             }
+
             PlayerRole.DOCTOR -> {
                 setTargetWithVisit(targetId, activePlayer) { it.copy(doctorTarget = targetId) }
             }
+
             PlayerRole.VILLAGER -> {
                 // Köylü için özel bir hedef seçimi yok, sadece bir sonraki role geç
                 checkNextSpecialRole()
             }
+
+            PlayerRole.VOTE_SABOTEUR,
+            PlayerRole.AUTOPSIR,
+            PlayerRole.VETERAN,
+            PlayerRole.MADMAN,
+            PlayerRole.WIZARD -> {
+                // Yeni roller için henüz özel bir işlem yok
+                checkNextSpecialRole()
+            }
+
             else -> {
                 // Diğer roller için bir işlem yapılmaz
             }
@@ -241,7 +277,12 @@ class GameViewModel : ViewModel() {
         sheriffCount: Int = _settings.value.sheriffCount,
         watcherCount: Int = _settings.value.watcherCount,
         serialKillerCount: Int = _settings.value.serialKillerCount,
-        doctorCount: Int = _settings.value.doctorCount
+        doctorCount: Int = _settings.value.doctorCount,
+        voteSaboteurCount: Int = _settings.value.voteSaboteurCount,
+        autopsirCount: Int = _settings.value.autopsirCount,
+        veteranCount: Int = _settings.value.veteranCount,
+        madmanCount: Int = _settings.value.madmanCount,
+        wizardCount: Int = _settings.value.wizardCount
     ): List<PlayerRole> {
         val roles = mutableListOf<PlayerRole>()
 
@@ -267,9 +308,17 @@ class GameViewModel : ViewModel() {
             roles.add(PlayerRole.DOCTOR)
         }
 
+        repeat(voteSaboteurCount) { roles.add(PlayerRole.VOTE_SABOTEUR) }
+        repeat(autopsirCount) { roles.add(PlayerRole.AUTOPSIR) }
+        repeat(veteranCount) { roles.add(PlayerRole.VETERAN) }
+        repeat(madmanCount) { roles.add(PlayerRole.MADMAN) }
+        repeat(wizardCount) { roles.add(PlayerRole.WIZARD) }
+
         // Kalan oyuncular için köylü rollerini ekle
         val specialRoleCount =
-            vampireCount + sheriffCount + watcherCount + serialKillerCount + doctorCount
+            vampireCount + sheriffCount + watcherCount + serialKillerCount + doctorCount +
+                    voteSaboteurCount + autopsirCount + veteranCount + madmanCount + wizardCount
+
         repeat(playerCount - specialRoleCount) {
             roles.add(PlayerRole.VILLAGER)
         }
@@ -407,7 +456,19 @@ class GameViewModel : ViewModel() {
     private fun proceedToGameOver() {
         val players = _gameState.value.players
         val vampiresWin =
-            players.none { it.isAlive && (it.role == PlayerRole.VILLAGER || it.role == PlayerRole.SHERIFF || it.role == PlayerRole.WATCHER || it.role == PlayerRole.DOCTOR) }
+            players.none {
+                it.isAlive && (
+                        it.role == PlayerRole.VILLAGER ||
+                                it.role == PlayerRole.SHERIFF ||
+                                it.role == PlayerRole.WATCHER ||
+                                it.role == PlayerRole.DOCTOR ||
+                                it.role == PlayerRole.VOTE_SABOTEUR ||
+                                it.role == PlayerRole.AUTOPSIR ||
+                                it.role == PlayerRole.VETERAN ||
+                                it.role == PlayerRole.MADMAN ||
+                                it.role == PlayerRole.WIZARD
+                        )
+            }
         val villagersWin =
             players.none { it.isAlive && (it.role == PlayerRole.VAMPIRE || it.role == PlayerRole.SERIAL_KILLER) }
         val serialKillerWin =
@@ -482,8 +543,17 @@ class GameViewModel : ViewModel() {
         // Köylü takımında kimse kalmadı mı? (Köylü, Şerif, Gözcü, Doktor)
         val players = _gameState.value.players
         val noVillageTeam = players.none {
-            it.isAlive && (it.role == PlayerRole.VILLAGER || it.role == PlayerRole.SHERIFF ||
-                    it.role == PlayerRole.WATCHER || it.role == PlayerRole.DOCTOR)
+            it.isAlive && (
+                    it.role == PlayerRole.VILLAGER ||
+                            it.role == PlayerRole.SHERIFF ||
+                            it.role == PlayerRole.WATCHER ||
+                            it.role == PlayerRole.DOCTOR ||
+                            it.role == PlayerRole.VOTE_SABOTEUR ||
+                            it.role == PlayerRole.AUTOPSIR ||
+                            it.role == PlayerRole.VETERAN ||
+                            it.role == PlayerRole.MADMAN ||
+                            it.role == PlayerRole.WIZARD
+                    )
         }
 
         // Vampir kalmadı mı?
