@@ -368,15 +368,11 @@ fun GameSetupScreen(
                                             wizardCount
                                         )
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
-                                )
-                                Text(
-                                    text = "Max: $maxVampireCount",
-                                    fontSize = 14.sp,
-                                    fontFamily = PixelFont,
-                                    color = Gold.copy(alpha = 0.7f),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = "Bu rolden en fazla $maxVampireCount tane olabilir!"
+                                        showWarning = true
+                                    }
                                 )
 
                                 // Şerif sayısı
@@ -424,7 +420,11 @@ fun GameSetupScreen(
                                         )
 
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                        showWarning = true
+                                    }
                                 )
 
                                 // Gözcü sayısı
@@ -472,7 +472,11 @@ fun GameSetupScreen(
                                         )
 
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                        showWarning = true
+                                    }
                                 )
 
                                 // Seri Katil sayısı
@@ -520,7 +524,11 @@ fun GameSetupScreen(
                                         )
 
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                        showWarning = true
+                                    }
                                 )
 
                                 // Doktor sayısı
@@ -568,7 +576,11 @@ fun GameSetupScreen(
                                         )
 
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                        showWarning = true
+                                    }
                                 )
 
                                 if (!isPlusUser) {
@@ -614,7 +626,11 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            showWarning = true
+                                        }
                                     )
 
                                     RoleCountSelector(
@@ -659,7 +675,11 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            showWarning = true
+                                        }
                                     )
 
                                     RoleCountSelector(
@@ -704,7 +724,11 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            showWarning = true
+                                        }
                                     )
 
                                     RoleCountSelector(
@@ -749,7 +773,11 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            showWarning = true
+                                        }
                                     )
 
                                     RoleCountSelector(
@@ -794,7 +822,11 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            showWarning = true
+                                        }
                                     )
                                 }
 
@@ -869,11 +901,14 @@ fun GameSetupScreen(
                     PixelArtButton(
                         text = stringResource(id = R.string.start),
                         onClick = {
-                            if (allNamesEntered) {
-                                onStartGame(playerNames.toList())
-                            } else {
+                            if (!allNamesEntered) {
                                 warningMessage = "Tüm oyuncuların isimlerini girmelisiniz!"
                                 showWarning = true
+                            } else if (selectedMode == GameMode.CUSTOM && vampireCount == 0 && serialKillerCount == 0) {
+                                warningMessage = "En az 1 tane vampir veya seri katil rolü bulunmalı!"
+                                showWarning = true
+                            } else {
+                                onStartGame(playerNames.toList())
                             }
                         },
                         color = Beige,
