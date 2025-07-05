@@ -91,7 +91,7 @@ object NavGraph {
             composable(Screen.Setup.route) {
                 val settings by gameViewModel.settings.collectAsState()
                 val isPlusUser by storeManager.isPlusUser.collectAsState(initial = false)
-
+                println("isPlusUser: $isPlusUser")
                 GameSetupScreen(
                     settings = settings,
                     navController = navController,

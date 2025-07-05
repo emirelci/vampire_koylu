@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
         // BillingClientWrapper'ı storeManager ile birlikte oluştur
         billingClientWrapper = BillingClientWrapper(this, lifecycleScope, storeManager)
 
+
         setContent {
             VampirKoyluTheme {
                 Surface(
