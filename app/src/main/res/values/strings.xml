@@ -127,7 +127,7 @@
     <string name="judgement_result_innocent">%1$s masum bulundu, yaşamasına izin verildi</string>
 
     <!-- Premium Package -->
-    <string name="premium">DAHA FAZLA ROL İÇİN TIKLA</string>
+    <string name="premium">DAHA FAZLA\nROL İÇİN</string>
     <string name="premium_title">PLUS PAKETİ</string>
     <string name="premium_description">Bu pakette Şerif, Gözcü, Seri Katil ve Doktor rolleri mevcuttur.</string>
     <string name="upgrade">YÜKSELT</string>

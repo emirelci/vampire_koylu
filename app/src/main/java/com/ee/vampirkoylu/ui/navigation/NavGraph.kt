@@ -2,29 +2,18 @@ package com.ee.vampirkoylu.ui.navigation
 
 
 import BillingClientWrapper
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.model.GamePhase
 import com.ee.vampirkoylu.StoreManager
-import com.ee.vampirkoylu.ui.component.PixelArtButton
 import com.ee.vampirkoylu.ui.screens.GameSetupScreen
 import com.ee.vampirkoylu.ui.screens.HomeScreen
 import com.ee.vampirkoylu.ui.screens.MainScreenBackground
@@ -38,10 +27,6 @@ import com.ee.vampirkoylu.ui.screens.NightResultsScreen
 import com.ee.vampirkoylu.ui.screens.RoleRevealScreen
 import com.ee.vampirkoylu.ui.screens.RuleScreen
 import com.ee.vampirkoylu.ui.screens.VotingScreen
-import com.ee.vampirkoylu.ui.theme.Beige
-import com.ee.vampirkoylu.ui.theme.DarkBlue
-import com.ee.vampirkoylu.ui.theme.PixelFont
-import com.ee.vampirkoylu.ui.theme.shine_gold
 import com.ee.vampirkoylu.viewmodel.GameViewModel
 import android.app.Activity
 import androidx.compose.runtime.DisposableEffect

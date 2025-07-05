@@ -155,10 +155,10 @@ private fun HomeScreenContent(
                     text = stringResource(id = R.string.premium),
                     onClick = { showPremiumDialog = true },
                     fontSize = 10.sp,
-                    imageId = R.drawable.button_orange,
-                    width = 240.dp,
+                    imageId = R.drawable.button_gray,
+                    width = 180.dp,
                     height = 80.dp,
-                    modifier = Modifier.align(Alignment.End)
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
 

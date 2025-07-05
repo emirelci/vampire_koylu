@@ -47,7 +47,6 @@ data class Player(
     val role: PlayerRole,
     val isAlive: Boolean = true,
     val isDying: Boolean = false,  // Bu turda öldürüldü ama sonuçlar fazında hala aktif
-    val isRevealed: Boolean = false // Rolü açığa çıktı mı?
 )
 
 /**
