@@ -1,28 +1,19 @@
 package com.ee.vampirkoylu.ui.navigation
 
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import BillingClientWrapper
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.model.GamePhase
-import com.ee.vampirkoylu.ui.component.PixelArtButton
+import com.ee.vampirkoylu.StoreManager
 import com.ee.vampirkoylu.ui.screens.GameSetupScreen
 import com.ee.vampirkoylu.ui.screens.HomeScreen
 import com.ee.vampirkoylu.ui.screens.MainScreenBackground
@@ -36,42 +27,88 @@ import com.ee.vampirkoylu.ui.screens.NightResultsScreen
 import com.ee.vampirkoylu.ui.screens.RoleRevealScreen
 import com.ee.vampirkoylu.ui.screens.RuleScreen
 import com.ee.vampirkoylu.ui.screens.VotingScreen
-import com.ee.vampirkoylu.ui.theme.Beige
-import com.ee.vampirkoylu.ui.theme.DarkBlue
-import com.ee.vampirkoylu.ui.theme.PixelFont
-import com.ee.vampirkoylu.ui.theme.shine_gold
 import com.ee.vampirkoylu.viewmodel.GameViewModel
+import android.app.Activity
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 object NavGraph {
 
     @Composable
     fun SetupNavGraph(
         navController: NavHostController,
+        billingClientWrapper: BillingClientWrapper,
+        storeManager: StoreManager,
+        activity: Activity,
         gameViewModel: GameViewModel = viewModel()
     ) {
+
+        LaunchedEffect(Unit) {
+            billingClientWrapper.startConnection()
+        }
+
+        val lifecycleOwner = LocalLifecycleOwner.current
+        DisposableEffect(lifecycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_START -> {
+                        if (!billingClientWrapper.isConnected.value) {
+                            billingClientWrapper.startConnection()
+                        }
+                    }
+
+                    Lifecycle.Event.ON_DESTROY -> {
+                        billingClientWrapper.disconnect()
+                    }
+
+                    else -> {}
+                }
+            }
+
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route
         ) {
             composable(Screen.Home.route) {
                 MainScreenBackground {
-                    HomeScreen(navController = navController)
+                    HomeScreen(
+                        navController = navController,
+                        billingClientWrapper = billingClientWrapper,
+                        storeManager = storeManager,
+                        activity = activity
+                    )
                 }
             }
 
             composable(Screen.Setup.route) {
                 val settings by gameViewModel.settings.collectAsState()
+                val isPlusUser by storeManager.isPlusUser.collectAsState(initial = false)
+
                 GameSetupScreen(
                     settings = settings,
                     navController = navController,
-                    onSettingsChange = { playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount ->
+                    isPlusUser = isPlusUser,
+                    onSettingsChange = { playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount ->
                         gameViewModel.updateSettings(
                             playerCount,
                             vampireCount,
                             sheriffCount,
                             watcherCount,
                             serialKillerCount,
-                            doctorCount
+                            doctorCount,
+                            saboteurCount,
+                            autopsirCount,
+                            veteranCount,
+                            madmanCount,
+                            wizardCount
                         )
                     },
                     onStartGame = { playerNames ->

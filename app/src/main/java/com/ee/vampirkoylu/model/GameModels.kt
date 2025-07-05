@@ -11,7 +11,13 @@ enum class PlayerRole {
     SHERIFF,     // Şerif
     WATCHER,     // Gözcü
     SERIAL_KILLER, // Seri Katil
-    DOCTOR       // Doktor
+    DOCTOR,       // Doktor
+    // Plus paketinde açılan roller
+    VOTE_SABOTEUR, // Oylama Sabotajcısı (Sahtekar)
+    AUTOPSIR,      // Ölü Gözlemcisi
+    VETERAN,       // Nöbetçi
+    MADMAN,        // Deli
+    WIZARD         // Büyücü (Yer Değiştirici)
 }
 
 /**
@@ -47,7 +53,6 @@ data class Player(
     val role: PlayerRole,
     val isAlive: Boolean = true,
     val isDying: Boolean = false,  // Bu turda öldürüldü ama sonuçlar fazında hala aktif
-    val isRevealed: Boolean = false // Rolü açığa çıktı mı?
 )
 
 /**
@@ -120,5 +125,12 @@ data class GameSettings(
     val sheriffCount: Int = 0,
     val watcherCount: Int = 0,
     val serialKillerCount: Int = 0,
-    val doctorCount: Int = 0
+    val doctorCount: Int = 0,
+
+    // Plus paketindeki yeni rollerin sayıları
+    val voteSaboteurCount: Int = 0,
+    val autopsirCount: Int = 0,
+    val veteranCount: Int = 0,
+    val madmanCount: Int = 0,
+    val wizardCount: Int = 0
 ) 

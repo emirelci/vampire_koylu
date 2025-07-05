@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.theme.PixelFont
@@ -71,13 +72,15 @@ fun PixelArtButton(
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 24.sp,
     imageId: Int = R.drawable.button_brown, // arka plan görseli
-    color: Color = Color(0xFFF0E68C)
+    color: Color = Color(0xFFF0E68C),
+    width: Dp = 260.dp,
+    height: Dp = 80.dp
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
-            .width(260.dp)
-            .height(80.dp),
+            .width(width)
+            .height(height),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
             contentColor = color

@@ -49,7 +49,8 @@ import kotlinx.coroutines.delay
 fun GameSetupScreen(
     settings: GameSettings,
     navController: NavController,
-    onSettingsChange: (Int, Int, Int, Int, Int, Int) -> Unit,
+    isPlusUser: Boolean,
+    onSettingsChange: (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> Unit,
     onStartGame: (List<String>) -> Unit,
     viewModel: GameViewModel = viewModel()
 ) {
@@ -60,16 +61,26 @@ fun GameSetupScreen(
     var watcherCount by remember { mutableStateOf(settings.watcherCount) }
     var serialKillerCount by remember { mutableStateOf(settings.serialKillerCount) }
     var doctorCount by remember { mutableStateOf(settings.doctorCount) }
-    
-    val playerNames = remember { mutableStateListOf<String>().apply { 
-        repeat(settings.playerCount) { add("") }
-    }}
-    
+    var saboteurCount by remember { mutableStateOf(settings.voteSaboteurCount) }
+    var autopsirCount by remember { mutableStateOf(settings.autopsirCount) }
+    var veteranCount by remember { mutableStateOf(settings.veteranCount) }
+    var madmanCount by remember { mutableStateOf(settings.madmanCount) }
+    var wizardCount by remember { mutableStateOf(settings.wizardCount) }
+
+
+    val playerNames = remember {
+        mutableStateListOf<String>().apply {
+            repeat(settings.playerCount) { add("") }
+        }
+    }
+
     // Maksimum vampir sayısı hesapla
     val maxVampireCount = calculateMaxVampires(playerCount)
-    
+
     // Özel rol sayısı hesapla
-    val specialRoleCount = vampireCount + sheriffCount + watcherCount + serialKillerCount + doctorCount
+    val specialRoleCount =
+        vampireCount + sheriffCount + watcherCount + serialKillerCount + doctorCount +
+                saboteurCount + autopsirCount + veteranCount + madmanCount + wizardCount
     val maxRoleCount = playerCount - 1 // En az 1 normal köylü olmalı
 
     var showWarning by remember { mutableStateOf(false) }
@@ -150,7 +161,19 @@ fun GameSetupScreen(
                                 onIncrease = {
                                     val newPlayerCount = playerCount + 1
                                     playerCount = newPlayerCount
-                                    onSettingsChange(newPlayerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                    onSettingsChange(
+                                        newPlayerCount,
+                                        vampireCount,
+                                        sheriffCount,
+                                        watcherCount,
+                                        serialKillerCount,
+                                        doctorCount,
+                                        saboteurCount,
+                                        autopsirCount,
+                                        veteranCount,
+                                        madmanCount,
+                                        wizardCount
+                                    )
                                     if (playerNames.size < newPlayerCount) {
                                         playerNames.add("")
                                     }
@@ -162,7 +185,19 @@ fun GameSetupScreen(
 
                                     playerCount = newPlayerCount
                                     vampireCount = newVampireCount
-                                    onSettingsChange(newPlayerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                    onSettingsChange(
+                                        newPlayerCount,
+                                        vampireCount,
+                                        sheriffCount,
+                                        watcherCount,
+                                        serialKillerCount,
+                                        doctorCount,
+                                        saboteurCount,
+                                        autopsirCount,
+                                        veteranCount,
+                                        madmanCount,
+                                        wizardCount
+                                    )
 
                                     while (playerNames.size > newPlayerCount) {
                                         playerNames.removeAt(playerNames.lastIndex)
@@ -205,18 +240,21 @@ fun GameSetupScreen(
                                 onIncrease = {
                                     val newVampireCount = vampireCount + 1
                                     vampireCount = newVampireCount
-                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                                 },
                                 onDecrease = {
                                     val newVampireCount = vampireCount - 1
                                     vampireCount = newVampireCount
-                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                                 },
                                 canIncrease = vampireCount < maxVampireCount,
                                 canDecrease = vampireCount > 1,
                                 fontSize = 20.sp,
                                 showWarningOnIncrease = {
-                                    warningMessage = "Maksimum vampir sayısına ulaşıldı! (Max: $maxVampireCount)"
+                                    warningMessage =
+                                        "Maksimum vampir sayısına ulaşıldı! (Max: $maxVampireCount)"
                                     showWarning = true
                                 },
                                 showWarningOnDecrease = {
@@ -261,7 +299,7 @@ fun GameSetupScreen(
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
-                        
+
                         // Şerif sayısı
                         RoleCountSelector(
                             title = stringResource(id = R.string.sheriff_count),
@@ -270,7 +308,8 @@ fun GameSetupScreen(
                             onIncrease = {
                                 if (specialRoleCount < maxRoleCount) {
                                     sheriffCount = 1
-                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                                 } else {
                                     warningMessage = "En fazla ${maxRoleCount} özel rol olabilir!"
                                     showWarning = true
@@ -278,10 +317,11 @@ fun GameSetupScreen(
                             },
                             onDecrease = {
                                 sheriffCount = 0
-                                onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                             }
                         )
-                        
+
                         // Gözcü sayısı
                         RoleCountSelector(
                             title = stringResource(id = R.string.watcher_count),
@@ -290,7 +330,8 @@ fun GameSetupScreen(
                             onIncrease = {
                                 if (specialRoleCount < maxRoleCount) {
                                     watcherCount = 1
-                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                                 } else {
                                     warningMessage = "En fazla ${maxRoleCount} özel rol olabilir!"
                                     showWarning = true
@@ -298,10 +339,11 @@ fun GameSetupScreen(
                             },
                             onDecrease = {
                                 watcherCount = 0
-                                onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                             }
                         )
-                        
+
                         // Seri Katil sayısı
                         RoleCountSelector(
                             title = stringResource(id = R.string.serial_killer_count),
@@ -310,7 +352,8 @@ fun GameSetupScreen(
                             onIncrease = {
                                 if (specialRoleCount < maxRoleCount) {
                                     serialKillerCount = 1
-                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                                 } else {
                                     warningMessage = "En fazla ${maxRoleCount} özel rol olabilir!"
                                     showWarning = true
@@ -318,10 +361,11 @@ fun GameSetupScreen(
                             },
                             onDecrease = {
                                 serialKillerCount = 0
-                                onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                             }
                         )
-                        
+
                         // Doktor sayısı
                         RoleCountSelector(
                             title = stringResource(id = R.string.doctor_count),
@@ -330,7 +374,8 @@ fun GameSetupScreen(
                             onIncrease = {
                                 if (specialRoleCount < maxRoleCount) {
                                     doctorCount = 1
-                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                                 } else {
                                     warningMessage = "En fazla ${maxRoleCount} özel rol olabilir!"
                                     showWarning = true
@@ -338,9 +383,107 @@ fun GameSetupScreen(
                             },
                             onDecrease = {
                                 doctorCount = 0
-                                onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount)
+                                onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+
                             }
                         )
+
+                        if (isPlusUser) {
+                            RoleCountSelector(
+                                title = stringResource(id = R.string.vote_saboteur_count),
+                                count = saboteurCount,
+                                maxCount = 1,
+                                onIncrease = {
+                                    if (specialRoleCount < maxRoleCount) {
+                                        saboteurCount = 1
+                                        onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                    } else {
+                                        warningMessage = "En fazla ${maxRoleCount} özel rol olabilir!"
+                                        showWarning = true
+                                    }
+                                },
+                                onDecrease = {
+                                    saboteurCount = 0
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                }
+                            )
+
+                            RoleCountSelector(
+                                title = stringResource(id = R.string.autopsir_count),
+                                count = autopsirCount,
+                                maxCount = 1,
+                                onIncrease = {
+                                    if (specialRoleCount < maxRoleCount) {
+                                        autopsirCount = 1
+                                        onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                    } else {
+                                        warningMessage = "En fazla ${maxRoleCount} özel rol olabilir!"
+                                        showWarning = true
+                                    }
+                                },
+                                onDecrease = {
+                                    autopsirCount = 0
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                }
+                            )
+
+                            RoleCountSelector(
+                                title = stringResource(id = R.string.veteran_count),
+                                count = veteranCount,
+                                maxCount = 1,
+                                onIncrease = {
+                                    if (specialRoleCount < maxRoleCount) {
+                                        veteranCount = 1
+                                        onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                    } else {
+                                        warningMessage = "En fazla ${maxRoleCount} özel rol olabilir!"
+                                        showWarning = true
+                                    }
+                                },
+                                onDecrease = {
+                                    veteranCount = 0
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                }
+                            )
+
+                            RoleCountSelector(
+                                title = stringResource(id = R.string.madman_count),
+                                count = madmanCount,
+                                maxCount = 1,
+                                onIncrease = {
+                                    if (specialRoleCount < maxRoleCount) {
+                                        madmanCount = 1
+                                        onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                    } else {
+                                        warningMessage = "En fazla ${maxRoleCount} özel rol olabilir!"
+                                        showWarning = true
+                                    }
+                                },
+                                onDecrease = {
+                                    madmanCount = 0
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                }
+                            )
+
+                            RoleCountSelector(
+                                title = stringResource(id = R.string.wizard_count),
+                                count = wizardCount,
+                                maxCount = 1,
+                                onIncrease = {
+                                    if (specialRoleCount < maxRoleCount) {
+                                        wizardCount = 1
+                                        onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                    } else {
+                                        warningMessage = "En fazla ${maxRoleCount} özel rol olabilir!"
+                                        showWarning = true
+                                    }
+                                },
+                                onDecrease = {
+                                    wizardCount = 0
+                                    onSettingsChange(playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount)
+                                }
+                            )
+                        }
                     }
                 }
 
@@ -493,7 +636,8 @@ fun GameSetupScreenPreview() {
     GameSetupScreen(
         settings = GameSettings(6, 1),
         navController = navController,
-        onSettingsChange = { _, _, _, _, _, _ -> },
+        isPlusUser = true,
+        onSettingsChange = { _, _, _, _, _, _, _, _, _, _, _ -> },
         onStartGame = { _ -> }
     )
 }

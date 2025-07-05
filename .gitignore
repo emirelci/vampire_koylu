@@ -1,44 +1,26 @@
-# Compiled class file
-*.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-
-# Kotlin Gradle plugin data
-.kotlin/
-
-# IDE and build system files
-*.iml
-.gradle
+# Android build files
+.gradle/
 .idea/
+*.iml
+build/
+captures/
+.externalNativeBuild/
+
+# Release keystore and generated files
+*.jks
+*.keystore
+*.apk
+*.ap_
+app/release/
+
+# Local configuration
 local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+
+# IntelliJ
+*.iws
+/out/
+
+# OS files
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+Thumbs.db
+gradle/wrapper/gradle-wrapper.jar

@@ -166,6 +166,11 @@ private fun getRoleNightTip(role: PlayerRole): String {
         PlayerRole.WATCHER -> R.string.watcher_night_tip
         PlayerRole.SERIAL_KILLER -> R.string.serial_killer_night_tip
         PlayerRole.DOCTOR -> R.string.doctor_night_tip
+        PlayerRole.VOTE_SABOTEUR -> R.string.vote_saboteur_night_tip
+        PlayerRole.AUTOPSIR -> R.string.autopsir_night_tip
+        PlayerRole.VETERAN -> R.string.veteran_night_tip
+        PlayerRole.MADMAN -> R.string.madman_night_tip
+        PlayerRole.WIZARD -> R.string.wizard_night_tip
     }
     return stringResource(id = stringResId)
 }
