@@ -78,6 +78,12 @@ fun GameSetupScreen(
     var madmanCount by remember { mutableStateOf(settings.madmanCount) }
     var wizardCount by remember { mutableStateOf(settings.wizardCount) }
 
+    val playerNames = remember {
+        mutableStateListOf<String>().apply {
+            repeat(settings.playerCount) { add("") }
+        }
+    }
+
     fun applyMode(mode: GameMode) {
         selectedMode = mode
         val s = mode.settings
@@ -111,13 +117,6 @@ fun GameSetupScreen(
 
     LaunchedEffect(Unit) {
         applyMode(selectedMode)
-    }
-
-
-    val playerNames = remember {
-        mutableStateListOf<String>().apply {
-            repeat(settings.playerCount) { add("") }
-        }
     }
 
     // Maksimum vampir sayısı hesapla
