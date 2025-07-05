@@ -389,7 +389,6 @@ fun GameSetupScreen(
                                         } else {
                                             editNotAllowedMessage
                                         }
-                                        showWarning = true
                                     }
                                 )
 
