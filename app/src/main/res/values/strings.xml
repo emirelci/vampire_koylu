@@ -15,6 +15,8 @@
     <string name="classic_mode">KLASİK</string>
     <string name="chaos_mode">KAOS</string>
     <string name="custom_mode">ÖZEL</string>
+    <string name="extreme_mode">ÇILGIN</string>
+    <string name="ultimate_mode">ÜST SEVİYE</string>
     <string name="vampire_count">VAMPİR</string>
     <string name="start">BAŞLAT</string>
     

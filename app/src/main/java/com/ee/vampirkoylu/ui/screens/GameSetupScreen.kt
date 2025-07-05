@@ -63,8 +63,13 @@ fun GameSetupScreen(
     viewModel: GameViewModel = viewModel()
 ) {
     // State'leri viewModel değerlerine göre başlat
-    val gameModes = remember { GameMode.values().toList() }
+    val gameModes = remember(isPlusUser) {
+        GameMode.values().filter { isPlusUser || !it.plusOnly }.toList()
+    }
     var selectedMode by remember { mutableStateOf(GameMode.CUSTOM) }
+    if (selectedMode.plusOnly && !isPlusUser) {
+        selectedMode = GameMode.CUSTOM
+    }
 
     var playerCount by remember { mutableStateOf(settings.playerCount) }
     var vampireCount by remember { mutableStateOf(settings.vampireCount) }
@@ -130,6 +135,7 @@ fun GameSetupScreen(
 
     var showWarning by remember { mutableStateOf(false) }
     var warningMessage by remember { mutableStateOf("") }
+    val editNotAllowedMessage = "Rol ayarları sadece Özel modda değiştirilebilir!"
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Arka plan resmi
@@ -274,11 +280,19 @@ fun GameSetupScreen(
                                 canIncrease = selectedMode == GameMode.CUSTOM && playerCount < 15,
                                 canDecrease = selectedMode == GameMode.CUSTOM && playerCount > 4,
                                 showWarningOnIncrease = {
-                                    warningMessage = "Oyuncu sayısı en fazla 15 olabilir!"
+                                    warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                        "Oyuncu sayısı en fazla 15 olabilir!"
+                                    } else {
+                                        editNotAllowedMessage
+                                    }
                                     showWarning = true
                                 },
                                 showWarningOnDecrease = {
-                                    warningMessage = "Oyuncu sayısı en az 4 olmalıdır!"
+                                    warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                        "Oyuncu sayısı en az 4 olmalıdır!"
+                                    } else {
+                                        editNotAllowedMessage
+                                    }
                                     showWarning = true
                                 },
                                 modifier = Modifier.padding(start = 6.dp)
@@ -370,8 +384,11 @@ fun GameSetupScreen(
                                     },
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
-                                        warningMessage = "Bu rolden en fazla $maxVampireCount tane olabilir!"
-                                        showWarning = true
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla $maxVampireCount tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
                                     }
                                 )
 
@@ -422,7 +439,11 @@ fun GameSetupScreen(
                                     },
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
-                                        warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla 1 tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
                                         showWarning = true
                                     }
                                 )
@@ -474,7 +495,11 @@ fun GameSetupScreen(
                                     },
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
-                                        warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla 1 tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
                                         showWarning = true
                                     }
                                 )
@@ -526,7 +551,11 @@ fun GameSetupScreen(
                                     },
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
-                                        warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla 1 tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
                                         showWarning = true
                                     }
                                 )
@@ -578,12 +607,16 @@ fun GameSetupScreen(
                                     },
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
-                                        warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla 1 tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
                                         showWarning = true
                                     }
                                 )
 
-                                if (!isPlusUser) {
+                                if (isPlusUser) {
                                 RoleCountSelector(
                                     title = stringResource(id = R.string.vote_saboteur_count),
                                     count = saboteurCount,
@@ -628,7 +661,11 @@ fun GameSetupScreen(
                                         },
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
-                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
                                             showWarning = true
                                         }
                                     )
@@ -677,7 +714,11 @@ fun GameSetupScreen(
                                         },
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
-                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
                                             showWarning = true
                                         }
                                     )
@@ -726,7 +767,11 @@ fun GameSetupScreen(
                                         },
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
-                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
                                             showWarning = true
                                         }
                                     )
@@ -775,7 +820,11 @@ fun GameSetupScreen(
                                         },
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
-                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
                                             showWarning = true
                                         }
                                     )
@@ -824,7 +873,11 @@ fun GameSetupScreen(
                                         },
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
-                                            warningMessage = "Bu rolden en fazla 1 tane olabilir!"
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
                                             showWarning = true
                                         }
                                     )
