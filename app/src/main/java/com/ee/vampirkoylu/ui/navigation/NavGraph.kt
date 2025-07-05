@@ -194,9 +194,8 @@ object NavGraph {
                             NightActionScreen(
                                 activePlayer = currentPlayer,
                                 players = players,
-                                onTargetSelected = { targetId ->
-                                    // Hedef seçildiğinde GameViewModel'e bildir
-                                    gameViewModel.selectNightTarget(targetId)
+                                onTargetSelected = { ids ->
+                                    gameViewModel.selectNightTarget(ids)
                                 }
                             )
                         } ?: Text(
@@ -237,8 +236,8 @@ object NavGraph {
                             VotingScreen(
                                 activePlayer = currentPlayer,
                                 players = players,
-                                onVote = { targetId ->
-                                    gameViewModel.vote(targetId)
+                                onVote = { targetId, sab ->
+                                    gameViewModel.vote(targetId, sab)
 
                                     // Oylama fazı değiştiyse sonuçlara git
                                     if (gameState.currentPhase == GamePhase.VOTE_RESULT) {

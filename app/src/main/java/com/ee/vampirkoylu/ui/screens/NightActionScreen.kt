@@ -26,6 +26,7 @@ import com.ee.vampirkoylu.model.Player
 import com.ee.vampirkoylu.model.PlayerRole
 import com.ee.vampirkoylu.ui.component.PixelArtButton
 import com.ee.vampirkoylu.ui.component.PlayerSelectionItem
+import com.ee.vampirkoylu.ui.component.SelectionState
 import com.ee.vampirkoylu.ui.theme.Beige
 import com.ee.vampirkoylu.ui.theme.DarkBlue
 import com.ee.vampirkoylu.ui.theme.PixelFont
@@ -42,19 +43,19 @@ import com.ee.vampirkoylu.ui.theme.shine_gold
 fun NightActionScreen(
     activePlayer: Player,
     players: List<Player>,
-    onTargetSelected: (Int) -> Unit
+    onTargetSelected: (List<Int>) -> Unit
 ) {
     var revealed by remember { mutableStateOf(false) }
-    var selectedPlayerId by remember { mutableStateOf<Int?>(null) }
+    var selectedPlayerIds by remember { mutableStateOf<List<Int>>(emptyList()) }
     
     // Hedef seçildiğinde çağrılacak fonksiyon
-    val handleTargetSelected = { targetId: Int ->
+    val handleTargetSelected = { ids: List<Int> ->
         // Önce hedefi bildir
-        onTargetSelected(targetId)
+        onTargetSelected(ids)
         // Sonra revealed durumunu false yap ki bir sonraki oyuncu için "Sıra:Oyuncu" ekranı gösterilsin
         revealed = false
         // Seçilen oyuncuyu sıfırla
-        selectedPlayerId = null
+        selectedPlayerIds = emptyList()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -114,40 +115,71 @@ fun NightActionScreen(
                         fontSize = 20.sp
                     )
                 } else {
-                    // Diğer roller için oyuncu grid'i göster
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(8.dp)
-                    ) {
-                        items(players.filter { it.id != activePlayer.id }) { player ->
-                            PlayerSelectionItem(
-                                name = player.name,
-                                isSelected = selectedPlayerId == player.id,
-                                isAlive = player.isAlive,
-                                onSelect = { 
-                                    if (player.isAlive) {
-                                        selectedPlayerId = if (selectedPlayerId == player.id) null else player.id
-                                    }
+                    when (activePlayer.role) {
+                        PlayerRole.VETERAN -> {
+                            Spacer(modifier = Modifier.weight(1f))
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                PixelArtButton(
+                                    text = stringResource(id = R.string.confirm),
+                                    onClick = { handleTargetSelected(listOf(activePlayer.id)) },
+                                    imageId = R.drawable.button_red,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                PixelArtButton(
+                                    text = stringResource(id = R.string.skip_vote),
+                                    onClick = { handleTargetSelected(emptyList()) },
+                                    imageId = R.drawable.button_brown,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+
+                        else -> {
+                            val showPlayers = when (activePlayer.role) {
+                                PlayerRole.AUTOPSIR -> players.filter { !it.isAlive }
+                                else -> players.filter { it.id != activePlayer.id }
+                            }
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                modifier = Modifier.weight(1f),
+                                contentPadding = PaddingValues(8.dp)
+                            ) {
+                                items(showPlayers) { player ->
+                                    val selected = selectedPlayerIds.contains(player.id)
+                                    PlayerSelectionItem(
+                                        name = player.name,
+                                        selectionState = if (selected) SelectionState.VOTE else SelectionState.NONE,
+                                        isAlive = player.isAlive,
+                                        onSelect = {
+                                            if (player.isAlive || activePlayer.role == PlayerRole.AUTOPSIR) {
+                                                selectedPlayerIds = if (selected) selectedPlayerIds - player.id else {
+                                                    if (activePlayer.role == PlayerRole.WIZARD) {
+                                                        if (selectedPlayerIds.size < 2) selectedPlayerIds + player.id else selectedPlayerIds
+                                                    } else {
+                                                        listOf(player.id)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    )
                                 }
+                            }
+
+                            PixelArtButton(
+                                text = stringResource(id = R.string.confirm),
+                                onClick = { handleTargetSelected(selectedPlayerIds) },
+                                imageId = R.drawable.button_red,
+                                modifier = Modifier.padding(top = 24.dp),
+                                fontSize = 20.sp
                             )
                         }
                     }
-                    
-                    // Onaylama butonu
-                    PixelArtButton(
-                        text = stringResource(id = R.string.confirm),
-                        onClick = {
-                            if(selectedPlayerId != null){
-                                selectedPlayerId?.let { handleTargetSelected(it) }
-                            }else{
-                                handleTargetSelected(-1)
-                            }
-                        },
-                        imageId = R.drawable.button_red,
-                        modifier = Modifier.padding(top = 24.dp),
-                        fontSize = 20.sp
-                    )
                 }
             }
         }
@@ -190,6 +222,6 @@ fun NightActionScreenPreview() {
     NightActionScreen(
         activePlayer = previewPlayers[1],
         players = previewPlayers,
-        onTargetSelected = {}
+        onTargetSelected = { _ -> }
     )
 }
