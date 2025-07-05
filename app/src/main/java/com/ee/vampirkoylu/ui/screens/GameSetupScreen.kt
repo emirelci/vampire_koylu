@@ -616,7 +616,7 @@ fun GameSetupScreen(
                                     }
                                 )
 
-                                if (isPlusUser) {
+                                if (!isPlusUser) {
                                 RoleCountSelector(
                                     title = stringResource(id = R.string.vote_saboteur_count),
                                     count = saboteurCount,

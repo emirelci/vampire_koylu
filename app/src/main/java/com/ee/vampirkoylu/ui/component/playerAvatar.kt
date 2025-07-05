@@ -55,18 +55,18 @@ fun PlayerAvatar(
             Text(
                 text = stringResource(id = R.string.your_role),
                 fontFamily = PixelFont,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 color = shine_gold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
             )
             
             // Rol görseli
             if (showRole) {
                 Box(
                     modifier = Modifier
-                        .width(90.dp)
-                        .height(90.dp),
+                        .width(85.dp)
+                        .height(85.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     when (role) {
@@ -105,6 +105,7 @@ fun PlayerAvatar(
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
                         }
+
                         PlayerRole.DOCTOR -> {
                             Image(
                                 painter = painterResource(id = R.drawable.doctor1),
@@ -112,9 +113,42 @@ fun PlayerAvatar(
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
                         }
-                        PlayerRole.VOTE_SABOTEUR, PlayerRole.AUTOPSIR, PlayerRole.VETERAN, PlayerRole.MADMAN, PlayerRole.WIZARD -> {
+
+                        PlayerRole.AUTOPSIR -> {
                             Image(
-                                painter = painterResource(id = R.drawable.villager4),
+                                painter = painterResource(id = R.drawable.kahin),
+                                contentDescription = stringResource(id = R.string.doctor),
+                                modifier = Modifier.fillMaxSize(0.8f)
+                            )
+                        }
+
+                        PlayerRole.VETERAN -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.nobetci),
+                                contentDescription = stringResource(id = R.string.doctor),
+                                modifier = Modifier.fillMaxSize(0.8f)
+                            )
+                        }
+
+                        PlayerRole.WIZARD -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.transporter),
+                                contentDescription = stringResource(id = R.string.doctor),
+                                modifier = Modifier.fillMaxSize(0.8f)
+                            )
+                        }
+
+                        PlayerRole.MADMAN -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.deli),
+                                contentDescription = stringResource(id = R.string.doctor),
+                                modifier = Modifier.fillMaxSize(0.8f)
+                            )
+                        }
+
+                        PlayerRole.VOTE_SABOTEUR-> {
+                            Image(
+                                painter = painterResource(id = R.drawable.sahtekar),
                                 contentDescription = stringResource(id = R.string.villager),
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
@@ -140,7 +174,7 @@ fun PlayerAvatar(
                         PlayerRole.WIZARD -> stringResource(id = R.string.wizard)
                     },
                     fontFamily = PixelFont,
-                    fontSize = 20.sp,
+                    fontSize = 16.sp,
                     color = when (role) {
                         PlayerRole.VAMPIRE -> Color.Red
                         PlayerRole.SERIAL_KILLER -> Color.Red

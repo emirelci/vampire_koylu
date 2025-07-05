@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ee.vampirkoylu.R
@@ -50,7 +51,8 @@ fun GameOverScreen(
                     fontSize = 28.sp,
                     fontFamily = PixelFont,
                     color = shine_gold,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    textAlign = TextAlign.Center
                 )
 
                 val winTextId = when (gameResult.winningRole) {
@@ -64,7 +66,8 @@ fun GameOverScreen(
                     fontSize = 20.sp,
                     fontFamily = PixelFont,
                     color = shine_gold,
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    modifier = Modifier.padding(bottom = 24.dp),
+                    textAlign = TextAlign.Center
                 )
 
                 val survivors = gameResult.alivePlayers.joinToString(", ") { it.name }
@@ -74,7 +77,8 @@ fun GameOverScreen(
                         fontSize = 18.sp,
                         fontFamily = PixelFont,
                         color = shine_gold,
-                        modifier = Modifier.padding(bottom = 32.dp)
+                        modifier = Modifier.padding(bottom = 32.dp),
+                        textAlign = TextAlign.Center
                     )
                 }
 

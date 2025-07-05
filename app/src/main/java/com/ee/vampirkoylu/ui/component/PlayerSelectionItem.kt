@@ -43,7 +43,12 @@ private val allAvatarResources = listOf(
     R.drawable.villager3,
     R.drawable.villager4,
     R.drawable.watcher1,
-    R.drawable.vampir_logo
+    R.drawable.vampir_logo,
+    R.drawable.sahtekar,
+    R.drawable.transporter,
+    R.drawable.kahin,
+    R.drawable.deli,
+    R.drawable.nobetci
 )
 
 /**

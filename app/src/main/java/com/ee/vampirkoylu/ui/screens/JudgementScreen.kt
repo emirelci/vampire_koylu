@@ -43,10 +43,14 @@ fun JudgementScreen(
             verticalArrangement = Arrangement.Bottom
         ) {
             if (!revealed) {
-                PassDeviceScreen(
-                    activePlayer.name,
-                    onReady = { revealed = true }
-                )
+                Box(modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center){
+                    PassDeviceScreen(
+                        activePlayer.name,
+                        onReady = { revealed = true }
+                    )
+                }
+
             } else {
                 Text(
                     text = accusedPlayer.name,
@@ -65,6 +69,7 @@ fun JudgementScreen(
                 )
 
                 Spacer(Modifier.height(36.dp))
+
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.fillMaxWidth()
