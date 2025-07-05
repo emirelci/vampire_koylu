@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.sp
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.theme.PixelFont
 import com.ee.vampirkoylu.ui.theme.shine_gold
+import kotlin.random.Random
 
 enum class SelectionState { NONE, VOTE, SABOTAGE }
-import kotlin.random.Random
 
 // Kullanılabilecek tüm avatar resimleri - role göre sınıflandırılmamış
 private val allAvatarResources = listOf(

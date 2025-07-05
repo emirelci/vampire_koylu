@@ -60,8 +60,11 @@
     <string name="vote_saboteur_night_tip">Bu gece kimin oyunu sabote etmek istersin?</string>
     <string name="autopsir_night_tip">Gece ölenlerin rollerini gözlemle.</string>
     <string name="veteran_night_tip">Uyanık kal ve gelenleri vur.</string>
+    <string name="no_dead_players">Ölen kimse yok.</string>
     <string name="madman_night_tip">Masum olduğunu düşün ve rolünü oyna.</string>
     <string name="wizard_night_tip">Bu gece iki kişinin yerini değiştir.</string>
+    <string name="veteran_wake_up">UYANIK KAL</string>
+    <string name="veteran_sleep">UYU</string>
 
     <!-- Gece Sonuçları Ekranı -->
     <string name="night_results">GECE SONUCU</string>

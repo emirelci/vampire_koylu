@@ -70,7 +70,7 @@ data class NightVisit(
  */
 @Immutable
 data class SheriffInvestigation(
-    val targetId: Int,         // İncelenen kişinin ID'si
+    val targetId: Int?,         // İncelenen kişinin ID'si
     val result: GuiltStatus    // İnceleme sonucu (Suçlu/Masum)
 )
 

@@ -92,6 +92,15 @@ fun NightActionScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
+
+                Text(
+                    text = getRoleName(activePlayer.role),
+                    fontSize = 20.sp,
+                    fontFamily = PixelFont,
+                    color = shine_gold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
                 
                 // Rol bazlı bilgi metni
                 Text(
@@ -110,7 +119,7 @@ fun NightActionScreen(
                     // Devam et butonu
                     PixelArtButton(
                         text = stringResource(id = R.string.continue_game),
-                        onClick = { handleTargetSelected(-1) }, // Köylüler için -1 gönder
+                        onClick = { handleTargetSelected(emptyList()) }, // Köylüler için -1 gönder
                         imageId = R.drawable.button_red,
                         fontSize = 20.sp
                     )
@@ -123,7 +132,7 @@ fun NightActionScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 PixelArtButton(
-                                    text = stringResource(id = R.string.confirm),
+                                    text = stringResource(id = R.string.veteran_wake_up),
                                     onClick = { handleTargetSelected(listOf(activePlayer.id)) },
                                     imageId = R.drawable.button_red,
                                     fontSize = 20.sp,
@@ -131,7 +140,7 @@ fun NightActionScreen(
                                 )
                                 Spacer(modifier = Modifier.width(16.dp))
                                 PixelArtButton(
-                                    text = stringResource(id = R.string.skip_vote),
+                                    text = stringResource(id = R.string.veteran_sleep),
                                     onClick = { handleTargetSelected(emptyList()) },
                                     imageId = R.drawable.button_brown,
                                     fontSize = 20.sp,
@@ -145,45 +154,88 @@ fun NightActionScreen(
                                 PlayerRole.AUTOPSIR -> players.filter { !it.isAlive }
                                 else -> players.filter { it.id != activePlayer.id }
                             }
-                            LazyVerticalGrid(
-                                columns = GridCells.Fixed(2),
-                                modifier = Modifier.weight(1f),
-                                contentPadding = PaddingValues(8.dp)
-                            ) {
-                                items(showPlayers) { player ->
-                                    val selected = selectedPlayerIds.contains(player.id)
-                                    PlayerSelectionItem(
-                                        name = player.name,
-                                        selectionState = if (selected) SelectionState.VOTE else SelectionState.NONE,
-                                        isAlive = player.isAlive,
-                                        onSelect = {
-                                            if (player.isAlive || activePlayer.role == PlayerRole.AUTOPSIR) {
-                                                selectedPlayerIds = if (selected) selectedPlayerIds - player.id else {
-                                                    if (activePlayer.role == PlayerRole.WIZARD) {
-                                                        if (selectedPlayerIds.size < 2) selectedPlayerIds + player.id else selectedPlayerIds
-                                                    } else {
-                                                        listOf(player.id)
-                                                    }
+
+                            if (activePlayer.role == PlayerRole.AUTOPSIR && showPlayers.isEmpty()) {
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                Text(
+                                    text = stringResource(id = R.string.no_dead_players),
+                                    fontSize = 18.sp,
+                                    fontFamily = PixelFont,
+                                    color = shine_gold,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(vertical = 16.dp)
+                                )
+
+                                PixelArtButton(
+                                    text = stringResource(id = R.string.continue_game),
+                                    onClick = { handleTargetSelected(emptyList()) },
+                                    imageId = R.drawable.button_red,
+                                    fontSize = 20.sp
+                                )
+                            }else {
+                                LazyVerticalGrid(
+                                    columns = GridCells.Fixed(2),
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = PaddingValues(8.dp)
+                                ) {
+                                    items(showPlayers) { player ->
+                                        val selected = selectedPlayerIds.contains(player.id)
+                                        PlayerSelectionItem(
+                                            name = player.name,
+                                            selectionState = if (selected) SelectionState.VOTE else SelectionState.NONE,
+                                            isAlive = player.isAlive,
+                                            onSelect = {
+                                                if (player.isAlive || activePlayer.role == PlayerRole.AUTOPSIR) {
+                                                    selectedPlayerIds =
+                                                        if (selected) selectedPlayerIds - player.id else {
+                                                            if (activePlayer.role == PlayerRole.WIZARD) {
+                                                                if (selectedPlayerIds.size < 2) selectedPlayerIds + player.id else selectedPlayerIds
+                                                            } else {
+                                                                listOf(player.id)
+                                                            }
+                                                        }
                                                 }
                                             }
-                                        }
-                                    )
+                                        )
+                                    }
                                 }
-                            }
 
-                            PixelArtButton(
-                                text = stringResource(id = R.string.confirm),
-                                onClick = { handleTargetSelected(selectedPlayerIds) },
-                                imageId = R.drawable.button_red,
-                                modifier = Modifier.padding(top = 24.dp),
-                                fontSize = 20.sp
-                            )
+                                PixelArtButton(
+                                    text = stringResource(id = R.string.confirm),
+                                    onClick = { handleTargetSelected(selectedPlayerIds) },
+                                    imageId = R.drawable.button_red,
+                                    modifier = Modifier.padding(top = 24.dp),
+                                    fontSize = 20.sp
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
+
+/**
+ * Role göre görüntülenecek rol adını döndürür
+ */
+@Composable
+private fun getRoleName(role: PlayerRole): String {
+    val stringResId = when (role) {
+        PlayerRole.VAMPIRE -> R.string.vampire
+        PlayerRole.VILLAGER -> R.string.villager
+        PlayerRole.SHERIFF -> R.string.sheriff
+        PlayerRole.WATCHER -> R.string.watcher
+        PlayerRole.SERIAL_KILLER -> R.string.serial_killer
+        PlayerRole.DOCTOR -> R.string.doctor
+        PlayerRole.VOTE_SABOTEUR -> R.string.vote_saboteur
+        PlayerRole.AUTOPSIR -> R.string.autopsir
+        PlayerRole.VETERAN -> R.string.veteran
+        PlayerRole.MADMAN -> R.string.madman
+        PlayerRole.WIZARD -> R.string.wizard
+    }
+    return stringResource(id = stringResId)
 }
 
 /**
