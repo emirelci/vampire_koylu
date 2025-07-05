@@ -11,6 +11,10 @@
     <string name="new_game">YENİ OYUN</string>
     <string name="enter_names">İSİMLERİ GİRİN</string>
     <string name="player_count">OYNAYAN OYUNCU</string>
+    <string name="game_mode">OYUN MODU</string>
+    <string name="classic_mode">KLASİK</string>
+    <string name="chaos_mode">KAOS</string>
+    <string name="custom_mode">ÖZEL</string>
     <string name="vampire_count">VAMPİR</string>
     <string name="start">BAŞLAT</string>
     

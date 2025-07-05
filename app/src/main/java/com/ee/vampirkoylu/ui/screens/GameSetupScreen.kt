@@ -43,6 +43,8 @@ import com.ee.vampirkoylu.ui.component.PixelArtButton
 import com.ee.vampirkoylu.ui.component.RoleCountSelector
 import com.ee.vampirkoylu.ui.component.VerticalScrollbar
 import com.ee.vampirkoylu.ui.component.WarningBanner
+import com.ee.vampirkoylu.ui.component.ModeSelector
+import com.ee.vampirkoylu.model.GameMode
 import com.ee.vampirkoylu.ui.navigation.Screen
 import com.ee.vampirkoylu.ui.theme.Beige
 import com.ee.vampirkoylu.ui.theme.Gold
@@ -61,6 +63,9 @@ fun GameSetupScreen(
     viewModel: GameViewModel = viewModel()
 ) {
     // State'leri viewModel değerlerine göre başlat
+    val gameModes = remember { GameMode.values().toList() }
+    var selectedMode by remember { mutableStateOf(GameMode.CUSTOM) }
+
     var playerCount by remember { mutableStateOf(settings.playerCount) }
     var vampireCount by remember { mutableStateOf(settings.vampireCount) }
     var sheriffCount by remember { mutableStateOf(settings.sheriffCount) }
@@ -72,6 +77,41 @@ fun GameSetupScreen(
     var veteranCount by remember { mutableStateOf(settings.veteranCount) }
     var madmanCount by remember { mutableStateOf(settings.madmanCount) }
     var wizardCount by remember { mutableStateOf(settings.wizardCount) }
+
+    fun applyMode(mode: GameMode) {
+        selectedMode = mode
+        val s = mode.settings
+        playerCount = s.playerCount
+        vampireCount = s.vampireCount
+        sheriffCount = s.sheriffCount
+        watcherCount = s.watcherCount
+        serialKillerCount = s.serialKillerCount
+        doctorCount = s.doctorCount
+        saboteurCount = s.voteSaboteurCount
+        autopsirCount = s.autopsirCount
+        veteranCount = s.veteranCount
+        madmanCount = s.madmanCount
+        wizardCount = s.wizardCount
+        playerNames.clear()
+        repeat(playerCount) { playerNames.add("") }
+        onSettingsChange(
+            playerCount,
+            vampireCount,
+            sheriffCount,
+            watcherCount,
+            serialKillerCount,
+            doctorCount,
+            saboteurCount,
+            autopsirCount,
+            veteranCount,
+            madmanCount,
+            wizardCount
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        applyMode(selectedMode)
+    }
 
 
     val playerNames = remember {
@@ -146,6 +186,29 @@ fun GameSetupScreen(
                         modifier = Modifier.padding(4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        // Oyun modu
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.game_mode),
+                                fontSize = 14.sp,
+                                fontFamily = PixelFont,
+                                color = Beige,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            ModeSelector(
+                                modes = gameModes.map { it.nameRes },
+                                selectedIndex = gameModes.indexOf(selectedMode),
+                                onIndexChange = { applyMode(gameModes[it]) }
+                            )
+                        }
+
                         // Oyuncu sayısı
                         Row(
                             modifier = Modifier
@@ -209,8 +272,8 @@ fun GameSetupScreen(
                                         playerNames.removeAt(playerNames.lastIndex)
                                     }
                                 },
-                                canIncrease = playerCount < 15,
-                                canDecrease = playerCount > 4,
+                                canIncrease = selectedMode == GameMode.CUSTOM && playerCount < 15,
+                                canDecrease = selectedMode == GameMode.CUSTOM && playerCount > 4,
                                 showWarningOnIncrease = {
                                     warningMessage = "Oyuncu sayısı en fazla 15 olabilir!"
                                     showWarning = true
@@ -225,85 +288,6 @@ fun GameSetupScreen(
 
                         }
 
-                        // Vampir sayısı
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.vampire_count),
-                                fontSize = 14.sp,
-                                fontFamily = PixelFont,
-                                color = Beige,
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            IncreaseDecreaseCount(
-                                count = vampireCount,
-                                onIncrease = {
-                                    val newVampireCount = vampireCount + 1
-                                    vampireCount = newVampireCount
-                                    onSettingsChange(
-                                        playerCount,
-                                        vampireCount,
-                                        sheriffCount,
-                                        watcherCount,
-                                        serialKillerCount,
-                                        doctorCount,
-                                        saboteurCount,
-                                        autopsirCount,
-                                        veteranCount,
-                                        madmanCount,
-                                        wizardCount
-                                    )
-
-                                },
-                                onDecrease = {
-                                    val newVampireCount = vampireCount - 1
-                                    vampireCount = newVampireCount
-                                    onSettingsChange(
-                                        playerCount,
-                                        vampireCount,
-                                        sheriffCount,
-                                        watcherCount,
-                                        serialKillerCount,
-                                        doctorCount,
-                                        saboteurCount,
-                                        autopsirCount,
-                                        veteranCount,
-                                        madmanCount,
-                                        wizardCount
-                                    )
-
-                                },
-                                canIncrease = vampireCount < maxVampireCount,
-                                canDecrease = vampireCount > 1,
-                                fontSize = 20.sp,
-                                showWarningOnIncrease = {
-                                    warningMessage =
-                                        "Maksimum vampir sayısına ulaşıldı! (Max: $maxVampireCount)"
-                                    showWarning = true
-                                },
-                                showWarningOnDecrease = {
-                                    warningMessage = "En az 1 vampir olmalıdır!"
-                                    showWarning = true
-                                },
-                                modifier = Modifier.padding(start = 12.dp)
-                            )
-                        }
-
-                        // Vampir sayısı açıklaması
-                        Text(
-                            text = "Max: $maxVampireCount",
-                            fontSize = 14.sp,
-                            fontFamily = PixelFont,
-                            color = Gold.copy(alpha = 0.7f),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
-                        )
                     }
                 }
 
@@ -346,6 +330,56 @@ fun GameSetupScreen(
                                     .verticalScroll(roleScrollState),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
+                                // Vampir sayısı
+                                RoleCountSelector(
+                                    title = stringResource(id = R.string.vampire_count),
+                                    count = vampireCount,
+                                    maxCount = maxVampireCount,
+                                    onIncrease = {
+                                        val newVampireCount = vampireCount + 1
+                                        vampireCount = newVampireCount
+                                        onSettingsChange(
+                                            playerCount,
+                                            vampireCount,
+                                            sheriffCount,
+                                            watcherCount,
+                                            serialKillerCount,
+                                            doctorCount,
+                                            saboteurCount,
+                                            autopsirCount,
+                                            veteranCount,
+                                            madmanCount,
+                                            wizardCount
+                                        )
+                                    },
+                                    onDecrease = {
+                                        val newVampireCount = vampireCount - 1
+                                        vampireCount = newVampireCount
+                                        onSettingsChange(
+                                            playerCount,
+                                            vampireCount,
+                                            sheriffCount,
+                                            watcherCount,
+                                            serialKillerCount,
+                                            doctorCount,
+                                            saboteurCount,
+                                            autopsirCount,
+                                            veteranCount,
+                                            madmanCount,
+                                            wizardCount
+                                        )
+                                    },
+                                    editable = selectedMode == GameMode.CUSTOM
+                                )
+                                Text(
+                                    text = "Max: $maxVampireCount",
+                                    fontSize = 14.sp,
+                                    fontFamily = PixelFont,
+                                    color = Gold.copy(alpha = 0.7f),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                                )
+
                                 // Şerif sayısı
                                 RoleCountSelector(
                                     title = stringResource(id = R.string.sheriff_count),
@@ -390,7 +424,8 @@ fun GameSetupScreen(
                                             wizardCount
                                         )
 
-                                    }
+                                    },
+                                    editable = selectedMode == GameMode.CUSTOM
                                 )
 
                                 // Gözcü sayısı
@@ -437,7 +472,8 @@ fun GameSetupScreen(
                                             wizardCount
                                         )
 
-                                    }
+                                    },
+                                    editable = selectedMode == GameMode.CUSTOM
                                 )
 
                                 // Seri Katil sayısı
@@ -484,7 +520,8 @@ fun GameSetupScreen(
                                             wizardCount
                                         )
 
-                                    }
+                                    },
+                                    editable = selectedMode == GameMode.CUSTOM
                                 )
 
                                 // Doktor sayısı
@@ -531,14 +568,15 @@ fun GameSetupScreen(
                                             wizardCount
                                         )
 
-                                    }
+                                    },
+                                    editable = selectedMode == GameMode.CUSTOM
                                 )
 
                                 if (!isPlusUser) {
-                                    RoleCountSelector(
-                                        title = stringResource(id = R.string.vote_saboteur_count),
-                                        count = saboteurCount,
-                                        maxCount = 1,
+                                RoleCountSelector(
+                                    title = stringResource(id = R.string.vote_saboteur_count),
+                                    count = saboteurCount,
+                                    maxCount = 1,
                                         onIncrease = {
                                             if (specialRoleCount < maxRoleCount) {
                                                 saboteurCount = 1
@@ -576,7 +614,8 @@ fun GameSetupScreen(
                                                 madmanCount,
                                                 wizardCount
                                             )
-                                        }
+                                        },
+                                        editable = selectedMode == GameMode.CUSTOM
                                     )
 
                                     RoleCountSelector(
@@ -620,7 +659,8 @@ fun GameSetupScreen(
                                                 madmanCount,
                                                 wizardCount
                                             )
-                                        }
+                                        },
+                                        editable = selectedMode == GameMode.CUSTOM
                                     )
 
                                     RoleCountSelector(
@@ -664,7 +704,8 @@ fun GameSetupScreen(
                                                 madmanCount,
                                                 wizardCount
                                             )
-                                        }
+                                        },
+                                        editable = selectedMode == GameMode.CUSTOM
                                     )
 
                                     RoleCountSelector(
@@ -708,7 +749,8 @@ fun GameSetupScreen(
                                                 madmanCount,
                                                 wizardCount
                                             )
-                                        }
+                                        },
+                                        editable = selectedMode == GameMode.CUSTOM
                                     )
 
                                     RoleCountSelector(
@@ -752,7 +794,8 @@ fun GameSetupScreen(
                                                 madmanCount,
                                                 wizardCount
                                             )
-                                        }
+                                        },
+                                        editable = selectedMode == GameMode.CUSTOM
                                     )
                                 }
 
