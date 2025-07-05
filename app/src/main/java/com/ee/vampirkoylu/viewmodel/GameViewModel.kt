@@ -125,28 +125,27 @@ class GameViewModel : ViewModel() {
     /**
      * Gece fazında vampirin hedef seçmesi
      */
-    fun selectNightTarget(targetId: Int) {
-        // Hedef kendisi olamaz
-        if (targetId == _activePlayer.value?.id) {
-            return
-        }
-
+    fun selectNightTarget(targetIds: List<Int>) {
+        // Aktif oyuncuyu al
         val activePlayer = _activePlayer.value ?: return
 
-        // Aktif oyuncunun rolüne göre hedefi ayarla
+        // Bazı roller hedef gerektirmez
         when (activePlayer.role) {
             PlayerRole.VAMPIRE -> {
+                val targetId = targetIds.firstOrNull() ?: return
+                if (targetId == activePlayer.id) return
                 setTargetWithVisit(targetId, activePlayer) { it.copy(nightTarget = targetId) }
             }
 
             PlayerRole.SERIAL_KILLER -> {
-                setTargetWithVisit(
-                    targetId,
-                    activePlayer
-                ) { it.copy(serialKillerTarget = targetId) }
+                val targetId = targetIds.firstOrNull() ?: return
+                if (targetId == activePlayer.id) return
+                setTargetWithVisit(targetId, activePlayer) { it.copy(serialKillerTarget = targetId) }
             }
 
             PlayerRole.SHERIFF -> {
+                val targetId = targetIds.firstOrNull() ?: return
+                if (targetId == activePlayer.id) return
                 setTargetWithVisit(targetId, activePlayer) { it.copy(sheriffTarget = targetId) }
 
                 // Suçlu olup olmadığını kontrol et
@@ -169,10 +168,14 @@ class GameViewModel : ViewModel() {
             }
 
             PlayerRole.WATCHER -> {
+                val targetId = targetIds.firstOrNull() ?: return
+                if (targetId == activePlayer.id) return
                 setTarget(targetId) { it.copy(watcherTarget = targetId) }
             }
 
             PlayerRole.DOCTOR -> {
+                val targetId = targetIds.firstOrNull() ?: return
+                if (targetId == activePlayer.id) return
                 setTargetWithVisit(targetId, activePlayer) { it.copy(doctorTarget = targetId) }
             }
 
@@ -181,12 +184,37 @@ class GameViewModel : ViewModel() {
                 checkNextSpecialRole()
             }
 
-            PlayerRole.VOTE_SABOTEUR,
-            PlayerRole.AUTOPSIR,
-            PlayerRole.VETERAN,
-            PlayerRole.MADMAN,
+            PlayerRole.VOTE_SABOTEUR -> {
+                // Sahtekarın gece eylemi yok
+                checkNextSpecialRole()
+            }
+
+            PlayerRole.AUTOPSIR -> {
+                val targetId = targetIds.firstOrNull() ?: return
+                val targetPlayer = _gameState.value.players.find { it.id == targetId && !it.isAlive }
+                if (targetPlayer != null) {
+                    val report = AutopsirReport(targetId, targetPlayer.role)
+                    _gameState.update { it.copy(autopsirResults = it.autopsirResults + report) }
+                }
+                checkNextSpecialRole()
+            }
+
+            PlayerRole.VETERAN -> {
+                if (targetIds.isNotEmpty()) {
+                    _gameState.update { it.copy(veteranAlertIds = it.veteranAlertIds + activePlayer.id) }
+                }
+                checkNextSpecialRole()
+            }
+
+            PlayerRole.MADMAN -> {
+                // Deli için özel bir eylem yok
+                checkNextSpecialRole()
+            }
+
             PlayerRole.WIZARD -> {
-                // Yeni roller için henüz özel bir işlem yok
+                if (targetIds.size == 2) {
+                    _gameState.update { it.copy(wizardSwap = Pair(targetIds[0], targetIds[1])) }
+                }
                 checkNextSpecialRole()
             }
 
@@ -199,13 +227,36 @@ class GameViewModel : ViewModel() {
     /**
      * Gündüz fazında oyuncu oyu
      */
-    fun vote(targetId: Int) {
+    fun vote(targetId: Int, sabotage: Boolean = false) {
         // Aktif oyuncuyu kontrol et
         val activePlayer = _activePlayer.value ?: return
 
         // Ölmekte olan veya ölü oyuncular oy veremez
         if (!activePlayer.isAlive || activePlayer.isDying) {
             nextPlayer()
+            return
+        }
+
+        // Vote sabotage özelliği
+        if (sabotage && activePlayer.role == PlayerRole.VOTE_SABOTEUR) {
+            _gameState.update { it.copy(voteSabotageTarget = targetId) }
+            votedPlayers.add(activePlayer.id)
+            if (allPlayersVoted()) {
+                proceedToVoteResult()
+            } else {
+                nextPlayer()
+            }
+            return
+        }
+
+        // Sabotajlanan oyuncunun oyu geçersiz sayılır
+        if (_gameState.value.voteSabotageTarget == activePlayer.id) {
+            votedPlayers.add(activePlayer.id)
+            if (allPlayersVoted()) {
+                proceedToVoteResult()
+            } else {
+                nextPlayer()
+            }
             return
         }
 
@@ -357,7 +408,10 @@ class GameViewModel : ViewModel() {
                 serialKillerTarget = null,
                 sheriffTarget = null,
                 watcherTarget = null,
-                nightVisits = emptyList() // Ziyaretleri sıfırla
+                nightVisits = emptyList(), // Ziyaretleri sıfırla
+                veteranAlertIds = emptySet(),
+                wizardSwap = null,
+                voteSabotageTarget = null
             )
         }
 
@@ -374,7 +428,8 @@ class GameViewModel : ViewModel() {
         _gameState.update {
             it.copy(
                 currentPhase = GamePhase.VOTING,
-                votingResults = emptyMap()
+                votingResults = emptyMap(),
+                voteSabotageTarget = null
             )
         }
 
@@ -667,20 +722,37 @@ class GameViewModel : ViewModel() {
 
     // Gece ölümlerini hesapla
     private fun processNightKills() {
-        val vampireTarget = _gameState.value.nightTarget
-        val doctorTarget = _gameState.value.doctorTarget
-        val serialKillerTarget = _gameState.value.serialKillerTarget
+        var vampireTarget = _gameState.value.nightTarget
+        var doctorTarget = _gameState.value.doctorTarget
+        var serialKillerTarget = _gameState.value.serialKillerTarget
+
+        // Büyücünün yer değiştirme etkisi
+        _gameState.value.wizardSwap?.let { (first, second) ->
+            fun swap(id: Int?): Int? = when (id) {
+                first -> second
+                second -> first
+                else -> id
+            }
+            vampireTarget = swap(vampireTarget)
+            serialKillerTarget = swap(serialKillerTarget)
+            doctorTarget = swap(doctorTarget)
+        }
 
         // Vampir kurbanı
         if (vampireTarget != null && vampireTarget != doctorTarget) {
-            // Öldürülecek oyuncuyu isDying olarak işaretle
             updatePlayerStatus(vampireTarget, isAlive = true, isDying = true)
         }
 
         // Seri katil kurbanı
         if (serialKillerTarget != null && serialKillerTarget != doctorTarget) {
-            // Öldürülecek oyuncuyu isDying olarak işaretle
             updatePlayerStatus(serialKillerTarget, isAlive = true, isDying = true)
+        }
+
+        // Nöbetçi uyanıksa ziyaretçileri öldür
+        _gameState.value.veteranAlertIds.forEach { vetId ->
+            _gameState.value.nightVisits.filter { it.targetId == vetId }.forEach { visit ->
+                updatePlayerStatus(visit.visitorId, isAlive = true, isDying = true)
+            }
         }
     }
 

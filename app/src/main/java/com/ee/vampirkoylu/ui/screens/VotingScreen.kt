@@ -25,6 +25,7 @@ import com.ee.vampirkoylu.model.Player
 import com.ee.vampirkoylu.model.PlayerRole
 import com.ee.vampirkoylu.ui.component.PixelArtButton
 import com.ee.vampirkoylu.ui.component.PlayerSelectionItem
+import com.ee.vampirkoylu.ui.component.SelectionState
 import com.ee.vampirkoylu.ui.theme.Beige
 import com.ee.vampirkoylu.ui.theme.DarkBlue
 import com.ee.vampirkoylu.ui.theme.PixelFont
@@ -42,22 +43,24 @@ import com.ee.vampirkoylu.ui.theme.shine_gold
 fun VotingScreen(
     activePlayer: Player,
     players: List<Player>,
-    onVote: (Int) -> Unit,
+    onVote: (Int, Boolean) -> Unit,
     onSkipVote: () -> Unit
 ) {
     var revealed by remember { mutableStateOf(false) }
     var selectedPlayerId by remember { mutableStateOf<Int?>(null) }
+    var sabotage by remember { mutableStateOf(false) }
     
     // Oy kullanıldığında veya atlandığında çağrılacak fonksiyon
-    val handleVote = { targetId: Int? ->
+    val handleVote = { targetId: Int?, sab: Boolean ->
         if (targetId != null) {
-            onVote(targetId)
+            onVote(targetId, sab)
         } else {
             onSkipVote()
         }
         // Sonraki oyuncu için görünümü sıfırla
         revealed = false
         selectedPlayerId = null
+        sabotage = false
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -112,12 +115,24 @@ fun VotingScreen(
                     contentPadding = PaddingValues(8.dp)
                 ) {
                     items(players.filter { it.id != activePlayer.id && it.isAlive && !it.isDying }) { player ->
+                        val state = if (selectedPlayerId == player.id) {
+                            if (sabotage) SelectionState.SABOTAGE else SelectionState.VOTE
+                        } else SelectionState.NONE
                         PlayerSelectionItem(
                             name = player.name,
-                            isSelected = selectedPlayerId == player.id,
+                            selectionState = state,
                             isAlive = player.isAlive,
-                            onSelect = { 
-                                selectedPlayerId = if (selectedPlayerId == player.id) null else player.id
+                            onSelect = {
+                                if (selectedPlayerId == player.id) {
+                                    if (activePlayer.role == PlayerRole.VOTE_SABOTEUR) {
+                                        sabotage = !sabotage
+                                    } else {
+                                        selectedPlayerId = null
+                                    }
+                                } else {
+                                    selectedPlayerId = player.id
+                                    sabotage = false
+                                }
                             }
                         )
                     }
@@ -132,7 +147,7 @@ fun VotingScreen(
                     // "Oy verme" butonu
                     PixelArtButton(
                         text = stringResource(id = R.string.skip_vote),
-                        onClick = { handleVote(null) },
+                        onClick = { handleVote(null, false) },
                         imageId = R.drawable.button_brown,
                         fontSize = 14.sp,
                         modifier = Modifier
@@ -143,8 +158,8 @@ fun VotingScreen(
                     // Onayla butonu
                     PixelArtButton(
                         text = stringResource(id = R.string.confirm),
-                        onClick = { 
-                            selectedPlayerId?.let { handleVote(it) }
+                        onClick = {
+                            selectedPlayerId?.let { handleVote(it, sabotage) }
                         },
                         imageId = R.drawable.button_red,
                         fontSize = 14.sp,
@@ -173,7 +188,7 @@ fun VotingScreenPreview() {
     VotingScreen(
         activePlayer = previewPlayers[0],
         players = previewPlayers,
-        onVote = {},
+        onVote = { _, _ -> },
         onSkipVote = {}
     )
-} 
+}

@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.theme.PixelFont
 import com.ee.vampirkoylu.ui.theme.shine_gold
+
+enum class SelectionState { NONE, VOTE, SABOTAGE }
 import kotlin.random.Random
 
 // Kullanılabilecek tüm avatar resimleri - role göre sınıflandırılmamış
@@ -54,14 +56,14 @@ private fun getRandomAvatarResId(): Int {
 /**
  * Oyuncu seçim öğesi komponenti
  * @param name Oyuncu adı
- * @param isSelected Seçili mi 
+ * @param selectionState Seçim durumu
  * @param onSelect Seçildiğinde çağrılacak fonksiyon
  * @param modifier Modifier
  */
 @Composable
 fun PlayerSelectionItem(
     name: String,
-    isSelected: Boolean = false,
+    selectionState: SelectionState = SelectionState.NONE,
     isAlive: Boolean = true,
     onSelect: () -> Unit,
     modifier: Modifier = Modifier
@@ -122,7 +124,7 @@ fun PlayerSelectionItem(
                 .clip(RoundedCornerShape(4.dp))
                 .clickable(enabled = isAlive) { onSelect() }
                 .background(
-                    if (isSelected) Color.Red else Color(0xFF1A1A2E)
+                    if (selectionState != SelectionState.NONE) Color.Red else Color(0xFF1A1A2E)
                 )
                 .border(
                     width = 2.dp,
@@ -131,14 +133,10 @@ fun PlayerSelectionItem(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            if (isSelected) {
-                // Seçili durumda tick işareti
-                Text(
-                    text = "✓",
-                    color = Color.White,
-                    fontSize = 24.sp,
-                    fontFamily = PixelFont
-                )
+            when (selectionState) {
+                SelectionState.VOTE -> Text("✓", color = Color.White, fontSize = 24.sp, fontFamily = PixelFont)
+                SelectionState.SABOTAGE -> Text("O", color = Color.White, fontSize = 24.sp, fontFamily = PixelFont)
+                else -> {}
             }
             
             if (!isAlive) {

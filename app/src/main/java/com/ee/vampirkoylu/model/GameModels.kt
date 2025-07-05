@@ -84,6 +84,15 @@ data class WatcherObservation(
 )
 
 /**
+ * Otopsir raporu
+ */
+@Immutable
+data class AutopsirReport(
+    val targetId: Int,          // İncelenen ölü oyuncunun ID'si
+    val role: PlayerRole        // Oyuncunun gerçek rolü
+)
+
+/**
  * Oyun durumunu temsil eden data class
  */
 @Immutable
@@ -99,6 +108,10 @@ data class GameState(
     val nightVisits: List<NightVisit> = emptyList(), // Gece ziyaretleri
     val sheriffResults: List<SheriffInvestigation> = emptyList(), // Şerif sonuçları
     val watcherResults: List<WatcherObservation> = emptyList(), // Gözcü sonuçları
+    val autopsirResults: List<AutopsirReport> = emptyList(), // Otopsir sonuçları
+    val veteranAlertIds: Set<Int> = emptySet(), // Bu gece uyanık kalan nöbetçiler
+    val wizardSwap: Pair<Int, Int>? = null, // Büyücünün yerini değiştirdiği oyuncular
+    val voteSabotageTarget: Int? = null, // Sahtekarın oyunu iptal edeceği oyuncu
     val votingResults: Map<Int, Int> = emptyMap(), // Key: Oy verilen ID, Value: Oy sayısı
     val lastEliminated: Int? = null, // Son elenen oyuncu ID'si
     val accusedId: Int? = null, // Oylama sonucunda suçlanan oyuncu
