@@ -63,8 +63,13 @@ fun GameSetupScreen(
     viewModel: GameViewModel = viewModel()
 ) {
     // State'leri viewModel değerlerine göre başlat
-    val gameModes = remember { GameMode.values().toList() }
+    val gameModes = remember(isPlusUser) {
+        GameMode.values().filter { isPlusUser || !it.plusOnly }.toList()
+    }
     var selectedMode by remember { mutableStateOf(GameMode.CUSTOM) }
+    if (selectedMode.plusOnly && !isPlusUser) {
+        selectedMode = GameMode.CUSTOM
+    }
 
     var playerCount by remember { mutableStateOf(settings.playerCount) }
     var vampireCount by remember { mutableStateOf(settings.vampireCount) }
@@ -130,6 +135,7 @@ fun GameSetupScreen(
 
     var showWarning by remember { mutableStateOf(false) }
     var warningMessage by remember { mutableStateOf("") }
+    val editNotAllowedMessage = "Rol ayarları sadece Özel modda değiştirilebilir!"
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Arka plan resmi
@@ -274,11 +280,19 @@ fun GameSetupScreen(
                                 canIncrease = selectedMode == GameMode.CUSTOM && playerCount < 15,
                                 canDecrease = selectedMode == GameMode.CUSTOM && playerCount > 4,
                                 showWarningOnIncrease = {
-                                    warningMessage = "Oyuncu sayısı en fazla 15 olabilir!"
+                                    warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                        "Oyuncu sayısı en fazla 15 olabilir!"
+                                    } else {
+                                        editNotAllowedMessage
+                                    }
                                     showWarning = true
                                 },
                                 showWarningOnDecrease = {
-                                    warningMessage = "Oyuncu sayısı en az 4 olmalıdır!"
+                                    warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                        "Oyuncu sayısı en az 4 olmalıdır!"
+                                    } else {
+                                        editNotAllowedMessage
+                                    }
                                     showWarning = true
                                 },
                                 modifier = Modifier.padding(start = 6.dp)
@@ -368,15 +382,15 @@ fun GameSetupScreen(
                                             wizardCount
                                         )
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
-                                )
-                                Text(
-                                    text = "Max: $maxVampireCount",
-                                    fontSize = 14.sp,
-                                    fontFamily = PixelFont,
-                                    color = Gold.copy(alpha = 0.7f),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla $maxVampireCount tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
+                                        showWarning = true
+                                    }
                                 )
 
                                 // Şerif sayısı
@@ -424,7 +438,15 @@ fun GameSetupScreen(
                                         )
 
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla 1 tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
+                                        showWarning = true
+                                    }
                                 )
 
                                 // Gözcü sayısı
@@ -472,7 +494,15 @@ fun GameSetupScreen(
                                         )
 
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla 1 tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
+                                        showWarning = true
+                                    }
                                 )
 
                                 // Seri Katil sayısı
@@ -520,7 +550,15 @@ fun GameSetupScreen(
                                         )
 
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla 1 tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
+                                        showWarning = true
+                                    }
                                 )
 
                                 // Doktor sayısı
@@ -568,10 +606,18 @@ fun GameSetupScreen(
                                         )
 
                                     },
-                                    editable = selectedMode == GameMode.CUSTOM
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla 1 tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
+                                        showWarning = true
+                                    }
                                 )
 
-                                if (!isPlusUser) {
+                                if (isPlusUser) {
                                 RoleCountSelector(
                                     title = stringResource(id = R.string.vote_saboteur_count),
                                     count = saboteurCount,
@@ -614,7 +660,15 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
+                                            showWarning = true
+                                        }
                                     )
 
                                     RoleCountSelector(
@@ -659,7 +713,15 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
+                                            showWarning = true
+                                        }
                                     )
 
                                     RoleCountSelector(
@@ -704,7 +766,15 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
+                                            showWarning = true
+                                        }
                                     )
 
                                     RoleCountSelector(
@@ -749,7 +819,15 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
+                                            showWarning = true
+                                        }
                                     )
 
                                     RoleCountSelector(
@@ -794,7 +872,15 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         },
-                                        editable = selectedMode == GameMode.CUSTOM
+                                        editable = selectedMode == GameMode.CUSTOM,
+                                        showWarningOnIncrease = {
+                                            warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                                "Bu rolden en fazla 1 tane olabilir!"
+                                            } else {
+                                                editNotAllowedMessage
+                                            }
+                                            showWarning = true
+                                        }
                                     )
                                 }
 
@@ -869,11 +955,14 @@ fun GameSetupScreen(
                     PixelArtButton(
                         text = stringResource(id = R.string.start),
                         onClick = {
-                            if (allNamesEntered) {
-                                onStartGame(playerNames.toList())
-                            } else {
+                            if (!allNamesEntered) {
                                 warningMessage = "Tüm oyuncuların isimlerini girmelisiniz!"
                                 showWarning = true
+                            } else if (selectedMode == GameMode.CUSTOM && vampireCount == 0 && serialKillerCount == 0) {
+                                warningMessage = "En az 1 tane vampir veya seri katil rolü bulunmalı!"
+                                showWarning = true
+                            } else {
+                                onStartGame(playerNames.toList())
                             }
                         },
                         color = Beige,
