@@ -3,6 +3,7 @@ import android.content.Context
 import android.util.Log
 import com.android.billingclient.api.*
 import com.ee.vampirkoylu.StoreManager
+import com.ee.vampirkoylu.util.PurchaseValidator
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -124,6 +125,10 @@ class BillingClientWrapper(
 
     private suspend fun handlePurchase(purchase: Purchase) {
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged) {
+            if (!PurchaseValidator.verifyPurchase(purchase)) {
+                Log.e("BillingWrapper", "Purchase signature verification failed")
+                return
+            }
             try {
                 val acknowledgeParams = AcknowledgePurchaseParams.newBuilder()
                     .setPurchaseToken(purchase.purchaseToken)
@@ -154,7 +159,9 @@ class BillingClientWrapper(
             )
 
             val valid = result.purchasesList.any {
-                it.products.contains("plus_package") && it.purchaseState == Purchase.PurchaseState.PURCHASED
+                it.products.contains("plus_package") &&
+                        it.purchaseState == Purchase.PurchaseState.PURCHASED &&
+                        PurchaseValidator.verifyPurchase(it)
             }
 
             _isPlusUser.value = valid

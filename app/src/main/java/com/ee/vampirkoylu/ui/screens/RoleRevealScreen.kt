@@ -165,7 +165,7 @@ private fun getRoleInfo(role: PlayerRole): String {
 @Preview(showSystemUi = true, showBackground = true, device = PIXEL_4)
 @Composable
 fun previewScreen() {
-    RoleRevealScreen("Emir", PlayerRole.DOCTOR) {
+    RoleRevealScreen("Emir", PlayerRole.MADMAN) {
 
     }
 }

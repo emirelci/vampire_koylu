@@ -81,20 +81,22 @@ fun DayVoteResultScreen(
                         fontSize = 20.sp,
                         fontFamily = PixelFont,
                         color = shine_gold,
-                        modifier = Modifier.padding(bottom = 24.dp)
+                        modifier = Modifier.padding(bottom = 24.dp),
+                        textAlign = TextAlign.Center
                     )
                     Text(
                         text = formatTime(timeLeft),
                         fontSize = 36.sp,
                         fontFamily = PixelFont,
                         color = shine_gold,
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        textAlign = TextAlign.Center
                     )
                     PixelArtButton(
                         text = stringResource(id = R.string.start_judgement),
                         onClick = { onFinish() },
                         imageId = R.drawable.button_brown,
-                        fontSize = 16.sp,
+                        fontSize = 12.sp,
                         modifier = Modifier.padding(top = 264.dp)
                     )
                 } else {
@@ -111,7 +113,7 @@ fun DayVoteResultScreen(
                         text = stringResource(id = R.string.proceed_to_night),
                         onClick = { onFinish() },
                         imageId = R.drawable.button_brown,
-                        fontSize = 16.sp,
+                        fontSize = 12.sp,
                         modifier = Modifier.padding(top = 24.dp)
                     )
                 }
