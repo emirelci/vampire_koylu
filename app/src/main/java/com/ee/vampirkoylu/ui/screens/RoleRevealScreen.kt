@@ -57,7 +57,7 @@ fun RoleRevealScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (revealed) {
+            if (!revealed) {
 
                 PassDeviceScreen(
                     playerName = playerName,

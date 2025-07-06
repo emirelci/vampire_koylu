@@ -16,12 +16,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.ee.vampirkoylu.ui.navigation.NavGraph
 import com.ee.vampirkoylu.ui.theme.VampirKoyluTheme
-import kotlinx.coroutines.launch
+import com.google.android.gms.ads.MobileAds
 
 class MainActivity : ComponentActivity() {
 
@@ -32,6 +31,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         actionBar?.hide()
+
+        MobileAds.initialize(this)
 
         // StoreManager'ı önce oluştur
         storeManager = StoreManager(this)

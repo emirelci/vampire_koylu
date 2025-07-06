@@ -334,9 +334,12 @@ object NavGraph {
 
             composable(Screen.GameOver.route) {
                 val gameState by gameViewModel.gameState.collectAsState()
+                val isPlusUser by storeManager.isPlusUser.collectAsState(initial = false)
+
                 gameState.gameResult?.let { result ->
                     GameOverScreen(
                         gameResult = result,
+                        isPlusUser = isPlusUser,
                         onBackToMenu = {
                             gameViewModel.resetGame()
                             navController.navigate(Screen.Home.route) {
