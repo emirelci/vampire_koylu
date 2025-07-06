@@ -1038,7 +1038,7 @@ fun PlayerNameInput(
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,showSystemUi = true)
 @Composable
 fun GameSetupScreenPreview() {
     val navController = rememberNavController()
