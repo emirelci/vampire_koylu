@@ -125,7 +125,7 @@ fun PlayerAvatar(
                         PlayerRole.AUTOPSIR -> {
                             Image(
                                 painter = painterResource(id = R.drawable.kahin),
-                                contentDescription = stringResource(id = R.string.doctor),
+                                contentDescription = stringResource(id = R.string.autopsir),
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
                         }
@@ -133,7 +133,7 @@ fun PlayerAvatar(
                         PlayerRole.VETERAN -> {
                             Image(
                                 painter = painterResource(id = R.drawable.nobetci),
-                                contentDescription = stringResource(id = R.string.doctor),
+                                contentDescription = stringResource(id = R.string.veteran),
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
                         }
@@ -141,7 +141,7 @@ fun PlayerAvatar(
                         PlayerRole.WIZARD -> {
                             Image(
                                 painter = painterResource(id = R.drawable.transporter),
-                                contentDescription = stringResource(id = R.string.doctor),
+                                contentDescription = stringResource(id = R.string.wizard),
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
                         }
@@ -149,7 +149,7 @@ fun PlayerAvatar(
                         PlayerRole.MADMAN -> {
                             Image(
                                 painter = painterResource(id = R.drawable.deli),
-                                contentDescription = stringResource(id = R.string.doctor),
+                                contentDescription = stringResource(id = R.string.madman),
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
                         }
@@ -157,7 +157,7 @@ fun PlayerAvatar(
                         PlayerRole.VOTE_SABOTEUR-> {
                             Image(
                                 painter = painterResource(id = R.drawable.sahtekar),
-                                contentDescription = stringResource(id = R.string.villager),
+                                contentDescription = stringResource(id = R.string.vote_saboteur),
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
                         }
