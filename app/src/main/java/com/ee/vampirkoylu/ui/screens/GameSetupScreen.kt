@@ -1133,7 +1133,7 @@ fun GameSetupScreenPreview() {
         settings = GameSettings(6, 1),
         navController = navController,
         isPlusUser = true,
-        onSettingsChange = { _, _, _, _, _, _, _, _, _, _, _ -> },
+        onSettingsChange = { _, _, _, _, _, _, _, _, _, _, _ , _-> },
         onStartGame = { _ -> }
     )
 }

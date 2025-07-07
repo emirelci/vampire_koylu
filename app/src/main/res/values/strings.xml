@@ -85,7 +85,7 @@
     <string name="night_results_watcher_novisit">Kimse ziyarete gelmedi</string>
     <string name="night_results_watcher_visit">%1$s ziyarete geldi</string>
     <string name="night_results_watcher_visits">%1$s kişi ziyarete geldi: %2$s</string>
-    <string name="night_results_seer">%1$s'ın rolü: %2$s</string>
+    <string name="night_results_seer">%1$s\'ın rolü: %2$s</string>
     <string name="night_results_header">GECE SONUCU</string>
     <string name="ready_for_new_day">YENİ GÜNE HAZIRLANIN</string>
     <string name="night_results_dead_player">%1$s, ÖLDÜRÜLDÜN!</string>
@@ -164,6 +164,7 @@
     <!-- Premium Package -->
     <string name="premium">DAHA FAZLA\nROL İÇİN</string>
     <string name="premium_title">PLUS PAKETİ</string>
+    <string name="premium_active">PREMIUM AKTİF</string>
     <string name="premium_description">Bu pakette ek olarak Sahtekar, Otopsir, Nöbetçi, Deli ve Büyücü rolleri mevcuttur.</string>
     <string name="upgrade">YÜKSELT</string>
     <string name="not_now">DAHA SONRA</string>

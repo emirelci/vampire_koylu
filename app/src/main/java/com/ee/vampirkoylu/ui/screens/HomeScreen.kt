@@ -147,10 +147,11 @@ private fun HomeScreenContent(
 
         // Logo ve Başlık
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            val isPlusUser by storeManager.isPlusUser.collectAsState(initial = false)
+            val isPlusUserState = storeManager.isPlusUser.collectAsState(initial = null)
+            val isPlusUser = isPlusUserState.value
             var showPremiumDialog by remember { mutableStateOf(false) }
 
-            if (!isPlusUser) {
+            if (isPlusUser == false) {
                 PixelArtButton(
                     text = stringResource(id = R.string.premium),
                     onClick = { showPremiumDialog = true },
@@ -158,6 +159,14 @@ private fun HomeScreenContent(
                     imageId = R.drawable.button_plus_bg,
                     width = 180.dp,
                     height = 80.dp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 24.dp)
+                )
+            }else if (isPlusUser == true) {
+                Text(
+                    text = stringResource(id = R.string.premium_active),
+                    fontFamily = PixelFont,
+                    color = Color(0xFFF0E68C),
+                    fontSize = 14.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 24.dp)
                 )
             }
