@@ -229,6 +229,7 @@ private fun getRoleName(role: PlayerRole): String {
         PlayerRole.WATCHER -> R.string.watcher
         PlayerRole.SERIAL_KILLER -> R.string.serial_killer
         PlayerRole.DOCTOR -> R.string.doctor
+        PlayerRole.SEER -> R.string.seer
         PlayerRole.VOTE_SABOTEUR -> R.string.vote_saboteur
         PlayerRole.AUTOPSIR -> R.string.autopsir
         PlayerRole.VETERAN -> R.string.veteran
@@ -250,6 +251,7 @@ private fun getRoleNightTip(role: PlayerRole): String {
         PlayerRole.WATCHER -> R.string.watcher_night_tip
         PlayerRole.SERIAL_KILLER -> R.string.serial_killer_night_tip
         PlayerRole.DOCTOR -> R.string.doctor_night_tip
+        PlayerRole.SEER -> R.string.seer_night_tip
         PlayerRole.VOTE_SABOTEUR -> R.string.vote_saboteur_night_tip
         PlayerRole.AUTOPSIR -> R.string.autopsir_night_tip
         PlayerRole.VETERAN -> R.string.veteran_night_tip

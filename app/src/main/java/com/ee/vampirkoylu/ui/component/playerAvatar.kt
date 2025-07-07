@@ -114,6 +114,14 @@ fun PlayerAvatar(
                             )
                         }
 
+                        PlayerRole.SEER -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.kahin),
+                                contentDescription = stringResource(id = R.string.seer),
+                                modifier = Modifier.fillMaxSize(0.8f)
+                            )
+                        }
+
                         PlayerRole.AUTOPSIR -> {
                             Image(
                                 painter = painterResource(id = R.drawable.kahin),
@@ -167,6 +175,7 @@ fun PlayerAvatar(
                         PlayerRole.WATCHER -> stringResource(id = R.string.watcher)
                         PlayerRole.SERIAL_KILLER -> stringResource(id = R.string.serial_killer)
                         PlayerRole.DOCTOR -> stringResource(id = R.string.doctor)
+                        PlayerRole.SEER -> stringResource(id = R.string.seer)
                         PlayerRole.VOTE_SABOTEUR -> stringResource(id = R.string.vote_saboteur)
                         PlayerRole.AUTOPSIR -> stringResource(id = R.string.autopsir)
                         PlayerRole.VETERAN -> stringResource(id = R.string.veteran)
