@@ -64,6 +64,8 @@ private fun getRandomAvatarResId(): Int {
  * @param selectionState Seçim durumu
  * @param onSelect Seçildiğinde çağrılacak fonksiyon
  * @param modifier Modifier
+ * @param allowDeadSelection Ölü oyuncuların seçilebilmesini sağlar
+ *
  */
 @Composable
 fun PlayerSelectionItem(
@@ -71,7 +73,8 @@ fun PlayerSelectionItem(
     selectionState: SelectionState = SelectionState.NONE,
     isAlive: Boolean = true,
     onSelect: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    allowDeadSelection: Boolean = false
 ) {
     val avatarResId = remember(name) { getRandomAvatarResId() }
     
@@ -90,7 +93,7 @@ fun PlayerSelectionItem(
                     color = Color(0xFF996515),
                     shape = RoundedCornerShape(8.dp)
                 )
-                .clickable(enabled = isAlive) { onSelect() }
+                .clickable(enabled = isAlive || allowDeadSelection) { onSelect() }
         ) {
             // Border (çerçeve)
             Image(
@@ -127,7 +130,7 @@ fun PlayerSelectionItem(
             modifier = Modifier
                 .size(40.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .clickable(enabled = isAlive) { onSelect() }
+                .clickable(enabled = isAlive || allowDeadSelection) { onSelect() }
                 .background(
                     if (selectionState != SelectionState.NONE) Color.Red else Color(0xFF1A1A2E)
                 )

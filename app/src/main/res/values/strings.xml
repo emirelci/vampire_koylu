@@ -124,14 +124,9 @@
 
     <!-- Kurallar -->
     <string name="rules_title">KURALLAR</string>
-    <string name="rules_text">Bu oyun, klasik Vampir-Köylü oyununun dijital ortamda geliştirilmiş halidir.\n\n
-        • Oyunculara Vampir, Köylü, Şerif, Doktor, Gözcü gibi roller rastgele atanır.\n
-        • Gece vakti Vampirler ve Seri Katil hedef seçer; diğer özel roller yeteneklerini kullanır.\n
-        • Gündüz vakti oyuncular suçluları belirlemek için tartışır ve oylama yapar.\n
-        • Tüm Vampirler ve Seri Katil elenirse Köylüler kazanır; Köylüler yok olursa Vampirler kazanır. Seri Katilin hedefi tek başına hayatta kalmaktır.\n
-        • Plus paketi ile Sahtekar, Otopsir, Nöbetçi, Deli ve Büyücü gibi ek roller oyuna dahil olur.\n\n
-        Not: Uygulama tüm süreci yönetir, moderatöre gerek yoktur.
-    </string>
+    <string name="rules_gameplay">OYNANIŞ</string>
+    <string name="rules_text">1- Oyunculara Vampir, Köylü, Şerif, Doktor, Gözcü gibi roller rastgele atanır.\n\n2- Gece vakti Vampirler ve Seri Katil hedef seçer; diğer özel roller yeteneklerini kullanır.\n\n3- Gündüz vakti oyuncular suçluları belirlemek için tartışır ve oylama yapar.\n\n4- Tüm Vampirler ve Seri Katil elenirse Köylüler kazanır; Köylüler yok olursa Vampirler kazanır. Seri Katilin hedefi tek başına hayatta kalmaktır.\n\nEkstra: Plus paketi ile Sahtekar, Otopsir, Nöbetçi, Deli ve Büyücü gibi ek roller oyuna dahil olur.\n\nNot: Uygulama tüm süreci yönetir, moderatöre gerek yoktur.</string>
+    <string name="rules_roles_info">Roller Hakkında</string>
 
     <!-- Meeting Day -->
     <string name="meeting_day_title">TOPLANTI BAŞLIYOR</string>

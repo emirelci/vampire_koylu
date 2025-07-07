@@ -186,8 +186,9 @@ fun NightActionScreen(
                                             name = player.name,
                                             selectionState = if (selected) SelectionState.VOTE else SelectionState.NONE,
                                             isAlive = player.isAlive,
+                                            allowDeadSelection = displayRole == PlayerRole.AUTOPSIR,
                                             onSelect = {
-                                            if (player.isAlive || displayRole == PlayerRole.AUTOPSIR) {
+                                                if (player.isAlive || displayRole == PlayerRole.AUTOPSIR) {
                                                     selectedPlayerIds =
                                                         if (selected) selectedPlayerIds - player.id else {
                                                             if (displayRole == PlayerRole.WIZARD) {

@@ -494,6 +494,9 @@ fun GameSetupScreen(
                                     },
                                     onDecrease = {
                                         watcherCount = (watcherCount - 1).coerceAtLeast(0)
+                                        if (watcherCount == 0 && seerCount == 0 && autopsirCount == 0) {
+                                            madmanCount = 0
+                                        }
                                         onSettingsChange(
                                             playerCount,
                                             vampireCount,
@@ -666,6 +669,9 @@ fun GameSetupScreen(
                                     },
                                     onDecrease = {
                                         seerCount = (seerCount - 1).coerceAtLeast(0)
+                                        if (watcherCount == 0 && seerCount == 0 && autopsirCount == 0) {
+                                            madmanCount = 0
+                                        }
                                         onSettingsChange(
                                             playerCount,
                                             vampireCount,
@@ -778,6 +784,9 @@ fun GameSetupScreen(
                                         },
                                         onDecrease = {
                                             autopsirCount = (autopsirCount - 1).coerceAtLeast(0)
+                                            if (watcherCount == 0 && seerCount == 0 && autopsirCount == 0) {
+                                                madmanCount = 0
+                                            }
                                             onSettingsChange(
                                                 playerCount,
                                                 vampireCount,
@@ -864,7 +873,11 @@ fun GameSetupScreen(
                                         count = madmanCount,
                                         maxCount = 1,
                                         onIncrease = {
-                                            if (specialRoleCount < maxRoleCount) {
+                                            if (watcherCount == 0 && seerCount == 0 && autopsirCount == 0) {
+                                                warningMessage =
+                                                    "Deli eklemek için en az 1 Gözcü, Kahin veya Otopsir olmalı!"
+                                                showWarning = true
+                                            } else if (specialRoleCount < maxRoleCount) {
                                                 madmanCount = 1
                                                 onSettingsChange(
                                                     playerCount,
@@ -1044,10 +1057,14 @@ fun GameSetupScreen(
                             if (!allNamesEntered) {
                                 warningMessage = "Tüm oyuncuların isimlerini girmelisiniz!"
                                 showWarning = true
-                            } else if (selectedMode == GameMode.CUSTOM && vampireCount == 0 && serialKillerCount == 0) {
+                            }else if (selectedMode == GameMode.CUSTOM && vampireCount == 0 && serialKillerCount == 0) {
                                 warningMessage = "En az 1 tane vampir veya seri katil rolü bulunmalı!"
                                 showWarning = true
-                            } else {
+                            }else if (madmanCount > 0 && watcherCount == 0 && seerCount == 0 && autopsirCount == 0) {
+                                warningMessage =
+                                    "Deli eklemek için en az 1 Gözcü, Kahin veya Otopsir olmalı!"
+                                showWarning = true
+                            }else {
                                 onStartGame(playerNames.toList())
                             }
                         },

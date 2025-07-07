@@ -672,7 +672,7 @@ class GameViewModel : ViewModel() {
     /**
      * Oyuncu durumunu güncelle
      */
-    private fun updatePlayerStatus(playerId: Int, isAlive: Boolean, isDying: Boolean = false) {
+    private fun updatePlayerStatus(playerId: Int?, isAlive: Boolean, isDying: Boolean = false) {
         val updatedPlayers = _gameState.value.players.map { player ->
             if (player.id == playerId) {
                 player.copy(isAlive = isAlive, isDying = isDying)
@@ -829,7 +829,8 @@ class GameViewModel : ViewModel() {
             watcherTargets.forEach { (watcherId, targetId) ->
                 val isFake = _gameState.value.madmanDisguises[watcherId] == PlayerRole.WATCHER
                 val visitors = if (isFake) {
-                    _gameState.value.players.filter { it.id != targetId && it.id != watcherId }
+                    _gameState.value.players
+                        .filter { it.id != targetId && it.id != watcherId && it.isAlive }
                         .map { it.id }
                         .shuffled()
                         .take((0..2).random())

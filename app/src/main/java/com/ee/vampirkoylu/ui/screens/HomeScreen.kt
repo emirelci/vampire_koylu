@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.*
 import android.app.Activity
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,7 +18,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.compose.runtime.collectAsState
 import com.ee.vampirkoylu.StoreManager
@@ -28,9 +25,9 @@ import com.ee.vampirkoylu.ui.theme.LocalWindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.compose.rememberNavController
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.component.PixelArtButton
+import com.ee.vampirkoylu.ui.component.RoleInfoItem
 import com.ee.vampirkoylu.ui.navigation.Screen
 import com.ee.vampirkoylu.ui.theme.PixelFont
 
@@ -95,40 +92,6 @@ fun HomeScreen(
         }
     }
 }
-
-@Composable
-private fun RoleInfoItem(imageRes: Int, nameRes: Int, descRes: Int) {
-    Row(
-        modifier = Modifier
-            .padding(8.dp)
-            .width(250.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = imageRes),
-            contentDescription = null,
-            modifier = Modifier.size(120.dp),
-            contentScale = ContentScale.Fit,
-            alignment = Alignment.Center
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column(modifier = Modifier.widthIn(max = 150.dp)) {
-            Text(
-                text = stringResource(id = nameRes),
-                fontFamily = PixelFont,
-                color = Color(0xFFF0E68C),
-                fontSize = 14.sp
-            )
-            Text(
-                text = stringResource(id = descRes),
-                color = Color.White,
-                fontSize = 12.sp,
-                lineHeight = 14.sp
-            )
-        }
-    }
-}
-
 
 @Composable
 private fun HomeScreenContent(
