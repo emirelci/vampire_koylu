@@ -256,25 +256,31 @@ fun GameSetupScreen(
                                     val newPlayerCount = playerCount - 1
                                     val newMaxVampires = calculateMaxVampires(newPlayerCount)
                                     val newVampireCount = minOf(vampireCount, newMaxVampires)
+                                    val newMaxRoleCount = newPlayerCount - 1
 
-                                    playerCount = newPlayerCount
-                                    vampireCount = newVampireCount
-                                    onSettingsChange(
-                                        newPlayerCount,
-                                        vampireCount,
-                                        sheriffCount,
-                                        watcherCount,
-                                        serialKillerCount,
-                                        doctorCount,
-                                        saboteurCount,
-                                        autopsirCount,
-                                        veteranCount,
-                                        madmanCount,
-                                        wizardCount
-                                    )
+                                    if (specialRoleCount > newMaxRoleCount) {
+                                        warningMessage = "Önce özel rollerin sayısını azaltmalısınız!"
+                                        showWarning = true
+                                    } else {
+                                        playerCount = newPlayerCount
+                                        vampireCount = newVampireCount
+                                        onSettingsChange(
+                                            newPlayerCount,
+                                            vampireCount,
+                                            sheriffCount,
+                                            watcherCount,
+                                            serialKillerCount,
+                                            doctorCount,
+                                            saboteurCount,
+                                            autopsirCount,
+                                            veteranCount,
+                                            madmanCount,
+                                            wizardCount
+                                        )
 
-                                    while (playerNames.size > newPlayerCount) {
-                                        playerNames.removeAt(playerNames.lastIndex)
+                                        while (playerNames.size > newPlayerCount) {
+                                            playerNames.removeAt(playerNames.lastIndex)
+                                        }
                                     }
                                 },
                                 canIncrease = selectedMode == GameMode.CUSTOM && playerCount < 15,
