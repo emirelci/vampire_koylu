@@ -90,12 +90,18 @@ fun NightResultsScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // Oyuncu ölü veya ölmekte mi kontrolü
+                val displayRole = if (player.role == PlayerRole.MADMAN) {
+                    gameState.madmanDisguises[player.id] ?: player.role
+                } else {
+                    player.role
+                }
+
                 if (!player.isAlive || player.isDying) {
                     // Ölü veya ölmekte olan oyuncular için özel mesaj
                     DisplayDeadPlayerMessage(player.name)
                 } else {
                     // Canlı oyuncular için rol bazlı mesajlar
-                    when (player.role) {
+                    when (displayRole) {
                         PlayerRole.SHERIFF -> {
                             DisplaySheriffResults(player.id, gameState.sheriffResults, allPlayers)
                         }

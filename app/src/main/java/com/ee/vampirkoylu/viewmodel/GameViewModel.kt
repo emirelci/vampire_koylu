@@ -37,6 +37,15 @@ class GameViewModel : ViewModel() {
 
     private val votedPlayers = mutableSetOf<Int>()
     private var skipVoteCount = 0
+
+    fun getDisplayRole(playerId: Int): PlayerRole {
+        val player = _gameState.value.players.find { it.id == playerId } ?: return PlayerRole.VILLAGER
+        return if (player.role == PlayerRole.MADMAN) {
+            _gameState.value.madmanDisguises[playerId] ?: PlayerRole.MADMAN
+        } else {
+            player.role
+        }
+    }
     /**
      * Oyun ayarlarını günceller
      */
@@ -111,12 +120,16 @@ class GameViewModel : ViewModel() {
                     )
                 }
 
+            val madmanRoles = newPlayers.filter { it.role == PlayerRole.MADMAN }
+                .associate { it.id to listOf(PlayerRole.SEER, PlayerRole.WATCHER, PlayerRole.AUTOPSIR).random() }
+
             // Oyun durumunu başlangıç fazına ayarla
             _gameState.update {
                 it.copy(
                     players = newPlayers,
                     currentPhase = GamePhase.NIGHT,
-                    currentDay = 1
+                    currentDay = 1,
+                    madmanDisguises = madmanRoles
                 )
             }
 
@@ -249,8 +262,50 @@ class GameViewModel : ViewModel() {
             }
 
             PlayerRole.MADMAN -> {
-                // Deli için özel bir eylem yok
-                checkNextSpecialRole()
+                val fakeRole = _gameState.value.madmanDisguises[activePlayer.id]
+                when (fakeRole) {
+                    PlayerRole.SEER -> {
+                        val targetId = targetIds.firstOrNull()
+                        if (targetId == null || targetId == activePlayer.id) {
+                            checkNextSpecialRole()
+                        } else {
+                            val targetPlayer = _gameState.value.players.find { it.id == targetId }
+                            if (targetPlayer != null) {
+                                val wrongRole = PlayerRole.values().filter { it != targetPlayer.role }.random()
+                                val vision = SeerVision(targetId, wrongRole)
+                                val current = _gameState.value.seerResults.toMutableMap()
+                                val list = current[activePlayer.id].orEmpty() + vision
+                                current[activePlayer.id] = list
+                                _gameState.update { it.copy(seerResults = current) }
+                            }
+                            setTargetWithVisit(targetId, activePlayer) { it }
+                        }
+                    }
+
+                    PlayerRole.WATCHER -> {
+                        val targetId = targetIds.firstOrNull()
+                        if (targetId == null || targetId == activePlayer.id) {
+                            checkNextSpecialRole()
+                        } else {
+                            setWatcherTarget(activePlayer.id, targetId)
+                        }
+                    }
+
+                    PlayerRole.AUTOPSIR -> {
+                        val targetId = targetIds.firstOrNull()
+                        if (targetId != null) {
+                            val targetPlayer = _gameState.value.players.find { it.id == targetId && !it.isAlive }
+                            if (targetPlayer != null) {
+                                val wrongRole = PlayerRole.values().filter { it != targetPlayer.role }.random()
+                                val report = AutopsirReport(targetId, wrongRole)
+                                _gameState.update { it.copy(autopsirResults = it.autopsirResults + report) }
+                            }
+                        }
+                        checkNextSpecialRole()
+                    }
+
+                    else -> checkNextSpecialRole()
+                }
             }
 
             PlayerRole.WIZARD -> {
@@ -772,8 +827,16 @@ class GameViewModel : ViewModel() {
         if (watcherTargets.isNotEmpty()) {
             val currentResults = _gameState.value.watcherResults.toMutableMap()
             watcherTargets.forEach { (watcherId, targetId) ->
-                val visitors = visits.filter { it.targetId == targetId }
-                    .map { it.visitorId }
+                val isFake = _gameState.value.madmanDisguises[watcherId] == PlayerRole.WATCHER
+                val visitors = if (isFake) {
+                    _gameState.value.players.filter { it.id != targetId && it.id != watcherId }
+                        .map { it.id }
+                        .shuffled()
+                        .take((0..2).random())
+                } else {
+                    visits.filter { it.targetId == targetId }
+                        .map { it.visitorId }
+                }
 
                 val observation = WatcherObservation(
                     targetId = targetId,

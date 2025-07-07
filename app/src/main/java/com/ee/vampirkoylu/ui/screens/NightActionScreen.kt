@@ -43,6 +43,7 @@ import com.ee.vampirkoylu.ui.theme.shine_gold
 fun NightActionScreen(
     activePlayer: Player,
     players: List<Player>,
+    displayRole: PlayerRole = activePlayer.role,
     onTargetSelected: (List<Int>) -> Unit
 ) {
     var revealed by remember { mutableStateOf(false) }
@@ -94,7 +95,7 @@ fun NightActionScreen(
                 )
 
                 Text(
-                    text = getRoleName(activePlayer.role),
+                    text = getRoleName(displayRole),
                     fontSize = 20.sp,
                     fontFamily = PixelFont,
                     color = shine_gold,
@@ -104,7 +105,7 @@ fun NightActionScreen(
                 
                 // Rol bazlı bilgi metni
                 Text(
-                    text = getRoleNightTip(activePlayer.role),
+                    text = getRoleNightTip(displayRole),
                     fontSize = 16.sp,
                     fontFamily = PixelFont,
                     color = shine_gold,
@@ -113,7 +114,7 @@ fun NightActionScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 
-                if (activePlayer.role == PlayerRole.VILLAGER) {
+                if (displayRole == PlayerRole.VILLAGER) {
                     // Köylü için görünüm - Grid gösterme, sadece devam et butonu göster
                     Spacer(modifier = Modifier.weight(1f))
                     // Devam et butonu
@@ -124,7 +125,7 @@ fun NightActionScreen(
                         fontSize = 20.sp
                     )
                 } else {
-                    when (activePlayer.role) {
+                    when (displayRole) {
                         PlayerRole.VETERAN -> {
                             Spacer(modifier = Modifier.weight(1f))
                             Row(
@@ -150,12 +151,12 @@ fun NightActionScreen(
                         }
 
                         else -> {
-                            val showPlayers = when (activePlayer.role) {
+                            val showPlayers = when (displayRole) {
                                 PlayerRole.AUTOPSIR -> players.filter { !it.isAlive }
                                 else -> players.filter { it.id != activePlayer.id }
                             }
 
-                            if (activePlayer.role == PlayerRole.AUTOPSIR && showPlayers.isEmpty()) {
+                            if (displayRole == PlayerRole.AUTOPSIR && showPlayers.isEmpty()) {
                                 Spacer(modifier = Modifier.weight(1f))
 
                                 Text(
@@ -186,10 +187,10 @@ fun NightActionScreen(
                                             selectionState = if (selected) SelectionState.VOTE else SelectionState.NONE,
                                             isAlive = player.isAlive,
                                             onSelect = {
-                                                if (player.isAlive || activePlayer.role == PlayerRole.AUTOPSIR) {
+                                            if (player.isAlive || displayRole == PlayerRole.AUTOPSIR) {
                                                     selectedPlayerIds =
                                                         if (selected) selectedPlayerIds - player.id else {
-                                                            if (activePlayer.role == PlayerRole.WIZARD) {
+                                                            if (displayRole == PlayerRole.WIZARD) {
                                                                 if (selectedPlayerIds.size < 2) selectedPlayerIds + player.id else selectedPlayerIds
                                                             } else {
                                                                 listOf(player.id)
@@ -276,6 +277,7 @@ fun NightActionScreenPreview() {
     NightActionScreen(
         activePlayer = previewPlayers[1],
         players = previewPlayers,
+        displayRole = previewPlayers[1].role,
         onTargetSelected = { _ -> }
     )
 }
