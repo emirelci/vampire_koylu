@@ -131,9 +131,10 @@ object NavGraph {
                 val players by gameViewModel.players.collectAsState()
                 val player = players.getOrNull(index)
                 if (player != null) {
+                    val displayRole = gameViewModel.getDisplayRole(player.id)
                     RoleRevealScreen(
                         playerName = player.name,
-                        role = player.role,
+                        role = displayRole,
                         onNext = {
                             if (index + 1 < players.size) {
                                 navController.navigate(Screen.RoleReveal.createRoute(index + 1)) {
@@ -195,6 +196,7 @@ object NavGraph {
                             NightActionScreen(
                                 activePlayer = currentPlayer,
                                 players = players,
+                                displayRole = gameViewModel.getDisplayRole(currentPlayer.id),
                                 onTargetSelected = { ids ->
                                     gameViewModel.selectNightTarget(ids)
                                 }

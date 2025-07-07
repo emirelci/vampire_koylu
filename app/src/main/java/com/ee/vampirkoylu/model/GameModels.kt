@@ -120,6 +120,7 @@ data class GameState(
     val watcherResults: Map<Int, List<WatcherObservation>> = emptyMap(), // Gözcü sonuçları
     val seerResults: Map<Int, List<SeerVision>> = emptyMap(), // Kahin sonuçları
     val autopsirResults: List<AutopsirReport> = emptyList(), // Otopsir sonuçları
+    val madmanDisguises: Map<Int, PlayerRole> = emptyMap(), // Deli oyuncuların sandığı roller
     val veteranAlertIds: Set<Int> = emptySet(), // Bu gece uyanık kalan nöbetçiler
     val wizardSwaps: Map<Int, Pair<Int, Int>> = emptyMap(), // Büyücülerin değiştirdiği oyuncular
     val voteSabotageTarget: Int? = null, // Sahtekarın oyunu iptal edeceği oyuncu
