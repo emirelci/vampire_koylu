@@ -207,11 +207,11 @@ fun DisplaySheriffResults(
 @Composable
 fun DisplayWatcherResults(
     watcherId: Int,
-    watcherResults: List<WatcherObservation>,
+    watcherResults: Map<Int, List<WatcherObservation>>,
     allPlayers: List<Player>
 ) {
     // Son güne ait gözcü gözlemini bul
-    val latestObservation = watcherResults.lastOrNull()
+    val latestObservation = watcherResults[watcherId]?.lastOrNull()
     
     if (latestObservation != null) {
         val targetPlayer = allPlayers.find { it.id == latestObservation.targetId }

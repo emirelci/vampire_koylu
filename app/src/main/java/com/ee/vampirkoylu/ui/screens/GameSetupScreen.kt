@@ -452,10 +452,10 @@ fun GameSetupScreen(
                                 RoleCountSelector(
                                     title = stringResource(id = R.string.watcher_count),
                                     count = watcherCount,
-                                    maxCount = 1,
+                                    maxCount = playerCount,
                                     onIncrease = {
                                         if (specialRoleCount < maxRoleCount) {
-                                            watcherCount = 1
+                                            watcherCount += 1
                                             onSettingsChange(
                                                 playerCount,
                                                 vampireCount,
@@ -477,7 +477,7 @@ fun GameSetupScreen(
                                         }
                                     },
                                     onDecrease = {
-                                        watcherCount = 0
+                                        watcherCount = (watcherCount - 1).coerceAtLeast(0)
                                         onSettingsChange(
                                             playerCount,
                                             vampireCount,
@@ -496,7 +496,7 @@ fun GameSetupScreen(
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
                                         warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                            "Bu rolden en fazla 1 tane olabilir!"
+                                            "Bu rolden en fazla $playerCount tane olabilir!"
                                         } else {
                                             editNotAllowedMessage
                                         }
@@ -564,10 +564,10 @@ fun GameSetupScreen(
                                 RoleCountSelector(
                                     title = stringResource(id = R.string.doctor_count),
                                     count = doctorCount,
-                                    maxCount = 1,
+                                    maxCount = playerCount,
                                     onIncrease = {
                                         if (specialRoleCount < maxRoleCount) {
-                                            doctorCount = 1
+                                            doctorCount += 1
                                             onSettingsChange(
                                                 playerCount,
                                                 vampireCount,
@@ -589,7 +589,7 @@ fun GameSetupScreen(
                                         }
                                     },
                                     onDecrease = {
-                                        doctorCount = 0
+                                        doctorCount = (doctorCount - 1).coerceAtLeast(0)
                                         onSettingsChange(
                                             playerCount,
                                             vampireCount,
@@ -608,7 +608,7 @@ fun GameSetupScreen(
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
                                         warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                            "Bu rolden en fazla 1 tane olabilir!"
+                                            "Bu rolden en fazla $playerCount tane olabilir!"
                                         } else {
                                             editNotAllowedMessage
                                         }
@@ -673,10 +673,10 @@ fun GameSetupScreen(
                                     RoleCountSelector(
                                         title = stringResource(id = R.string.autopsir_count),
                                         count = autopsirCount,
-                                        maxCount = 1,
+                                        maxCount = playerCount,
                                         onIncrease = {
                                             if (specialRoleCount < maxRoleCount) {
-                                                autopsirCount = 1
+                                                autopsirCount += 1
                                                 onSettingsChange(
                                                     playerCount,
                                                     vampireCount,
@@ -697,7 +697,7 @@ fun GameSetupScreen(
                                             }
                                         },
                                         onDecrease = {
-                                            autopsirCount = 0
+                                            autopsirCount = (autopsirCount - 1).coerceAtLeast(0)
                                             onSettingsChange(
                                                 playerCount,
                                                 vampireCount,
@@ -715,7 +715,7 @@ fun GameSetupScreen(
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
                                             warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                                "Bu rolden en fazla 1 tane olabilir!"
+                                                "Bu rolden en fazla $playerCount tane olabilir!"
                                             } else {
                                                 editNotAllowedMessage
                                             }
@@ -832,10 +832,10 @@ fun GameSetupScreen(
                                     RoleCountSelector(
                                         title = stringResource(id = R.string.wizard_count),
                                         count = wizardCount,
-                                        maxCount = 1,
+                                        maxCount = playerCount,
                                         onIncrease = {
                                             if (specialRoleCount < maxRoleCount) {
-                                                wizardCount = 1
+                                                wizardCount += 1
                                                 onSettingsChange(
                                                     playerCount,
                                                     vampireCount,
@@ -856,7 +856,7 @@ fun GameSetupScreen(
                                             }
                                         },
                                         onDecrease = {
-                                            wizardCount = 0
+                                            wizardCount = (wizardCount - 1).coerceAtLeast(0)
                                             onSettingsChange(
                                                 playerCount,
                                                 vampireCount,
@@ -874,7 +874,7 @@ fun GameSetupScreen(
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
                                             warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                                "Bu rolden en fazla 1 tane olabilir!"
+                                                "Bu rolden en fazla $playerCount tane olabilir!"
                                             } else {
                                                 editNotAllowedMessage
                                             }

@@ -61,14 +61,14 @@ class GameViewModel : ViewModel() {
                     playerCount / 3
                 ), // En fazla oyuncu sayısının 1/3'ü kadar vampir
                 sheriffCount = sheriffCount.coerceIn(0, 1), // En fazla 1 şerif
-                watcherCount = watcherCount.coerceIn(0, 1), // En fazla 1 gözcü
+                watcherCount = watcherCount.coerceIn(0, playerCount), // Gözcü sayısı sınırı
                 serialKillerCount = serialKillerCount.coerceIn(0, 1), // En fazla 1 seri katil
-                doctorCount = doctorCount.coerceIn(0, 1), // En fazla 1 doktor
+                doctorCount = doctorCount.coerceIn(0, playerCount), // Doktor sayısı sınırı
                 voteSaboteurCount = voteSaboteurCount.coerceIn(0, 1),
-                autopsirCount = autopsirCount.coerceIn(0, 1),
+                autopsirCount = autopsirCount.coerceIn(0, playerCount),
                 veteranCount = veteranCount.coerceIn(0, 1),
                 madmanCount = madmanCount.coerceIn(0, 1),
-                wizardCount = wizardCount.coerceIn(0, 1)
+                wizardCount = wizardCount.coerceIn(0, playerCount) // Büyücü sayısı sınırı
             )
         }
     }
@@ -186,7 +186,7 @@ class GameViewModel : ViewModel() {
                 if (targetId == null || targetId == activePlayer.id) {
                     checkNextSpecialRole()
                 } else {
-                    setTarget(targetId) { it.copy(watcherTarget = targetId) }
+                    setWatcherTarget(activePlayer.id, targetId)
                 }
             }
 
@@ -195,7 +195,7 @@ class GameViewModel : ViewModel() {
                 if (targetId == null || targetId == activePlayer.id) {
                     checkNextSpecialRole()
                 } else {
-                    setTargetWithVisit(targetId, activePlayer) { it.copy(doctorTarget = targetId) }
+                    setDoctorTarget(activePlayer.id, targetId)
                 }
             }
 
@@ -235,7 +235,11 @@ class GameViewModel : ViewModel() {
 
             PlayerRole.WIZARD -> {
                 if (targetIds.size == 2) {
-                    _gameState.update { it.copy(wizardSwap = Pair(targetIds[0], targetIds[1])) }
+                    _gameState.update {
+                        it.copy(
+                            wizardSwaps = it.wizardSwaps + (activePlayer.id to Pair(targetIds[0], targetIds[1]))
+                        )
+                    }
                 }
                 checkNextSpecialRole()
             }
@@ -427,13 +431,13 @@ class GameViewModel : ViewModel() {
                 lastEliminated = null,  // Artık birden fazla ölüm olabileceği için
                 // Gece hedeflerini temizle
                 nightTarget = null,
-                doctorTarget = null,
+                doctorTargets = emptyMap(),
                 serialKillerTarget = null,
                 sheriffTarget = null,
-                watcherTarget = null,
+                watcherTargets = emptyMap(),
                 nightVisits = emptyList(), // Ziyaretleri sıfırla
                 veteranAlertIds = emptySet(),
-                wizardSwap = null,
+                wizardSwaps = emptyMap(),
                 voteSabotageTarget = null
             )
         }
@@ -675,6 +679,23 @@ class GameViewModel : ViewModel() {
         checkNextSpecialRole()
     }
 
+    // Gözcü hedefini güncelleyen yardımcı fonksiyon
+    private fun setWatcherTarget(watcherId: Int, targetId: Int) {
+        _gameState.update {
+            it.copy(watcherTargets = it.watcherTargets + (watcherId to targetId))
+        }
+        checkNextSpecialRole()
+    }
+
+    // Doktor hedefini güncelleyen yardımcı fonksiyon
+    private fun setDoctorTarget(doctorId: Int, targetId: Int) {
+        _gameState.update {
+            it.copy(doctorTargets = it.doctorTargets + (doctorId to targetId))
+        }
+        addNightVisit(NightVisit(doctorId, targetId))
+        checkNextSpecialRole()
+    }
+
     // Ziyareti kaydeden yardımcı fonksiyon
     private fun addNightVisit(visit: NightVisit) {
         _gameState.update {
@@ -683,14 +704,18 @@ class GameViewModel : ViewModel() {
     }
 
     private fun applyWizardSwap(visits: List<NightVisit>): List<NightVisit> {
-        val swap = _gameState.value.wizardSwap ?: return visits
-        return visits.map { visit ->
-            val newTarget = when (visit.targetId) {
-                swap.first -> swap.second
-                swap.second -> swap.first
-                else -> visit.targetId
+        val swaps = _gameState.value.wizardSwaps.values
+        if (swaps.isEmpty()) return visits
+
+        return swaps.fold(visits) { acc, swap ->
+            acc.map { visit ->
+                val newTarget = when (visit.targetId) {
+                    swap.first -> swap.second
+                    swap.second -> swap.first
+                    else -> visit.targetId
+                }
+                visit.copy(targetId = newTarget)
             }
-            visit.copy(targetId = newTarget)
         }
     }
 
@@ -720,21 +745,23 @@ class GameViewModel : ViewModel() {
         val visits = applyWizardSwap(_gameState.value.nightVisits)
 
         // Gözcü sonuçlarını hesapla
-        val watcherTarget = _gameState.value.watcherTarget
-        if (watcherTarget != null) {
-            // Hedef eve gelen ziyaretçileri bul
-            val visitors = visits.filter { it.targetId == watcherTarget }
-                .map { it.visitorId }
+        val watcherTargets = _gameState.value.watcherTargets
+        if (watcherTargets.isNotEmpty()) {
+            val currentResults = _gameState.value.watcherResults.toMutableMap()
+            watcherTargets.forEach { (watcherId, targetId) ->
+                val visitors = visits.filter { it.targetId == targetId }
+                    .map { it.visitorId }
 
-            val observation = WatcherObservation(
-                targetId = watcherTarget,
-                visitorIds = visitors
-            )
+                val observation = WatcherObservation(
+                    targetId = targetId,
+                    visitorIds = visitors
+                )
 
-            _gameState.update {
-                it.copy(watcherResults = it.watcherResults + observation)
+                val list = currentResults[watcherId].orEmpty() + observation
+                currentResults[watcherId] = list
             }
 
+            _gameState.update { it.copy(watcherResults = currentResults) }
         }
 
         // Ölümleri hesapla
@@ -773,11 +800,11 @@ class GameViewModel : ViewModel() {
     // Gece ölümlerini hesapla
     private fun processNightKills(visits: List<NightVisit>) {
         var vampireTarget = _gameState.value.nightTarget
-        var doctorTarget = _gameState.value.doctorTarget
+        var doctorTargets = _gameState.value.doctorTargets.values.toMutableSet()
         var serialKillerTarget = _gameState.value.serialKillerTarget
 
         // Büyücünün yer değiştirme etkisi
-        _gameState.value.wizardSwap?.let { (first, second) ->
+        _gameState.value.wizardSwaps.values.forEach { (first, second) ->
             fun swap(id: Int?): Int? = when (id) {
                 first -> second
                 second -> first
@@ -785,16 +812,16 @@ class GameViewModel : ViewModel() {
             }
             vampireTarget = swap(vampireTarget)
             serialKillerTarget = swap(serialKillerTarget)
-            doctorTarget = swap(doctorTarget)
+            doctorTargets = doctorTargets.map { swap(it) ?: it }.toMutableSet()
         }
 
         // Vampir kurbanı
-        if (vampireTarget != null && vampireTarget != doctorTarget) {
+        if (vampireTarget != null && vampireTarget !in doctorTargets) {
             updatePlayerStatus(vampireTarget, isAlive = true, isDying = true)
         }
 
         // Seri katil kurbanı
-        if (serialKillerTarget != null && serialKillerTarget != doctorTarget) {
+        if (serialKillerTarget != null && serialKillerTarget !in doctorTargets) {
             updatePlayerStatus(serialKillerTarget, isAlive = true, isDying = true)
         }
 
