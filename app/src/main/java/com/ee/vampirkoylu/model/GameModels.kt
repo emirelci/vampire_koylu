@@ -12,6 +12,7 @@ enum class PlayerRole {
     WATCHER,     // Gözcü
     SERIAL_KILLER, // Seri Katil
     DOCTOR,       // Doktor
+    SEER,         // Kahin
     // Plus paketinde açılan roller
     VOTE_SABOTEUR, // Oylama Sabotajcısı (Sahtekar)
     AUTOPSIR,      // Ölü Gözlemcisi
@@ -93,6 +94,15 @@ data class AutopsirReport(
 )
 
 /**
+ * Kahin gözlemi
+ */
+@Immutable
+data class SeerVision(
+    val targetId: Int,          // İşaretlenen oyuncunun ID'si
+    val role: PlayerRole        // Oyuncunun gerçek rolü
+)
+
+/**
  * Oyun durumunu temsil eden data class
  */
 @Immutable
@@ -108,6 +118,7 @@ data class GameState(
     val nightVisits: List<NightVisit> = emptyList(), // Gece ziyaretleri
     val sheriffResults: List<SheriffInvestigation> = emptyList(), // Şerif sonuçları
     val watcherResults: Map<Int, List<WatcherObservation>> = emptyMap(), // Gözcü sonuçları
+    val seerResults: Map<Int, List<SeerVision>> = emptyMap(), // Kahin sonuçları
     val autopsirResults: List<AutopsirReport> = emptyList(), // Otopsir sonuçları
     val veteranAlertIds: Set<Int> = emptySet(), // Bu gece uyanık kalan nöbetçiler
     val wizardSwaps: Map<Int, Pair<Int, Int>> = emptyMap(), // Büyücülerin değiştirdiği oyuncular
@@ -139,6 +150,7 @@ data class GameSettings(
     val watcherCount: Int = 0,
     val serialKillerCount: Int = 0,
     val doctorCount: Int = 0,
+    val seerCount: Int = 0,
 
     // Plus paketindeki yeni rollerin sayıları
     val voteSaboteurCount: Int = 0,
@@ -146,4 +158,4 @@ data class GameSettings(
     val veteranCount: Int = 0,
     val madmanCount: Int = 0,
     val wizardCount: Int = 0
-) 
+)

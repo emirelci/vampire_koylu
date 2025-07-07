@@ -96,7 +96,7 @@ object NavGraph {
                     settings = settings,
                     navController = navController,
                     isPlusUser = isPlusUser,
-                    onSettingsChange = { playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount ->
+                    onSettingsChange = { playerCount, vampireCount, sheriffCount, watcherCount, serialKillerCount, doctorCount, seerCount, saboteurCount, autopsirCount, veteranCount, madmanCount, wizardCount ->
                         gameViewModel.updateSettings(
                             playerCount,
                             vampireCount,
@@ -104,6 +104,7 @@ object NavGraph {
                             watcherCount,
                             serialKillerCount,
                             doctorCount,
+                            seerCount,
                             saboteurCount,
                             autopsirCount,
                             veteranCount,

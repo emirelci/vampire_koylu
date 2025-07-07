@@ -47,6 +47,7 @@ class GameViewModel : ViewModel() {
         watcherCount: Int = 0,
         serialKillerCount: Int = 0,
         doctorCount: Int = 0,
+        seerCount: Int = 0,
         voteSaboteurCount: Int = 0,
         autopsirCount: Int = 0,
         veteranCount: Int = 0,
@@ -64,6 +65,7 @@ class GameViewModel : ViewModel() {
                 watcherCount = watcherCount.coerceIn(0, playerCount), // Gözcü sayısı sınırı
                 serialKillerCount = serialKillerCount.coerceIn(0, 1), // En fazla 1 seri katil
                 doctorCount = doctorCount.coerceIn(0, playerCount), // Doktor sayısı sınırı
+                seerCount = seerCount.coerceIn(0, playerCount),
                 voteSaboteurCount = voteSaboteurCount.coerceIn(0, 1),
                 autopsirCount = autopsirCount.coerceIn(0, playerCount),
                 veteranCount = veteranCount.coerceIn(0, 1),
@@ -91,6 +93,7 @@ class GameViewModel : ViewModel() {
                 _settings.value.watcherCount,
                 _settings.value.serialKillerCount,
                 _settings.value.doctorCount,
+                _settings.value.seerCount,
                 _settings.value.voteSaboteurCount,
                 _settings.value.autopsirCount,
                 _settings.value.veteranCount,
@@ -196,6 +199,23 @@ class GameViewModel : ViewModel() {
                     checkNextSpecialRole()
                 } else {
                     setDoctorTarget(activePlayer.id, targetId)
+                }
+            }
+
+            PlayerRole.SEER -> {
+                val targetId = targetIds.firstOrNull()
+                if (targetId == null || targetId == activePlayer.id) {
+                    checkNextSpecialRole()
+                } else {
+                    val targetPlayer = _gameState.value.players.find { it.id == targetId }
+                    if (targetPlayer != null) {
+                        val vision = SeerVision(targetId, targetPlayer.role)
+                        val current = _gameState.value.seerResults.toMutableMap()
+                        val list = current[activePlayer.id].orEmpty() + vision
+                        current[activePlayer.id] = list
+                        _gameState.update { it.copy(seerResults = current) }
+                    }
+                    setTargetWithVisit(targetId, activePlayer) { it }
                 }
             }
 
@@ -356,6 +376,7 @@ class GameViewModel : ViewModel() {
         watcherCount: Int = _settings.value.watcherCount,
         serialKillerCount: Int = _settings.value.serialKillerCount,
         doctorCount: Int = _settings.value.doctorCount,
+        seerCount: Int = _settings.value.seerCount,
         voteSaboteurCount: Int = _settings.value.voteSaboteurCount,
         autopsirCount: Int = _settings.value.autopsirCount,
         veteranCount: Int = _settings.value.veteranCount,
@@ -386,6 +407,8 @@ class GameViewModel : ViewModel() {
             roles.add(PlayerRole.DOCTOR)
         }
 
+        repeat(seerCount) { roles.add(PlayerRole.SEER) }
+
         repeat(voteSaboteurCount) { roles.add(PlayerRole.VOTE_SABOTEUR) }
         repeat(autopsirCount) { roles.add(PlayerRole.AUTOPSIR) }
         repeat(veteranCount) { roles.add(PlayerRole.VETERAN) }
@@ -394,7 +417,7 @@ class GameViewModel : ViewModel() {
 
         // Kalan oyuncular için köylü rollerini ekle
         val specialRoleCount =
-            vampireCount + sheriffCount + watcherCount + serialKillerCount + doctorCount +
+            vampireCount + sheriffCount + watcherCount + serialKillerCount + doctorCount + seerCount +
                     voteSaboteurCount + autopsirCount + veteranCount + madmanCount + wizardCount
 
         repeat(playerCount - specialRoleCount) {

@@ -58,7 +58,7 @@ fun GameSetupScreen(
     settings: GameSettings,
     navController: NavController,
     isPlusUser: Boolean,
-    onSettingsChange: (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> Unit,
+    onSettingsChange: (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> Unit,
     onStartGame: (List<String>) -> Unit,
     viewModel: GameViewModel = viewModel()
 ) {
@@ -77,6 +77,7 @@ fun GameSetupScreen(
     var watcherCount by remember { mutableStateOf(settings.watcherCount) }
     var serialKillerCount by remember { mutableStateOf(settings.serialKillerCount) }
     var doctorCount by remember { mutableStateOf(settings.doctorCount) }
+    var seerCount by remember { mutableStateOf(settings.seerCount) }
     var saboteurCount by remember { mutableStateOf(settings.voteSaboteurCount) }
     var autopsirCount by remember { mutableStateOf(settings.autopsirCount) }
     var veteranCount by remember { mutableStateOf(settings.veteranCount) }
@@ -98,6 +99,7 @@ fun GameSetupScreen(
         watcherCount = s.watcherCount
         serialKillerCount = s.serialKillerCount
         doctorCount = s.doctorCount
+        seerCount = s.seerCount
         saboteurCount = s.voteSaboteurCount
         autopsirCount = s.autopsirCount
         veteranCount = s.veteranCount
@@ -112,6 +114,7 @@ fun GameSetupScreen(
             watcherCount,
             serialKillerCount,
             doctorCount,
+            seerCount,
             saboteurCount,
             autopsirCount,
             veteranCount,
@@ -129,7 +132,7 @@ fun GameSetupScreen(
 
     // Özel rol sayısı hesapla
     val specialRoleCount =
-        vampireCount + sheriffCount + watcherCount + serialKillerCount + doctorCount +
+        vampireCount + sheriffCount + watcherCount + serialKillerCount + doctorCount + seerCount +
                 saboteurCount + autopsirCount + veteranCount + madmanCount + wizardCount
     val maxRoleCount = playerCount - 1 // En az 1 normal köylü olmalı
 
@@ -242,6 +245,7 @@ fun GameSetupScreen(
                                         watcherCount,
                                         serialKillerCount,
                                         doctorCount,
+                                        seerCount,
                                         saboteurCount,
                                         autopsirCount,
                                         veteranCount,
@@ -271,6 +275,7 @@ fun GameSetupScreen(
                                             watcherCount,
                                             serialKillerCount,
                                             doctorCount,
+                                            seerCount,
                                             saboteurCount,
                                             autopsirCount,
                                             veteranCount,
@@ -364,6 +369,7 @@ fun GameSetupScreen(
                                             watcherCount,
                                             serialKillerCount,
                                             doctorCount,
+                                            seerCount,
                                             saboteurCount,
                                             autopsirCount,
                                             veteranCount,
@@ -381,6 +387,7 @@ fun GameSetupScreen(
                                             watcherCount,
                                             serialKillerCount,
                                             doctorCount,
+                                            seerCount,
                                             saboteurCount,
                                             autopsirCount,
                                             veteranCount,
@@ -413,6 +420,7 @@ fun GameSetupScreen(
                                                 watcherCount,
                                                 serialKillerCount,
                                                 doctorCount,
+                                                seerCount,
                                                 saboteurCount,
                                                 autopsirCount,
                                                 veteranCount,
@@ -435,6 +443,7 @@ fun GameSetupScreen(
                                             watcherCount,
                                             serialKillerCount,
                                             doctorCount,
+                                            seerCount,
                                             saboteurCount,
                                             autopsirCount,
                                             veteranCount,
@@ -469,6 +478,7 @@ fun GameSetupScreen(
                                                 watcherCount,
                                                 serialKillerCount,
                                                 doctorCount,
+                                                seerCount,
                                                 saboteurCount,
                                                 autopsirCount,
                                                 veteranCount,
@@ -491,6 +501,7 @@ fun GameSetupScreen(
                                             watcherCount,
                                             serialKillerCount,
                                             doctorCount,
+                                            seerCount,
                                             saboteurCount,
                                             autopsirCount,
                                             veteranCount,
@@ -525,6 +536,7 @@ fun GameSetupScreen(
                                                 watcherCount,
                                                 serialKillerCount,
                                                 doctorCount,
+                                                seerCount,
                                                 saboteurCount,
                                                 autopsirCount,
                                                 veteranCount,
@@ -547,6 +559,7 @@ fun GameSetupScreen(
                                             watcherCount,
                                             serialKillerCount,
                                             doctorCount,
+                                            seerCount,
                                             saboteurCount,
                                             autopsirCount,
                                             veteranCount,
@@ -581,6 +594,7 @@ fun GameSetupScreen(
                                                 watcherCount,
                                                 serialKillerCount,
                                                 doctorCount,
+                                                seerCount,
                                                 saboteurCount,
                                                 autopsirCount,
                                                 veteranCount,
@@ -603,6 +617,63 @@ fun GameSetupScreen(
                                             watcherCount,
                                             serialKillerCount,
                                             doctorCount,
+                                            seerCount,
+                                            saboteurCount,
+                                            autopsirCount,
+                                            veteranCount,
+                                            madmanCount,
+                                            wizardCount
+                                        )
+
+                                    },
+                                    editable = selectedMode == GameMode.CUSTOM,
+                                    showWarningOnIncrease = {
+                                        warningMessage = if (selectedMode == GameMode.CUSTOM) {
+                                            "Bu rolden en fazla $playerCount tane olabilir!"
+                                        } else {
+                                            editNotAllowedMessage
+                                        }
+                                        showWarning = true
+                                    }
+                                )
+
+                                RoleCountSelector(
+                                    title = stringResource(id = R.string.seer_count),
+                                    count = seerCount,
+                                    maxCount = playerCount,
+                                    onIncrease = {
+                                        if (specialRoleCount < maxRoleCount) {
+                                            seerCount += 1
+                                            onSettingsChange(
+                                                playerCount,
+                                                vampireCount,
+                                                sheriffCount,
+                                                watcherCount,
+                                                serialKillerCount,
+                                                doctorCount,
+                                                seerCount,
+                                                saboteurCount,
+                                                autopsirCount,
+                                                veteranCount,
+                                                madmanCount,
+                                                wizardCount
+                                            )
+                                        } else {
+                                            warningMessage =
+                                                "En fazla ${maxRoleCount} özel rol olabilir!"
+                                            showWarning = true
+                                        }
+                                    },
+                                    onDecrease = {
+                                        seerCount = (seerCount - 1).coerceAtLeast(0)
+                                        onSettingsChange(
+                                            playerCount,
+                                            vampireCount,
+                                            sheriffCount,
+                                            watcherCount,
+                                            serialKillerCount,
+                                            doctorCount,
+                                            seerCount,
                                             saboteurCount,
                                             autopsirCount,
                                             veteranCount,
@@ -637,6 +708,7 @@ fun GameSetupScreen(
                                                     watcherCount,
                                                     serialKillerCount,
                                                     doctorCount,
+                                                    seerCount,
                                                     saboteurCount,
                                                     autopsirCount,
                                                     veteranCount,
@@ -658,6 +730,7 @@ fun GameSetupScreen(
                                                 watcherCount,
                                                 serialKillerCount,
                                                 doctorCount,
+                                                seerCount,
                                                 saboteurCount,
                                                 autopsirCount,
                                                 veteranCount,
@@ -690,6 +763,7 @@ fun GameSetupScreen(
                                                     watcherCount,
                                                     serialKillerCount,
                                                     doctorCount,
+                                                    seerCount,
                                                     saboteurCount,
                                                     autopsirCount,
                                                     veteranCount,
@@ -711,6 +785,7 @@ fun GameSetupScreen(
                                                 watcherCount,
                                                 serialKillerCount,
                                                 doctorCount,
+                                                seerCount,
                                                 saboteurCount,
                                                 autopsirCount,
                                                 veteranCount,
@@ -743,6 +818,7 @@ fun GameSetupScreen(
                                                     watcherCount,
                                                     serialKillerCount,
                                                     doctorCount,
+                                                    seerCount,
                                                     saboteurCount,
                                                     autopsirCount,
                                                     veteranCount,
@@ -764,6 +840,7 @@ fun GameSetupScreen(
                                                 watcherCount,
                                                 serialKillerCount,
                                                 doctorCount,
+                                                seerCount,
                                                 saboteurCount,
                                                 autopsirCount,
                                                 veteranCount,
@@ -796,6 +873,7 @@ fun GameSetupScreen(
                                                     watcherCount,
                                                     serialKillerCount,
                                                     doctorCount,
+                                                    seerCount,
                                                     saboteurCount,
                                                     autopsirCount,
                                                     veteranCount,
@@ -817,6 +895,7 @@ fun GameSetupScreen(
                                                 watcherCount,
                                                 serialKillerCount,
                                                 doctorCount,
+                                                seerCount,
                                                 saboteurCount,
                                                 autopsirCount,
                                                 veteranCount,
@@ -849,6 +928,7 @@ fun GameSetupScreen(
                                                     watcherCount,
                                                     serialKillerCount,
                                                     doctorCount,
+                                                    seerCount,
                                                     saboteurCount,
                                                     autopsirCount,
                                                     veteranCount,
@@ -870,6 +950,7 @@ fun GameSetupScreen(
                                                 watcherCount,
                                                 serialKillerCount,
                                                 doctorCount,
+                                                seerCount,
                                                 saboteurCount,
                                                 autopsirCount,
                                                 veteranCount,

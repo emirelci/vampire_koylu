@@ -102,6 +102,9 @@ fun NightResultsScreen(
                         PlayerRole.WATCHER -> {
                             DisplayWatcherResults(player.id, gameState.watcherResults, allPlayers)
                         }
+                        PlayerRole.SEER -> {
+                            DisplaySeerResults(player.id, gameState.seerResults, allPlayers)
+                        }
                         else -> {
                             // Köylü, Vampir, Seri Katil ve Doktor için sadece bilgi mesajı göster
                             Text(
@@ -268,6 +271,54 @@ fun DisplayWatcherResults(
             }
         }
     }
+}
+
+/**
+ * Kahin sonuçlarını gösterir
+ */
+@Composable
+fun DisplaySeerResults(
+    seerId: Int,
+    seerResults: Map<Int, List<SeerVision>>,
+    allPlayers: List<Player>
+) {
+    val latestVision = seerResults[seerId]?.lastOrNull()
+    if (latestVision != null) {
+        val targetPlayer = allPlayers.find { it.id == latestVision.targetId }
+        if (targetPlayer != null) {
+            Text(
+                text = stringResource(
+                    id = R.string.night_results_seer,
+                    targetPlayer.name,
+                    getRoleName(targetPlayer.role)
+                ),
+                fontSize = 16.sp,
+                fontFamily = PixelFont,
+                color = Beige,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 48.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun getRoleName(role: PlayerRole): String {
+    val stringResId = when (role) {
+        PlayerRole.VAMPIRE -> R.string.vampire
+        PlayerRole.VILLAGER -> R.string.villager
+        PlayerRole.SHERIFF -> R.string.sheriff
+        PlayerRole.WATCHER -> R.string.watcher
+        PlayerRole.SERIAL_KILLER -> R.string.serial_killer
+        PlayerRole.DOCTOR -> R.string.doctor
+        PlayerRole.SEER -> R.string.seer
+        PlayerRole.VOTE_SABOTEUR -> R.string.vote_saboteur
+        PlayerRole.AUTOPSIR -> R.string.autopsir
+        PlayerRole.VETERAN -> R.string.veteran
+        PlayerRole.MADMAN -> R.string.madman
+        PlayerRole.WIZARD -> R.string.wizard
+    }
+    return stringResource(id = stringResId)
 }
 
 @Preview(showBackground = true)
