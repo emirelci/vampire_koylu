@@ -20,7 +20,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.ee.vampirkoylu.ui.navigation.NavGraph
 import com.ee.vampirkoylu.ui.theme.VampirKoyluTheme
+import com.ee.vampirkoylu.util.AdvertisingIdUtils
 import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -40,6 +42,9 @@ class MainActivity : ComponentActivity() {
         // BillingClientWrapper'ı storeManager ile birlikte oluştur
         billingClientWrapper = BillingClientWrapper(this, lifecycleScope, storeManager)
 
+        lifecycleScope.launch {
+            AdvertisingIdUtils.getAdvertisingId(this@MainActivity)
+        }
 
         setContent {
             VampirKoyluTheme {

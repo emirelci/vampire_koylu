@@ -15,6 +15,7 @@ app/release/
 
 # Local configuration
 local.properties
+/local.properties
 
 # IntelliJ
 *.iws

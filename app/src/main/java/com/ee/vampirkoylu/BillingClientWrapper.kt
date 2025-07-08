@@ -62,13 +62,11 @@ class BillingClientWrapper(
                     }
                 } else {
                     _isConnected.value = false
-                    showToast("Billing setup failed")
                 }
             }
 
             override fun onBillingServiceDisconnected() {
                 _isConnected.value = false
-                showToast("Billing service disconnected")
             }
         })
     }
@@ -89,11 +87,8 @@ class BillingClientWrapper(
                 result.productDetailsList?.let {
                     _products.value = it
                 }
-            } else {
-                showToast("Product query failed")
             }
         } catch (e: Exception) {
-            showToast("Error querying products")
         }
     }
 

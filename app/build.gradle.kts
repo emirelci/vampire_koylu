@@ -14,8 +14,8 @@ android {
         applicationId = "com.ee.vampirkoylu"
         minSdk = 24
         targetSdk = 35
-        versionCode = 3
-        versionName = "0.6.0"
+        versionCode = 7
+        versionName = "0.8.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -23,11 +23,8 @@ android {
         }
     }
 
-    buildTypes {
 
-        debug {
-            buildConfigField("String", "BILLING_PUBLIC_KEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArKCHhuf3b3tqx8WZSwh7SvYap3yxyUbBYljSKjw97YfPaGbVzO58BerDZ1OmErc15wRGvKdvQwlEvE/EAjzJTaOndVkOZcAqoG2hNAhOQXrmJcaGgkY7H/j6sOeyNxXDhFh7sx5JswpDD3N3h3mYORjb7huE8q6oFq7shilAoZy3lZAAv0OKG7uQZp5EtYoT0GJ14x2QKO5FGb4n+o7Y953xLIAnOm5zx4Sm25PRvjBlzbBdXcyQsECSV02J47efJU3GA8ht/K3R3vxDXwxYr6W+Fq84CksHArqoYNqo+o5x69VpOwuowQOYA5tsv44zRa61/3pvpOrEh7Q5R9ZDhwIDAQAB\"")
-        }
+    buildTypes {
 
         release {
             isMinifyEnabled = false
@@ -35,7 +32,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "BILLING_PUBLIC_KEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArKCHhuf3b3tqx8WZSwh7SvYap3yxyUbBYljSKjw97YfPaGbVzO58BerDZ1OmErc15wRGvKdvQwlEvE/EAjzJTaOndVkOZcAqoG2hNAhOQXrmJcaGgkY7H/j6sOeyNxXDhFh7sx5JswpDD3N3h3mYORjb7huE8q6oFq7shilAoZy3lZAAv0OKG7uQZp5EtYoT0GJ14x2QKO5FGb4n+o7Y953xLIAnOm5zx4Sm25PRvjBlzbBdXcyQsECSV02J47efJU3GA8ht/K3R3vxDXwxYr6W+Fq84CksHArqoYNqo+o5x69VpOwuowQOYA5tsv44zRa61/3pvpOrEh7Q5R9ZDhwIDAQAB\"")
         }
 
     }
@@ -94,7 +90,8 @@ dependencies {
     implementation(libs.billing)
 
     //Google Ads
-    implementation("com.google.android.gms:play-services-ads:24.4.0")
+    implementation(libs.play.services.ads)
+    implementation("com.google.android.gms:play-services-ads-identifier:18.2.0")
 
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.lifecycle.runtime.compose)

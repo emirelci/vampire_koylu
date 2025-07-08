@@ -44,12 +44,13 @@ fun GameOverScreen(
     var interstitialAd by remember { mutableStateOf<InterstitialAd?>(null) }
     var adShown by remember { mutableStateOf(false) }
 
+
     LaunchedEffect(isPlusUser) {
         if (!isPlusUser) {
             val adRequest = AdRequest.Builder().build()
             InterstitialAd.load(
                 context,
-                "ca-app-pub-3940256099942544/1033173712",
+                "ca-app-pub-3681703552429739/9932303057",
                 adRequest,
                 object : InterstitialAdLoadCallback() {
                     override fun onAdLoaded(ad: InterstitialAd) {
