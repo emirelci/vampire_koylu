@@ -1,7 +1,6 @@
 package com.ee.vampirkoylu.ui.screens
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Surface
@@ -68,7 +67,6 @@ fun GameOverScreen(
                     }
 
                     override fun onAdFailedToLoad(adError: LoadAdError) {
-                        Log.d("Ads", "Interstitial load failed: ${adError.message}")
                         interstitialAd = null
                     }
                 }
