@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.ee.vampirkoylu"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 3
         versionName = "0.6.0"
 

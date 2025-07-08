@@ -48,7 +48,8 @@ private val allAvatarResources = listOf(
     R.drawable.transporter,
     R.drawable.kahin,
     R.drawable.deli,
-    R.drawable.nobetci
+    R.drawable.nobetci,
+    R.drawable.otopsier
 )
 
 /**

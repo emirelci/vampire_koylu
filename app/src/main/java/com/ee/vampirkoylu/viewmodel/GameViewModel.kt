@@ -66,10 +66,7 @@ class GameViewModel : ViewModel() {
         _settings.update {
             it.copy(
                 playerCount = playerCount.coerceIn(4, 15), // Min 4, max 15 oyuncu
-                vampireCount = vampireCount.coerceIn(
-                    1,
-                    playerCount / 3
-                ), // En fazla oyuncu sayısının 1/3'ü kadar vampir
+                vampireCount = vampireCount.coerceIn(1,playerCount / 3), // En fazla oyuncu sayısının 1/3'ü kadar vampir
                 sheriffCount = sheriffCount.coerceIn(0, 1), // En fazla 1 şerif
                 watcherCount = watcherCount.coerceIn(0, playerCount), // Gözcü sayısı sınırı
                 serialKillerCount = serialKillerCount.coerceIn(0, 1), // En fazla 1 seri katil
@@ -139,7 +136,7 @@ class GameViewModel : ViewModel() {
     }
 
     /**
-     * Gece fazında vampirin hedef seçmesi
+     * Gece fazında rollerin hedef seçmimleri
      */
     fun selectNightTarget(targetIds: List<Int>) {
         // Aktif oyuncuyu al
@@ -239,7 +236,14 @@ class GameViewModel : ViewModel() {
 
             PlayerRole.VOTE_SABOTEUR -> {
                 // Sahtekarın gece eylemi yok
-                checkNextSpecialRole()
+                val targetId = targetIds.firstOrNull()
+                if (targetId == null || targetId == activePlayer.id) {
+                    checkNextSpecialRole()
+                } else {
+                    setTargetWithVisit(targetId, activePlayer) {
+                        it.copy(voteSabotageTarget = targetId)
+                    }
+                }
             }
 
             PlayerRole.AUTOPSIR -> {
@@ -516,7 +520,6 @@ class GameViewModel : ViewModel() {
                 nightVisits = emptyList(), // Ziyaretleri sıfırla
                 veteranAlertIds = emptySet(),
                 wizardSwaps = emptyMap(),
-                voteSabotageTarget = null
             )
         }
 
@@ -534,7 +537,6 @@ class GameViewModel : ViewModel() {
             it.copy(
                 currentPhase = GamePhase.VOTING,
                 votingResults = emptyMap(),
-                voteSabotageTarget = null
             )
         }
 
@@ -606,7 +608,8 @@ class GameViewModel : ViewModel() {
                 currentPhase = GamePhase.NIGHT,
                 // currentDay = it.currentDay + 1, geri alınabilir..
                 lastEliminated = null,
-                accusedId = null
+                accusedId = null,
+                voteSabotageTarget = null
             )
         }
 

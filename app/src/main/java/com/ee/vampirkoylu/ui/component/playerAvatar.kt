@@ -124,7 +124,7 @@ fun PlayerAvatar(
 
                         PlayerRole.AUTOPSIR -> {
                             Image(
-                                painter = painterResource(id = R.drawable.kahin),
+                                painter = painterResource(id = R.drawable.otopsier),
                                 contentDescription = stringResource(id = R.string.autopsir),
                                 modifier = Modifier.fillMaxSize(0.8f)
                             )
