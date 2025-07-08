@@ -91,7 +91,6 @@ object NavGraph {
             composable(Screen.Setup.route) {
                 val settings by gameViewModel.settings.collectAsState()
                 val isPlusUser by storeManager.isPlusUser.collectAsState(initial = false)
-                println("isPlusUser: $isPlusUser")
                 GameSetupScreen(
                     settings = settings,
                     navController = navController,
@@ -162,7 +161,6 @@ object NavGraph {
                 MeetingDayScreen(
                     onFinish = {
                         // İlk gün için direkt gece fazına geç
-                        println("CurrentDay: " + gameState.currentDay)
                         if (gameState.currentDay == 1) {
                             // İlk gün sonrası direkt gece fazına geç (oylama yok)
                             gameViewModel.proceed() // Gece fazına geç
@@ -297,7 +295,6 @@ object NavGraph {
 
                     GamePhase.VOTE_RESULT -> {
                         val accused = players.find { it.id == gameState.accusedId }
-                        println("accused: suçlanan $accused")
                         JudgementResultScreen(
                             accusedPlayer = accused,
                             eliminated = gameState.lastEliminated == gameState.accusedId,
