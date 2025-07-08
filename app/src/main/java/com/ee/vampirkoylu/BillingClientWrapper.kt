@@ -1,6 +1,6 @@
 import android.app.Activity
 import android.content.Context
-import android.util.Log
+import android.widget.Toast
 import com.android.billingclient.api.*
 import com.ee.vampirkoylu.StoreManager
 import com.ee.vampirkoylu.util.PurchaseValidator
@@ -24,15 +24,19 @@ class BillingClientWrapper(
     private val _isConnected = MutableStateFlow(false)
     val isConnected = _isConnected.asStateFlow()
 
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
     private val purchasesUpdatedListener = PurchasesUpdatedListener { billingResult, purchases ->
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
             for (purchase in purchases) {
                 coroutineScope.launch { handlePurchase(purchase) }
             }
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-            Log.i("BillingWrapper", "User canceled the purchase")
+            showToast("Purchase canceled")
         } else {
-            Log.e("BillingWrapper", "Purchase failed: ${billingResult.debugMessage}")
+            showToast("Purchase failed")
         }
     }
 
@@ -58,13 +62,13 @@ class BillingClientWrapper(
                     }
                 } else {
                     _isConnected.value = false
-                    Log.e("BillingWrapper", "Billing setup failed: ${billingResult.debugMessage}")
+                    showToast("Billing setup failed")
                 }
             }
 
             override fun onBillingServiceDisconnected() {
                 _isConnected.value = false
-                Log.w("BillingWrapper", "Billing service disconnected")
+                showToast("Billing service disconnected")
             }
         })
     }
@@ -84,24 +88,23 @@ class BillingClientWrapper(
             if (result.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 result.productDetailsList?.let {
                     _products.value = it
-                    Log.d("BillingWrapper", "Products loaded: ${it.size}")
                 }
             } else {
-                Log.e("BillingWrapper", "Product query failed: ${result.billingResult.debugMessage}")
+                showToast("Product query failed")
             }
         } catch (e: Exception) {
-            Log.e("BillingWrapper", "Exception in queryProducts", e)
+            showToast("Error querying products")
         }
     }
 
     fun launchPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
         if (!billingClient.isReady) {
-            Log.w("BillingWrapper", "Billing client not ready for purchase")
+            showToast("Billing client not ready for purchase")
             return
         }
 
         val offerToken = productDetails.oneTimePurchaseOfferDetails?.offerToken ?: run {
-            Log.e("BillingWrapper", "No offer token found for product")
+            showToast("Product error")
             return
         }
 
@@ -119,14 +122,14 @@ class BillingClientWrapper(
 
         val result = billingClient.launchBillingFlow(activity, billingFlowParams)
         if (result.responseCode != BillingClient.BillingResponseCode.OK) {
-            Log.e("BillingWrapper", "Billing flow failed: ${result.debugMessage}")
+            showToast("Billing flow failed")
         }
     }
 
     private suspend fun handlePurchase(purchase: Purchase) {
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged) {
             if (!PurchaseValidator.verifyPurchase(purchase)) {
-                Log.e("BillingWrapper", "Purchase signature verification failed")
+                showToast("Purchase verification failed")
                 return
             }
             try {
@@ -136,17 +139,16 @@ class BillingClientWrapper(
 
                 val result = billingClient.acknowledgePurchase(acknowledgeParams)
                 if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                    Log.d("BillingWrapper", "Purchase acknowledged")
                     storeManager.setPlusUser(true)
                     _isPlusUser.value = true
                 } else {
-                    Log.e("BillingWrapper", "Acknowledgment failed: ${result.debugMessage}")
+                    showToast("Acknowledgment failed")
                 }
             } catch (e: Exception) {
-                Log.e("BillingWrapper", "Exception in handlePurchase", e)
+                showToast("Error handling purchase")
             }
         } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
-            Log.i("BillingWrapper", "Purchase is pending")
+            showToast("Purchase pending")
         }
     }
 
@@ -174,7 +176,7 @@ class BillingClientWrapper(
             }
 
         } catch (e: Exception) {
-            Log.e("BillingWrapper", "Exception in queryPurchases", e)
+            showToast("Error querying purchases")
         }
     }
 

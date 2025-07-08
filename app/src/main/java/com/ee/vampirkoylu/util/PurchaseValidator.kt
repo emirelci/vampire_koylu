@@ -1,7 +1,6 @@
 package com.ee.vampirkoylu.util
 
 import android.util.Base64
-import android.util.Log
 import com.android.billingclient.api.Purchase
 import java.security.KeyFactory
 import java.security.Signature
@@ -20,12 +19,8 @@ object PurchaseValidator {
             signature.initVerify(publicKey)
             signature.update(purchase.originalJson.toByteArray(Charsets.UTF_8))
             val isValid = signature.verify(Base64.decode(purchase.signature, Base64.DEFAULT))
-            if (!isValid) {
-                Log.e("PurchaseValidator", "Invalid purchase signature")
-            }
             isValid
         } catch (e: Exception) {
-            Log.e("PurchaseValidator", "Verification error", e)
             false
         }
     }
