@@ -10,6 +10,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.ee.vampirkoylu.util.WindowWidthSizeClass
 import com.ee.vampirkoylu.ui.theme.LocalWindowWidthSizeClass
 
 private val DarkColorScheme = darkColorScheme(
@@ -39,7 +40,7 @@ fun VampirKoyluTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    widthSizeClass: androidx.compose.material3.windowsizeclass.WindowWidthSizeClass = androidx.compose.material3.windowsizeclass.WindowWidthSizeClass.Compact,
+    widthSizeClass: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

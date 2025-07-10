@@ -22,7 +22,7 @@ import androidx.navigation.NavController
 import androidx.compose.runtime.collectAsState
 import com.ee.vampirkoylu.StoreManager
 import com.ee.vampirkoylu.ui.theme.LocalWindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import com.ee.vampirkoylu.util.WindowWidthSizeClass
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.window.Dialog
 import com.ee.vampirkoylu.R

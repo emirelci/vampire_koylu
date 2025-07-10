@@ -1,0 +1,170 @@
+<resources>
+    <string name="app_name">Werewolf</string>
+    
+    <!-- Main Menu -->
+    <string name="game_title">WEREWOLF</string>
+    <string name="start_game">START GAME</string>
+    <string name="rules">RULES</string>
+    <string name="developer">DEVELOPER</string>
+    
+    <!-- Game Setup Screen -->
+    <string name="new_game">NEW GAME</string>
+    <string name="enter_names">ENTER NAMES</string>
+    <string name="player_count">PLAYERS</string>
+    <string name="game_mode">GAME MODE</string>
+    <string name="classic_mode">CLASSIC</string>
+    <string name="chaos_mode">CHAOS</string>
+    <string name="custom_mode">CUSTOM</string>
+    <string name="extreme_mode">EXTREME</string>
+    <string name="ultimate_mode">ULTIMATE</string>
+    <string name="vampire_count">VAMPIRES</string>
+    <string name="start">START</string>
+    
+    <!-- In-Game -->
+    <string name="night">NIGHT FALLS</string>
+    <string name="day">DAY BREAKS</string>
+    <string name="pass_to">Pass the phone to %1$s.\nOnly they can see their role.</string>
+    <string name="pass_to_header">TURN: %1$s</string>
+    <string name="pass_to_info">Only they can see their role.</string>
+    <string name="pass_warning">Don\'t let anyone see until ready!</string>
+    <string name="pass_continue">Press the button to continue.</string>
+    <string name="your_role">YOUR ROLE</string>
+    <string name="vampire">VAMPIRE</string>
+    <string name="villager">VILLAGER</string>
+    <string name="sheriff">SHERIFF</string>
+    <string name="watcher">WATCHER</string>
+    <string name="serial_killer">SERIAL KILLER</string>
+    <string name="doctor">DOCTOR</string>
+    <string name="seer">SEER</string>
+    <string name="vote_saboteur">SABOTEUR</string>
+    <string name="autopsir">CORONER</string>
+    <string name="veteran">VETERAN</string>
+    <string name="madman">MADMAN</string>
+    <string name="wizard">WIZARD</string>
+    
+    <!-- Role Descriptions -->
+    <string name="role_info">ROLE INFO</string>
+    <string name="vampire_info">You can kill one villager each night. Your goal is to eliminate all villagers. Hide your identity and try to appear innocent.</string>
+    <string name="villager_info">Your goal is to find the vampires and eliminate them through voting to save the village. Discuss during the day and evaluate clues.</string>
+    <string name="sheriff_info">You are a villager with strong intuition. Each night you can learn if a player is guilty or innocent. Vampires and Serial Killers are guilty; all other roles are innocent.</string>
+    <string name="watcher_info">Each night you watch one player\'s house. You learn who visited that player during the night. However, you don\'t learn why they visited.</string>
+    <string name="serial_killer_info">You are a lone killer. You can kill one person each night. Your goal is to be the last person standing.</string>
+    <string name="doctor_info">Each night you can protect someone from vampire attacks. If vampires target the person you protect, they survive.</string>
+    <string name="seer_info">Each night you learn the true role of a player you choose.</string>
+    <string name="vote_saboteur_info">You can nullify a player\'s vote during the day\'s voting.</string>
+    <string name="autopsir_info">You learn the role of any player who dies.</string>
+    <string name="veteran_info">You kill anyone who visits you at night.</string>
+    <string name="madman_info">You think you have a useful role, but you don\'t actually help anyone.</string>
+    <string name="wizard_info">You swap the positions of two players at night.</string>
+    
+    <!-- Role Categories for Rules Screen -->
+    <string name="basic_roles">BASIC ROLES</string>
+    <string name="plus_package_roles">PLUS PACKAGE ROLES</string>
+
+    <!-- Night action tips -->
+    <string name="villager_night_tip">Don\'t hand over the phone too quickly so you can pretend to have a role.</string>
+
+    <string name="vampire_night_tip">Who will you kill tonight? Make your selection.</string>
+    <string name="sheriff_night_tip">Who would you like to investigate tonight? Make your selection.</string>
+    <string name="watcher_night_tip">Whose house would you like to watch tonight? Make your selection.</string>
+    <string name="serial_killer_night_tip">Who would you like to kill tonight? Make your selection.</string>
+    <string name="doctor_night_tip">Who would you like to protect tonight? Make your selection.</string>
+    <string name="seer_night_tip">Whose role would you like to learn tonight?</string>
+    <string name="vote_saboteur_night_tip">Whose vote would you like to sabotage tonight?</string>
+    <string name="autopsir_night_tip">Observe the roles of those who died during the night.</string>
+    <string name="veteran_night_tip">Stay awake and shoot anyone who visits.</string>
+    <string name="no_dead_players">No one has died.</string>
+    <string name="madman_night_tip">Think you\'re innocent and play your role.</string>
+    <string name="wizard_night_tip">Swap the positions of two people tonight.</string>
+    <string name="veteran_wake_up">STAY AWAKE</string>
+    <string name="veteran_sleep">SLEEP</string>
+
+    <!-- Night Results Screen -->
+    <string name="night_results">NIGHT RESULT</string>
+    <string name="night_results_villager">Night is over, are you ready for the new day?</string>
+    <string name="night_results_sheriff">Your investigation result for %1$s is %2$s</string>
+    <string name="sheriff_result_innocent">INNOCENT</string>
+    <string name="sheriff_result_guilty">GUILTY</string>
+    <string name="night_results_watcher">You watched %1$s\'s house and saw</string>
+    <string name="night_results_watcher_novisit">No one came to visit</string>
+    <string name="night_results_watcher_visit">%1$s came to visit</string>
+    <string name="night_results_watcher_visits">%1$s people came to visit: %2$s</string>
+    <string name="night_results_seer">%1$s\'s role is: %2$s</string>
+    <string name="night_results_header">NIGHT RESULT</string>
+    <string name="ready_for_new_day">PREPARE FOR A NEW DAY</string>
+    <string name="night_results_dead_player">%1$s, YOU ARE DEAD!</string>
+    <string name="night_results_dead_message">You were killed tonight by vampires or the serial killer. You can continue to watch the game, but you can no longer vote.</string>
+
+    <string name="confirm">CONFIRM</string>
+    <string name="select_target">SELECT TARGET</string>
+    <string name="night_action">NIGHT ACTION</string>
+
+    <string name="done">DONE</string>
+    <string name="show_role">I\'M READY\n>SHOW MY ROLE</string>
+    <string name="choose_target">SELECT TARGET</string>
+    <string name="voting">VOTING</string>
+    <string name="vote_result">VOTING RESULT</string>
+    <string name="eliminated">ELIMINATED</string>
+    <string name="continue_game">CONTINUE</string>
+    <string name="game_over">GAME OVER</string>
+    <string name="vampires_win">VAMPIRES WIN</string>
+    <string name="villagers_win">VILLAGERS WIN</string>
+    <string name="back_to_menu">RETURN TO MENU</string>
+    <string name="serial_killer_win">SERIAL KILLER WINS</string>
+    <string name="surviving_players">SURVIVORS: %1$s</string>
+    
+    <!-- Role Settings -->
+    <string name="role_settings">ROLE SETTINGS</string>
+    <string name="sheriff_count">SHERIFF</string>
+    <string name="watcher_count">WATCHER</string>
+    <string name="serial_killer_count">SERIAL KILLER</string>
+    <string name="doctor_count">DOCTOR</string>
+    <string name="seer_count">SEER</string>
+    <string name="vote_saboteur_count">SABOTEUR</string>
+    <string name="autopsir_count">CORONER</string>
+    <string name="veteran_count">VETERAN</string>
+    <string name="madman_count">MADMAN</string>
+    <string name="wizard_count">WIZARD</string>
+
+    <!-- Rules -->
+    <string name="rules_title">RULES</string>
+    <string name="rules_gameplay">GAMEPLAY</string>
+    <string name="rules_text">1- Players are randomly assigned roles such as Vampire, Villager, Sheriff, Doctor, Watcher.\n\n2- At night, Vampires and the Serial Killer choose targets; other special roles use their abilities.\n\n3- During the day, players discuss to identify the guilty and hold a vote.\n\n4- Villagers win if all Vampires and Serial Killers are eliminated; Vampires win if all Villagers are gone. The Serial Killer\'s goal is to be the last one standing.\n\nExtra: The Plus package includes additional roles like Saboteur, Coroner, Veteran, Madman, and Wizard.\n\nNote: The app manages the entire process, no moderator needed.</string>
+    <string name="rules_roles_info">ABOUT ROLES</string>
+
+    <!-- Meeting Day -->
+    <string name="meeting_day_title">MEETING BEGINS</string>
+    <string name="countdown_hint">Day 1: No execution or voting</string>
+    <string name="skip_meeting">SKIP DISCUSSION</string>
+    <string name="day_started">DAY HAS BEGUN</string>
+    <string name="no_one_died">No one was killed tonight.</string>
+    <string name="player_died_at_night">%1$s died during the night.</string>
+    <string name="multiple_players_died">%1$s died during the night.</string>
+    <string name="proceed_to_voting">PROCEED TO VOTING</string>
+    <string name="voting_phase">VOTING</string>
+    <string name="voting_instruction">Who do you want to execute?</string>
+    <string name="skip_vote">SKIP VOTE</string>
+
+    <!-- Day Vote Result -->
+    <string name="day_vote_result_title">VOTING RESULT</string>
+    <string name="accused_player">Accused: %1$s</string>
+    <string name="start_judgement">PROCEED TO JUDGEMENT</string>
+    <string name="no_accused_player">No one was accused</string>
+    <string name="proceed_to_night">PROCEED TO NIGHT</string>
+
+    <!-- Judgement Screen -->
+    <string name="judgement_title">JUDGEMENT</string>
+    <string name="vote_guilty">GUILTY</string>
+    <string name="vote_innocent">INNOCENT</string>
+    <string name="judgement_result_title">JUDGEMENT RESULT</string>
+    <string name="judgement_result_guilty">%1$s was found guilty and hanged</string>
+    <string name="judgement_result_innocent">%1$s was found innocent and allowed to live</string>
+
+    <!-- Premium Package -->
+    <string name="premium">FOR MORE\nROLES</string>
+    <string name="premium_title">PLUS PACKAGE</string>
+    <string name="premium_active">PREMIUM ACTIVE</string>
+    <string name="premium_description">This package includes additional roles: Saboteur, Coroner, Veteran, Madman, and Wizard.</string>
+    <string name="upgrade">UPGRADE</string>
+    <string name="not_now">NOT NOW</string>
+</resources> 

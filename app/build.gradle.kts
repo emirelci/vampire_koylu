@@ -14,8 +14,8 @@ android {
         applicationId = "com.ee.vampirkoylu"
         minSdk = 24
         targetSdk = 35
-        versionCode = 7
-        versionName = "0.8.0"
+        versionCode = 8
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -78,20 +78,28 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.material)
+    
     //Navigation
     implementation(libs.androidx.navigation.compose)
+    
     //Coroutine
     implementation(libs.kotlinx.coroutines.android)
 
+    // Jetpack Window Manager
+    implementation("androidx.window:window:1.4.0")
+    
+    // Büyük ekran desteği
     implementation(libs.androidx.adaptive)
-    implementation(libs.androidx.material3.window.size.class1)
+    
+    // Material3 core (window-size-class deneysel API'leri içermeden)
+    implementation("androidx.compose.material3:material3:1.2.1")
 
     //Google Play Billing
     implementation(libs.billing)
 
     //Google Ads
     implementation(libs.play.services.ads)
-    implementation("com.google.android.gms:play-services-ads-identifier:18.2.0")
+    implementation(libs.play.services.ads.identifier)
 
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -101,6 +109,4 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.hilt.compiler)
-
-
 }

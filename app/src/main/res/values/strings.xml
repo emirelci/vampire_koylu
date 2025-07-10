@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VampirKoylu</string>
+    <string name="app_name">Vampir Köylü</string>
     
     <!-- Ana Menü -->
     <string name="game_title">VAMPİR KÖYLÜ</string>
@@ -56,6 +56,10 @@
     <string name="veteran_info">Gece kendisine gelenleri öldürür.</string>
     <string name="madman_info">Masum bir rolü olduğunu sanır fakat kimseye yardımı olmaz.</string>
     <string name="wizard_info">Gece iki oyuncunun yerini değiştirir.</string>
+
+    <!-- Kurallar Ekranı Rol Kategorileri -->
+    <string name="basic_roles">TEMEL ROLLER</string>
+    <string name="plus_package_roles">PLUS PAKETİ ROLLERİ</string>
 
     <!-- Night action tips -->
     <string name="villager_night_tip">Telefonu hızlı teslim etmeyin ki sanki bir role sahipmişsiniz gibi davranabilirsiniz.</string>
@@ -126,7 +130,7 @@
     <string name="rules_title">KURALLAR</string>
     <string name="rules_gameplay">OYNANIŞ</string>
     <string name="rules_text">1- Oyunculara Vampir, Köylü, Şerif, Doktor, Gözcü gibi roller rastgele atanır.\n\n2- Gece vakti Vampirler ve Seri Katil hedef seçer; diğer özel roller yeteneklerini kullanır.\n\n3- Gündüz vakti oyuncular suçluları belirlemek için tartışır ve oylama yapar.\n\n4- Tüm Vampirler ve Seri Katil elenirse Köylüler kazanır; Köylüler yok olursa Vampirler kazanır. Seri Katilin hedefi tek başına hayatta kalmaktır.\n\nEkstra: Plus paketi ile Sahtekar, Otopsir, Nöbetçi, Deli ve Büyücü gibi ek roller oyuna dahil olur.\n\nNot: Uygulama tüm süreci yönetir, moderatöre gerek yoktur.</string>
-    <string name="rules_roles_info">Roller Hakkında</string>
+    <string name="rules_roles_info">ROLLER HAKKINDA</string>
 
     <!-- Meeting Day -->
     <string name="meeting_day_title">TOPLANTI BAŞLIYOR</string>

@@ -45,6 +45,7 @@ fun RuleScreen(navController: NavHostController) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Text(
             text = stringResource(id = R.string.rules_title),
             fontSize = 36.sp,
@@ -65,58 +66,114 @@ fun RuleScreen(navController: NavHostController) {
                     .padding(12.dp),
                 alpha = 0.4f
             )
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(16.dp)
             ) {
+
                 Text(
-                    text = stringResource(id = R.string.rules_roles_info), // "PLUS PAKETİ"
+                    text = stringResource(id = R.string.rules_roles_info),
                     fontFamily = PixelFont,
                     textAlign = TextAlign.Center,
                     color = Color(0xFFF0E68C),
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(top = 16.dp)
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Rol kaydırmalı alan
+                // Temel Roller kaydırmalı alan
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Vampir
+                    RoleInfoItem(
+                        R.drawable.vampir_logo,
+                        R.string.vampire,
+                        R.string.vampire_info
+                    )
+
+                    // Köylü
+                    RoleInfoItem(
+                        R.drawable.villager1,
+                        R.string.villager,
+                        R.string.villager_info
+                    )
+
+                    // Şerif
+                    RoleInfoItem(
+                        R.drawable.sheriff1,
+                        R.string.sheriff,
+                        R.string.sheriff_info
+                    )
+
+                    // Gözcü
+                    RoleInfoItem(
+                        R.drawable.watcher1,
+                        R.string.watcher,
+                        R.string.watcher_info
+                    )
+
+                    // Seri Katil
+                    RoleInfoItem(
+                        R.drawable.serial_killer1,
+                        R.string.serial_killer,
+                        R.string.serial_killer_info
+                    )
+
+                    // Doktor
+                    RoleInfoItem(
+                        R.drawable.doctor1,
+                        R.string.doctor,
+                        R.string.doctor_info
+                    )
+
+                    // Kahin
+                    RoleInfoItem(
+                        R.drawable.kahin,
+                        R.string.seer,
+                        R.string.seer_info
+                    )
+
+                    // Sahtekar
                     RoleInfoItem(
                         R.drawable.sahtekar,
                         R.string.vote_saboteur,
                         R.string.vote_saboteur_info
                     )
+                    
+                    // Otopsir
                     RoleInfoItem(
-                        R.drawable.kahin,
+                        R.drawable.otopsier,
                         R.string.autopsir,
                         R.string.autopsir_info
                     )
+
+                    // Nöbetçi
                     RoleInfoItem(
                         R.drawable.nobetci,
                         R.string.veteran,
                         R.string.veteran_info
                     )
+
+                    // Deli
                     RoleInfoItem(
                         R.drawable.deli,
                         R.string.madman,
                         R.string.madman_info
                     )
+
+                    // Büyücü
                     RoleInfoItem(
                         R.drawable.transporter,
                         R.string.wizard,
                         R.string.wizard_info
                     )
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
 
