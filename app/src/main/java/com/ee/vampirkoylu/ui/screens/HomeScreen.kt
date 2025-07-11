@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import android.app.Activity
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -24,12 +26,14 @@ import com.ee.vampirkoylu.StoreManager
 import com.ee.vampirkoylu.ui.theme.LocalWindowWidthSizeClass
 import com.ee.vampirkoylu.util.WindowWidthSizeClass
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.window.Dialog
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.component.PixelArtButton
 import com.ee.vampirkoylu.ui.component.RoleInfoItem
 import com.ee.vampirkoylu.ui.navigation.Screen
 import com.ee.vampirkoylu.ui.theme.PixelFont
+import com.ee.vampirkoylu.ui.theme.shine_gold
 
 @Composable
 fun MainScreenBackground(content: @Composable () -> Unit) {
@@ -140,21 +144,24 @@ private fun HomeScreenContent(
                     contentDescription = "Vampir İkonu",
                     modifier = Modifier.size(140.dp)
                 )
-
-                Text(
-                    text = stringResource(id = R.string.game_title),
-                    fontSize = 32.sp,
-                    fontFamily = PixelFont,
-                    color = Color(0xFFF0E68C),
-                    textAlign = TextAlign.Center,
+                BasicText(
+                    text = stringResource(R.string.game_title),
+                    autoSize = TextAutoSize.StepBased(),
+                    maxLines = 2,
+                    style = TextStyle(
+                        fontFamily = PixelFont,
+                        color = Color(0xFFF0E68C),
+                        textAlign = TextAlign.Center
+                    ),
                     overflow = TextOverflow.Ellipsis,
-                    lineHeight = 40.sp,
-                    modifier = Modifier.weight(1f).align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .align(Alignment.CenterVertically)
+                        .padding(4.dp)
                 )
 
                 val products by billingClientWrapper.products.collectAsState()
-
-
 
                 if (showPremiumDialog) {
                     Dialog(onDismissRequest = { showPremiumDialog = false }) {

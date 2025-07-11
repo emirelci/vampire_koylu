@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Werewolf</string>
+    <string name="app_name">Vampire Village</string>
     
     <!-- Main Menu -->
-    <string name="game_title">WEREWOLF</string>
+    <string name="game_title">VAMPIRE\nVILLAGE</string>
     <string name="start_game">START GAME</string>
     <string name="rules">RULES</string>
     <string name="developer">DEVELOPER</string>
