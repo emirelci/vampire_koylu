@@ -11,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -138,7 +139,17 @@ fun GameSetupScreen(
 
     var showWarning by remember { mutableStateOf(false) }
     var warningMessage by remember { mutableStateOf("") }
-    val editNotAllowedMessage = "Rol ayarları sadece Özel modda değiştirilebilir!"
+    val editNotAllowedMessage = stringResource(id = R.string.edit_not_allowed_warning)
+    
+    // String kaynakları önceden hazırla
+    val decreaseSpecialRolesWarning = stringResource(id = R.string.decrease_special_roles_warning)
+    val maxPlayerWarning = stringResource(id = R.string.max_player_warning)
+    val minPlayerWarning = stringResource(id = R.string.min_player_warning)
+    val maxRoleCountWarningFormat = stringResource(id = R.string.max_role_count_warning)
+    val maxSpecialRolesWarningFormat = stringResource(id = R.string.max_special_roles_warning)
+    val enterAllNamesWarning = stringResource(id = R.string.enter_all_names_warning)
+    val atLeastOneVampireOrSerialKillerWarning = stringResource(id = R.string.at_least_one_vampire_or_serial_killer_warning)
+    val addWatcherSeerAutopsirWarning = stringResource(id = R.string.add_watcher_seer_autopsir_warning)
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Arka plan resmi
@@ -207,13 +218,16 @@ fun GameSetupScreen(
                                 fontSize = 14.sp,
                                 fontFamily = PixelFont,
                                 color = Beige,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier
+                                    .weight(1f)
                             )
 
                             ModeSelector(
-                                modes = gameModes.map { it.nameRes },
-                                selectedIndex = gameModes.indexOf(selectedMode),
-                                onIndexChange = { applyMode(gameModes[it]) }
+                                modes = gameModes,
+                                selectedMode = selectedMode,
+                                onModeSelected = { mode ->
+                                    applyMode(mode)
+                                }
                             )
                         }
 
@@ -221,25 +235,30 @@ fun GameSetupScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = stringResource(id = R.string.player_count),
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 fontFamily = PixelFont,
                                 color = Beige,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp)
+                                    .weight(1f)
                             )
 
                             IncreaseDecreaseCount(
                                 count = playerCount,
                                 onIncrease = {
                                     val newPlayerCount = playerCount + 1
+                                    val newMaxVampires = calculateMaxVampires(newPlayerCount)
                                     playerCount = newPlayerCount
+                                    if (vampireCount > newMaxVampires) {
+                                        vampireCount = newMaxVampires
+                                    }
                                     onSettingsChange(
-                                        newPlayerCount,
+                                        playerCount,
                                         vampireCount,
                                         sheriffCount,
                                         watcherCount,
@@ -263,7 +282,7 @@ fun GameSetupScreen(
                                     val newMaxRoleCount = newPlayerCount - 1
 
                                     if (specialRoleCount > newMaxRoleCount) {
-                                        warningMessage = "Önce özel rollerin sayısını azaltmalısınız!"
+                                        warningMessage = decreaseSpecialRolesWarning
                                         showWarning = true
                                     } else {
                                         playerCount = newPlayerCount
@@ -292,7 +311,7 @@ fun GameSetupScreen(
                                 canDecrease = selectedMode == GameMode.CUSTOM && playerCount > 4,
                                 showWarningOnIncrease = {
                                     warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                        "Oyuncu sayısı en fazla 15 olabilir!"
+                                        maxPlayerWarning
                                     } else {
                                         editNotAllowedMessage
                                     }
@@ -300,7 +319,7 @@ fun GameSetupScreen(
                                 },
                                 showWarningOnDecrease = {
                                     warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                        "Oyuncu sayısı en az 4 olmalıdır!"
+                                        minPlayerWarning
                                     } else {
                                         editNotAllowedMessage
                                     }
@@ -398,10 +417,11 @@ fun GameSetupScreen(
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
                                         warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                            "Bu rolden en fazla $maxVampireCount tane olabilir!"
+                                            String.format(maxRoleCountWarningFormat, maxVampireCount)
                                         } else {
                                             editNotAllowedMessage
                                         }
+                                        showWarning = true
                                     }
                                 )
 
@@ -429,8 +449,7 @@ fun GameSetupScreen(
                                             )
 
                                         } else {
-                                            warningMessage =
-                                                "En fazla ${maxRoleCount} özel rol olabilir!"
+                                            warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                             showWarning = true
                                         }
                                     },
@@ -455,7 +474,7 @@ fun GameSetupScreen(
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
                                         warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                            "Bu rolden en fazla 1 tane olabilir!"
+                                            String.format(maxRoleCountWarningFormat, 1)
                                         } else {
                                             editNotAllowedMessage
                                         }
@@ -487,8 +506,7 @@ fun GameSetupScreen(
                                             )
 
                                         } else {
-                                            warningMessage =
-                                                "En fazla ${maxRoleCount} özel rol olabilir!"
+                                            warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                             showWarning = true
                                         }
                                     },
@@ -516,7 +534,7 @@ fun GameSetupScreen(
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
                                         warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                            "Bu rolden en fazla $playerCount tane olabilir!"
+                                            String.format(maxRoleCountWarningFormat, playerCount)
                                         } else {
                                             editNotAllowedMessage
                                         }
@@ -548,8 +566,7 @@ fun GameSetupScreen(
                                             )
 
                                         } else {
-                                            warningMessage =
-                                                "En fazla ${maxRoleCount} özel rol olabilir!"
+                                            warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                             showWarning = true
                                         }
                                     },
@@ -574,7 +591,7 @@ fun GameSetupScreen(
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
                                         warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                            "Bu rolden en fazla 1 tane olabilir!"
+                                            String.format(maxRoleCountWarningFormat, 1)
                                         } else {
                                             editNotAllowedMessage
                                         }
@@ -606,8 +623,7 @@ fun GameSetupScreen(
                                             )
 
                                         } else {
-                                            warningMessage =
-                                                "En fazla ${maxRoleCount} özel rol olabilir!"
+                                            warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                             showWarning = true
                                         }
                                     },
@@ -632,7 +648,7 @@ fun GameSetupScreen(
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
                                         warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                            "Bu rolden en fazla $playerCount tane olabilir!"
+                                            String.format(maxRoleCountWarningFormat, playerCount)
                                         } else {
                                             editNotAllowedMessage
                                         }
@@ -662,8 +678,7 @@ fun GameSetupScreen(
                                                 wizardCount
                                             )
                                         } else {
-                                            warningMessage =
-                                                "En fazla ${maxRoleCount} özel rol olabilir!"
+                                            warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                             showWarning = true
                                         }
                                     },
@@ -691,7 +706,7 @@ fun GameSetupScreen(
                                     editable = selectedMode == GameMode.CUSTOM,
                                     showWarningOnIncrease = {
                                         warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                            "Bu rolden en fazla $playerCount tane olabilir!"
+                                            String.format(maxRoleCountWarningFormat, playerCount)
                                         } else {
                                             editNotAllowedMessage
                                         }
@@ -722,8 +737,7 @@ fun GameSetupScreen(
                                                     wizardCount
                                                 )
                                             } else {
-                                                warningMessage =
-                                                    "En fazla ${maxRoleCount} özel rol olabilir!"
+                                                warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                                 showWarning = true
                                             }
                                         },
@@ -747,7 +761,7 @@ fun GameSetupScreen(
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
                                             warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                                "Bu rolden en fazla 1 tane olabilir!"
+                                                String.format(maxRoleCountWarningFormat, 1)
                                             } else {
                                                 editNotAllowedMessage
                                             }
@@ -777,8 +791,7 @@ fun GameSetupScreen(
                                                     wizardCount
                                                 )
                                             } else {
-                                                warningMessage =
-                                                    "En fazla ${maxRoleCount} özel rol olabilir!"
+                                                warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                                 showWarning = true
                                             }
                                         },
@@ -805,7 +818,7 @@ fun GameSetupScreen(
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
                                             warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                                "Bu rolden en fazla $playerCount tane olabilir!"
+                                                String.format(maxRoleCountWarningFormat, playerCount)
                                             } else {
                                                 editNotAllowedMessage
                                             }
@@ -835,8 +848,7 @@ fun GameSetupScreen(
                                                     wizardCount
                                                 )
                                             } else {
-                                                warningMessage =
-                                                    "En fazla ${maxRoleCount} özel rol olabilir!"
+                                                warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                                 showWarning = true
                                             }
                                         },
@@ -860,7 +872,7 @@ fun GameSetupScreen(
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
                                             warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                                "Bu rolden en fazla 1 tane olabilir!"
+                                                String.format(maxRoleCountWarningFormat, 1)
                                             } else {
                                                 editNotAllowedMessage
                                             }
@@ -874,8 +886,7 @@ fun GameSetupScreen(
                                         maxCount = 1,
                                         onIncrease = {
                                             if (watcherCount == 0 && seerCount == 0 && autopsirCount == 0) {
-                                                warningMessage =
-                                                    "Deli eklemek için en az 1 Gözcü, Kahin veya Otopsir olmalı!"
+                                                warningMessage = addWatcherSeerAutopsirWarning
                                                 showWarning = true
                                             } else if (specialRoleCount < maxRoleCount) {
                                                 madmanCount = 1
@@ -894,8 +905,7 @@ fun GameSetupScreen(
                                                     wizardCount
                                                 )
                                             } else {
-                                                warningMessage =
-                                                    "En fazla ${maxRoleCount} özel rol olabilir!"
+                                                warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                                 showWarning = true
                                             }
                                         },
@@ -919,7 +929,7 @@ fun GameSetupScreen(
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
                                             warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                                "Bu rolden en fazla 1 tane olabilir!"
+                                                String.format(maxRoleCountWarningFormat, 1)
                                             } else {
                                                 editNotAllowedMessage
                                             }
@@ -927,13 +937,14 @@ fun GameSetupScreen(
                                         }
                                     )
 
+                                    // Büyücü sayısı
                                     RoleCountSelector(
                                         title = stringResource(id = R.string.wizard_count),
                                         count = wizardCount,
-                                        maxCount = playerCount,
+                                        maxCount = 1,
                                         onIncrease = {
                                             if (specialRoleCount < maxRoleCount) {
-                                                wizardCount += 1
+                                                wizardCount = 1
                                                 onSettingsChange(
                                                     playerCount,
                                                     vampireCount,
@@ -949,13 +960,12 @@ fun GameSetupScreen(
                                                     wizardCount
                                                 )
                                             } else {
-                                                warningMessage =
-                                                    "En fazla ${maxRoleCount} özel rol olabilir!"
+                                                warningMessage = String.format(maxSpecialRolesWarningFormat, maxRoleCount)
                                                 showWarning = true
                                             }
                                         },
                                         onDecrease = {
-                                            wizardCount = (wizardCount - 1).coerceAtLeast(0)
+                                            wizardCount = 0
                                             onSettingsChange(
                                                 playerCount,
                                                 vampireCount,
@@ -974,7 +984,7 @@ fun GameSetupScreen(
                                         editable = selectedMode == GameMode.CUSTOM,
                                         showWarningOnIncrease = {
                                             warningMessage = if (selectedMode == GameMode.CUSTOM) {
-                                                "Bu rolden en fazla $playerCount tane olabilir!"
+                                                String.format(maxRoleCountWarningFormat, playerCount)
                                             } else {
                                                 editNotAllowedMessage
                                             }
@@ -1006,18 +1016,20 @@ fun GameSetupScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .fillMaxHeight(0.65f) // Ekranın %40'ını kullan
                         .background(
                             Color(0xFF1A1A2E).copy(alpha = 0.01f),
                             shape = MaterialTheme.shapes.medium
                         )
-                        .padding(horizontal = 8.dp, vertical = 8.dp),
-                    contentPadding = PaddingValues(vertical = 4.dp)
+                        .imePadding()
+                        .padding(6.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
                 ) {
                     itemsIndexed(playerNames) { index, name ->
                         PlayerNameInput(
                             name = name,
                             index = index + 1,
+                            totalPlayers = playerNames.size,
                             onNameChange = { newName ->
                                 playerNames[index] = newName
                             }
@@ -1029,7 +1041,8 @@ fun GameSetupScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp),
+                        .padding(vertical = 16.dp)
+                        .imePadding(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // Geri butonu
@@ -1055,16 +1068,15 @@ fun GameSetupScreen(
                         text = stringResource(id = R.string.start),
                         onClick = {
                             if (!allNamesEntered) {
-                                warningMessage = "Tüm oyuncuların isimlerini girmelisiniz!"
+                                warningMessage = enterAllNamesWarning
                                 showWarning = true
-                            }else if (selectedMode == GameMode.CUSTOM && vampireCount == 0 && serialKillerCount == 0) {
-                                warningMessage = "En az 1 tane vampir veya seri katil rolü bulunmalı!"
+                            } else if (selectedMode == GameMode.CUSTOM && vampireCount == 0 && serialKillerCount == 0) {
+                                warningMessage = atLeastOneVampireOrSerialKillerWarning
                                 showWarning = true
-                            }else if (madmanCount > 0 && watcherCount == 0 && seerCount == 0 && autopsirCount == 0) {
-                                warningMessage =
-                                    "Deli eklemek için en az 1 Gözcü, Kahin veya Otopsir olmalı!"
+                            } else if (madmanCount > 0 && watcherCount == 0 && seerCount == 0 && autopsirCount == 0) {
+                                warningMessage = addWatcherSeerAutopsirWarning
                                 showWarning = true
-                            }else {
+                            } else {
                                 onStartGame(playerNames.toList())
                             }
                         },
@@ -1107,6 +1119,7 @@ private fun calculateMaxVampires(playerCount: Int): Int {
 fun PlayerNameInput(
     name: String,
     index: Int,
+    totalPlayers: Int,
     onNameChange: (String) -> Unit
 ) {
     OutlinedTextField(
@@ -1114,7 +1127,7 @@ fun PlayerNameInput(
         onValueChange = onNameChange,
         label = {
             Text(
-                text = "Oyuncu $index",
+                text = stringResource(id = R.string.player_name_label, index),
                 fontFamily = PixelFont,
                 fontSize = 16.sp,
                 color = Beige
@@ -1123,7 +1136,7 @@ fun PlayerNameInput(
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,
-            imeAction = ImeAction.Next
+            imeAction = if (index == totalPlayers) ImeAction.Done else ImeAction.Next
         ),
         colors = OutlinedTextFieldDefaults.colors(
             focusedTextColor = Gold,

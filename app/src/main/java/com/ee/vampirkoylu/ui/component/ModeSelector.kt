@@ -17,16 +17,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ee.vampirkoylu.R
+import com.ee.vampirkoylu.model.GameMode
 import com.ee.vampirkoylu.ui.theme.Gold
 import com.ee.vampirkoylu.ui.theme.PixelFont
 
 @Composable
 fun ModeSelector(
-    modes: List<Int>,
-    selectedIndex: Int,
-    onIndexChange: (Int) -> Unit,
+    modes: List<GameMode>,
+    selectedMode: GameMode,
+    onModeSelected: (GameMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val selectedIndex = modes.indexOf(selectedMode)
+    
     Row(
         modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -34,7 +37,7 @@ fun ModeSelector(
     ) {
         val canDecrease = selectedIndex > 0
         IconButton(
-            onClick = { if (canDecrease) onIndexChange(selectedIndex - 1) },
+            onClick = { if (canDecrease) onModeSelected(modes[selectedIndex - 1]) },
             modifier = Modifier.size(28.dp)
         ) {
             Image(
@@ -51,7 +54,7 @@ fun ModeSelector(
         }
 
         Text(
-            text = stringResource(id = modes[selectedIndex]),
+            text = stringResource(id = modes[selectedIndex].nameRes),
             fontSize = 16.sp,
             fontFamily = PixelFont,
             color = Gold,
@@ -60,7 +63,7 @@ fun ModeSelector(
 
         val canIncrease = selectedIndex < modes.lastIndex
         IconButton(
-            onClick = { if (canIncrease) onIndexChange(selectedIndex + 1) },
+            onClick = { if (canIncrease) onModeSelected(modes[selectedIndex + 1]) },
             modifier = Modifier.size(28.dp)
         ) {
             Image(

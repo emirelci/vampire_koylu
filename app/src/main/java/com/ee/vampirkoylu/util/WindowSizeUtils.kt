@@ -1,8 +1,5 @@
 package com.ee.vampirkoylu.util
 
-import android.app.Activity
-import android.content.Context
-import android.util.DisplayMetrics
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
@@ -71,20 +68,44 @@ fun rememberWindowSizeClass(): WindowSizeClass {
 }
 
 /**
- * Ekran ölçümlerini piksel cinsinden hesapla
- */
-fun calculateScreenSize(context: Context): DisplayMetrics {
-    val displayMetrics = DisplayMetrics()
-    (context as? Activity)?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
-    return displayMetrics
-}
-
-/**
- * WindowMetricsCalculator kullanarak boyut hesaplama (kararlı API)
+ * WindowMetricsCalculator kullanarak boyut hesaplama (modern kararlı API)
  */
 @Composable
 fun rememberWindowMetrics(): WindowMetrics {
     val context = LocalContext.current
     val calculator = remember { WindowMetricsCalculator.getOrCreate() }
     return calculator.computeCurrentWindowMetrics(context)
+}
+
+/**
+ * Modern API kullanarak ekran boyutunu dp cinsinden hesapla
+ */
+@Composable
+fun rememberScreenSizeDp(): Pair<Float, Float> {
+    val windowMetrics = rememberWindowMetrics()
+    val configuration = LocalConfiguration.current
+    val density = configuration.densityDpi / 160f
+    
+    val widthDp = windowMetrics.bounds.width() / density
+    val heightDp = windowMetrics.bounds.height() / density
+    
+    return Pair(widthDp, heightDp)
+}
+
+/**
+ * Responsive tasarım için breakpoint kontrolü
+ */
+@Composable
+fun isCompactScreen(): Boolean {
+    return rememberWindowWidthSizeClass() == WindowWidthSizeClass.Compact
+}
+
+@Composable
+fun isMediumScreen(): Boolean {
+    return rememberWindowWidthSizeClass() == WindowWidthSizeClass.Medium
+}
+
+@Composable
+fun isExpandedScreen(): Boolean {
+    return rememberWindowWidthSizeClass() == WindowWidthSizeClass.Expanded
 }

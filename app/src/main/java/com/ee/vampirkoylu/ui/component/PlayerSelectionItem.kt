@@ -34,29 +34,14 @@ enum class SelectionState { NONE, VOTE, SABOTAGE }
 
 // Kullanılabilecek tüm avatar resimleri - role göre sınıflandırılmamış
 private val allAvatarResources = listOf(
-    R.drawable.doctor1,
-    R.drawable.serial_killer1,
-    R.drawable.sheriff1,
-    R.drawable.sheriff2,
-    R.drawable.villager1,
-    R.drawable.villager2, 
-    R.drawable.villager3,
-    R.drawable.villager4,
-    R.drawable.watcher1,
-    R.drawable.vampir_logo,
-    R.drawable.sahtekar,
-    R.drawable.transporter,
-    R.drawable.kahin,
-    R.drawable.deli,
-    R.drawable.nobetci,
-    R.drawable.otopsier
+    R.drawable.unknown
 )
 
 /**
  * Rastgele avatar resmi seçer
  */
 private fun getRandomAvatarResId(): Int {
-    return allAvatarResources[Random.nextInt(allAvatarResources.size)]
+    return allAvatarResources[0]
 }
 
 /**

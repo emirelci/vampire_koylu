@@ -20,6 +20,17 @@
     <string name="vampire_count">VAMPIRES</string>
     <string name="start">START</string>
     
+    <!-- GameSetupScreen Warnings -->
+    <string name="edit_not_allowed_warning">Role settings can only be changed in Custom mode!</string>
+    <string name="max_player_warning">Maximum number of players is 15!</string>
+    <string name="min_player_warning">Minimum number of players is 4!</string>
+    <string name="max_special_roles_warning">Maximum number of special roles is %1$d!</string>
+    <string name="max_role_count_warning">Maximum number of this role is %1$d!</string>
+    <string name="enter_all_names_warning">You must enter names for all players!</string>
+    <string name="at_least_one_vampire_or_serial_killer_warning">You need at least 1 vampire or serial killer role!</string>
+    <string name="add_watcher_seer_autopsir_warning">To add Madman, you need at least 1 Watcher, Seer, or Coroner!</string>
+    <string name="decrease_special_roles_warning">You must decrease the number of special roles first!</string>
+    
     <!-- In-Game -->
     <string name="night">NIGHT FALLS</string>
     <string name="day">DAY BREAKS</string>
@@ -167,4 +178,7 @@
     <string name="premium_description">This package includes additional roles: Saboteur, Coroner, Veteran, Madman, and Wizard.</string>
     <string name="upgrade">UPGRADE</string>
     <string name="not_now">NOT NOW</string>
+    
+    <!-- Player Name -->
+    <string name="player_name_label">Player %1$d</string>
 </resources> 

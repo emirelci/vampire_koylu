@@ -20,6 +20,17 @@
     <string name="vampire_count">VAMPİR</string>
     <string name="start">BAŞLAT</string>
     
+    <!-- GameSetupScreen Uyarıları -->
+    <string name="edit_not_allowed_warning">Rol ayarları sadece Özel modda değiştirilebilir!</string>
+    <string name="max_player_warning">Oyuncu sayısı en fazla 15 olabilir!</string>
+    <string name="min_player_warning">Oyuncu sayısı en az 4 olmalıdır!</string>
+    <string name="max_special_roles_warning">En fazla %1$d özel rol olabilir!</string>
+    <string name="max_role_count_warning">Bu rolden en fazla %1$d tane olabilir!</string>
+    <string name="enter_all_names_warning">Tüm oyuncuların isimlerini girmelisiniz!</string>
+    <string name="at_least_one_vampire_or_serial_killer_warning">En az 1 tane vampir veya seri katil rolü bulunmalı!</string>
+    <string name="add_watcher_seer_autopsir_warning">Deli eklemek için en az 1 Gözcü, Kahin veya Otopsir olmalı!</string>
+    <string name="decrease_special_roles_warning">Önce özel rollerin sayısını azaltmalısınız!</string>
+    
     <!-- Oyun İçi -->
     <string name="night">GECE OLDU</string>
     <string name="day">GÜNDÜZ OLDU</string>
@@ -167,4 +178,7 @@
     <string name="premium_description">Bu pakette ek olarak Sahtekar, Otopsir, Nöbetçi, Deli ve Büyücü rolleri mevcuttur.</string>
     <string name="upgrade">YÜKSELT</string>
     <string name="not_now">DAHA SONRA</string>
+    
+    <!-- Player Name -->
+    <string name="player_name_label">Oyuncu %1$d</string>
 </resources>

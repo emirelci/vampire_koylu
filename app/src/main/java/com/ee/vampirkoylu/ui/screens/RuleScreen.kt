@@ -143,7 +143,7 @@ fun RuleScreen(navController: NavHostController) {
                         R.string.vote_saboteur,
                         R.string.vote_saboteur_info
                     )
-                    
+
                     // Otopsir
                     RoleInfoItem(
                         R.drawable.otopsier,

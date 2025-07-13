@@ -2,8 +2,14 @@
 <resources>
 
     <style name="Theme.VampirKoylu" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="android:statusBarColor">@android:color/black</item> <!-- Koyu renk -->
-        <item name="android:navigationBarColor">@android:color/black</item> <!-- Alt çubuk da -->
+        <!-- Edge-to-edge için transparent system bars -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <!-- Modern edge-to-edge support -->
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
     </style>
 
 </resources>
