@@ -203,37 +203,89 @@ private fun HomeScreenContent(
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 // Rol kaydırmalı alan
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .horizontalScroll(rememberScrollState()),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    RoleInfoItem(
-                                        R.drawable.sahtekar,
-                                        R.string.vote_saboteur,
-                                        R.string.vote_saboteur_info
-                                    )
-                                    RoleInfoItem(
-                                        R.drawable.kahin,
-                                        R.string.autopsir,
-                                        R.string.autopsir_info
-                                    )
-                                    RoleInfoItem(
-                                        R.drawable.nobetci,
-                                        R.string.veteran,
-                                        R.string.veteran_info
-                                    )
-                                    RoleInfoItem(
-                                        R.drawable.deli,
-                                        R.string.madman,
-                                        R.string.madman_info
-                                    )
-                                    RoleInfoItem(
-                                        R.drawable.transporter,
-                                        R.string.wizard,
-                                        R.string.wizard_info
-                                    )
+                                Column {
+                                    val scrollState = rememberScrollState()
+                                    
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .horizontalScroll(scrollState),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RoleInfoItem(
+                                            R.drawable.sahtekar,
+                                            R.string.vote_saboteur,
+                                            R.string.vote_saboteur_info
+                                        )
+                                        RoleInfoItem(
+                                            R.drawable.kahin,
+                                            R.string.autopsir,
+                                            R.string.autopsir_info
+                                        )
+                                        RoleInfoItem(
+                                            R.drawable.nobetci,
+                                            R.string.veteran,
+                                            R.string.veteran_info
+                                        )
+                                        RoleInfoItem(
+                                            R.drawable.deli,
+                                            R.string.madman,
+                                            R.string.madman_info
+                                        )
+                                        RoleInfoItem(
+                                            R.drawable.transporter,
+                                            R.string.wizard,
+                                            R.string.wizard_info
+                                        )
+                                    }
+                                    
+                                    // Yatay scroll indicator - her zaman görünür
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(6.dp)
+                                            .padding(horizontal = 24.dp)
+                                            .padding(top = 8.dp)
+                                    ) {
+                                        // Arka plan bar - daha belirgin
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(
+                                                    Color.White.copy(alpha = 0.4f),
+                                                    RoundedCornerShape(3.dp)
+                                                )
+                                        )
+                                        
+                                        // Scroll thumb
+                                        if (scrollState.maxValue > 0) {
+                                            val scrollProgress = scrollState.value.toFloat() / scrollState.maxValue
+                                            val thumbWidth = 0.3f // Thumb genişliği (bar'ın %30'u)
+                                            val thumbPosition = scrollProgress * (1f - thumbWidth)
+                                            
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxHeight()
+                                                    .fillMaxWidth(thumbWidth)
+                                                    .absoluteOffset(x = (thumbPosition * 150).dp) // Scroll pozisyonu
+                                                    .background(
+                                                        Color(0xFFF0E68C),
+                                                        RoundedCornerShape(3.dp)
+                                                    )
+                                            )
+                                        } else {
+                                            // Scroll edilecek içerik yoksa statik thumb
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxHeight()
+                                                    .fillMaxWidth(0.8f)
+                                                    .background(
+                                                        Color(0xFFF0E68C).copy(alpha = 0.6f),
+                                                        RoundedCornerShape(3.dp)
+                                                    )
+                                            )
+                                        }
+                                    }
                                 }
 
                                 Spacer(modifier = Modifier.height(16.dp))
@@ -308,7 +360,7 @@ private fun HomeScreenContent(
             onLanguageChange = { newLanguage ->
                 Log.d("HomeScreenContent", "Language change requested: $newLanguage")
                 currentLanguage = newLanguage
-                LanguageManager.setLanguage(context, newLanguage.lowercase())
+                LanguageManager.setLanguage(activity, newLanguage.lowercase())
             },
             modifier = Modifier
                 .align(Alignment.TopEnd)

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "62529455792",
+    "project_id": "vampirevillage-e1e8c",
+    "storage_bucket": "vampirevillage-e1e8c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62529455792:android:63cb1c1d8f3da385be1d75",
+        "android_client_info": {
+          "package_name": "com.ee.vampirkoylu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOkEkQVhCsk39Va6bUzorWh0MZR9wxp-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

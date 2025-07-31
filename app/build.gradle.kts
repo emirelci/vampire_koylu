@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -14,8 +15,8 @@ android {
         applicationId = "com.ee.vampirkoylu"
         minSdk = 24
         targetSdk = 35
-        versionCode = 11
-        versionName = "1.0.1"
+        versionCode = 13
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -79,6 +80,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.material)
     
+    // AppCompat for Android 13+ language support
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    
     //Navigation
     implementation(libs.androidx.navigation.compose)
     
@@ -99,6 +103,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.preference.ktx)
 
+    implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
+    implementation("com.google.firebase:firebase-analytics")
     //Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)

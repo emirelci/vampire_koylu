@@ -5,9 +5,9 @@ import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +33,7 @@ import com.ee.vampirkoylu.util.LanguageManager
 import com.google.android.gms.ads.MobileAds
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var billingClientWrapper: BillingClientWrapper
     private lateinit var storeManager: StoreManager
@@ -98,11 +98,20 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Dil ayarını yeniden kontrol et
+        LanguageManager.initializeLanguage(this)
+        
         // Bağlantı NavGraph'ta otomatik olarak yönetiliyor
         // Ama yine de manuel olarak da başlatabilirsiniz
         if (!billingClientWrapper.isConnected.value) {
             billingClientWrapper.startConnection()
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // Dil değişikliğini yakala
+        Log.d("MainActivity", "Configuration changed - new locale: ${newConfig.locales[0]}")
     }
 
     override fun onDestroy() {
