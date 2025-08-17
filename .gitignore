@@ -12,6 +12,7 @@ captures/
 *.apk
 *.ap_
 app/release/
+app/google-services.json
 
 # Local configuration
 local.properties

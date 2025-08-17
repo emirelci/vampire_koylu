@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ee.vampirkoylu.R
+import com.ee.vampirkoylu.StoreManager
 import com.ee.vampirkoylu.model.GameResult
 import com.ee.vampirkoylu.model.PlayerRole
 import com.ee.vampirkoylu.ui.component.PixelArtButton
@@ -37,13 +38,13 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 fun GameOverScreen(
     gameResult: GameResult,
     isPlusUser: Boolean,
+    storeManager: StoreManager,
     onBackToMenu: () -> Unit
 ) {
     val context = LocalContext.current
     //Gerçek canlı reklam kimliğim: ca-app-pub-3681703552429739/9932303057
     var interstitialAd by remember { mutableStateOf<InterstitialAd?>(null) }
     var adShown by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(isPlusUser) {
         if (!isPlusUser) {

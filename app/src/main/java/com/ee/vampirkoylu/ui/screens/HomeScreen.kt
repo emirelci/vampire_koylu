@@ -31,11 +31,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.runtime.collectAsState
 import com.ee.vampirkoylu.StoreManager
+import com.ee.vampirkoylu.ads.RewardedAdManager
 import com.ee.vampirkoylu.ui.theme.LocalWindowWidthSizeClass
 import com.ee.vampirkoylu.util.WindowWidthSizeClass
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import java.util.Locale
 import com.ee.vampirkoylu.R
 import com.ee.vampirkoylu.ui.component.PixelArtButton
@@ -121,6 +124,27 @@ private fun HomeScreenContent(
         mutableStateOf(LanguageManager.getCurrentLanguage(context).uppercase())
     }
     
+    // Ödüllü reklam manager'ı
+    val rewardedAdManager = remember { RewardedAdManager(context) }
+    var showRewardDialog by remember { mutableStateOf(false) }
+    var adError by remember { mutableStateOf<String?>(null) }
+    var shouldGrantTrial by remember { mutableStateOf(false) }
+    
+    // Trial hakkı verme effect'i
+    if (shouldGrantTrial) {
+        LaunchedEffect(shouldGrantTrial) {
+            storeManager.grantTrialRight()
+            shouldGrantTrial = false
+        }
+    }
+    
+    // Reklam yükleme - sadece trial teklifi gösterilebiliyorsa
+    LaunchedEffect(Unit) {
+        if (storeManager.canShowTrialOffer()) {
+            rewardedAdManager.loadRewardedAd(null)
+        }
+    }
+    
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -133,26 +157,43 @@ private fun HomeScreenContent(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 val isPlusUserState = storeManager.isPlusUser.collectAsState(initial = null)
                 val isPlusUser = isPlusUserState.value
+                val isTrialAvailableState = storeManager.isTrialAvailable.collectAsState(initial = false)
+                val isTrialAvailable = isTrialAvailableState.value
                 var showPremiumDialog by remember { mutableStateOf(false) }
 
-                if (isPlusUser == false) {
-                    PixelArtButton(
-                        text = stringResource(id = R.string.premium),
-                        onClick = { showPremiumDialog = true },
-                        fontSize = 10.sp,
-                        imageId = R.drawable.button_plus_bg,
-                        width = 180.dp,
-                        height = 80.dp,
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 24.dp)
-                    )
-                }else if (isPlusUser == true) {
-                    Text(
-                        text = stringResource(id = R.string.premium_active),
-                        fontFamily = PixelFont,
-                        color = Color(0xFFF0E68C),
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 24.dp)
-                    )
+                when {
+                    isPlusUser == true -> {
+                        // Plus user aktif
+                        Text(
+                            text = stringResource(id = R.string.premium_active),
+                            fontFamily = PixelFont,
+                            color = Color(0xFFF0E68C),
+                            fontSize = 14.sp,
+                            modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 24.dp)
+                        )
+                    }
+                    isTrialAvailable -> {
+                        // Trial hakkı var
+                        Text(
+                            text = stringResource(id = R.string.trial_available), // Yeni string eklenecek
+                            fontFamily = PixelFont,
+                            color = Color(0xFF4CAF50),
+                            fontSize = 14.sp,
+                            modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 24.dp)
+                        )
+                    }
+                    else -> {
+                        // Plus user değil ve trial hakkı yok
+                        PixelArtButton(
+                            text = stringResource(id = R.string.premium),
+                            onClick = { showPremiumDialog = true },
+                            fontSize = 10.sp,
+                            imageId = R.drawable.button_plus_bg,
+                            width = 180.dp,
+                            height = 80.dp,
+                            modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 24.dp)
+                        )
+                    }
                 }
 
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -291,30 +332,170 @@ private fun HomeScreenContent(
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 // Butonlar
-                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    PixelArtButton(
-                                        text = stringResource(id = R.string.upgrade),
-                                        onClick = {
-                                            showPremiumDialog = false
-                                            products.find { it.productId == "plus_package" }?.let {
-                                                billingClientWrapper.launchPurchaseFlow(activity, it)
-                                            }
-                                        },
-                                        imageId = R.drawable.button_red,
-                                        fontSize = 10.sp,
-                                        width = 140.dp,
-                                        height = 56.dp
-                                    )
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    // Üst sıra - Satın alma butonları
+                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        PixelArtButton(
+                                            text = stringResource(id = R.string.upgrade),
+                                            onClick = {
+                                                showPremiumDialog = false
+                                                products.find { it.productId == "plus_package" }?.let {
+                                                    billingClientWrapper.launchPurchaseFlow(activity, it)
+                                                }
+                                            },
+                                            imageId = R.drawable.button_red,
+                                            fontSize = 10.sp,
+                                            width = 140.dp,
+                                            height = 56.dp
+                                        )
 
-                                    PixelArtButton(
-                                        text = stringResource(id = R.string.not_now),
-                                        onClick = { showPremiumDialog = false },
-                                        imageId = R.drawable.button_gray,
-                                        fontSize = 10.sp,
-                                        width = 140.dp,
-                                        height = 56.dp
-                                    )
+                                        PixelArtButton(
+                                            text = stringResource(id = R.string.not_now),
+                                            onClick = { showPremiumDialog = false },
+                                            imageId = R.drawable.button_gray,
+                                            fontSize = 10.sp,
+                                            width = 140.dp,
+                                            height = 56.dp
+                                        )
+                                    }
+                                    
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    
+                                    // Alt sıra - Ödüllü reklam butonu (sadece trial teklifi yapılabiliyorsa)
+                                    var canShowTrial by remember { mutableStateOf(false) }
+                                    
+                                    LaunchedEffect(Unit) {
+                                        canShowTrial = storeManager.canShowTrialOffer()
+                                    }
+                                    
+                                    if (canShowTrial) {
+                                        PixelArtButton(
+                                            text = stringResource(id = R.string.try_for_free), // String güncellendi
+                                            onClick = {
+                                                if (rewardedAdManager.isAdLoaded()) {
+                                                    rewardedAdManager.showRewardedAd(activity, object : RewardedAdManager.RewardedAdCallback {
+                                                        override fun onAdLoaded() {}
+                                                        override fun onAdFailedToLoad(error: String) {
+                                                            adError = error
+                                                        }
+                                                        override fun onAdShown() {}
+                                                        override fun onAdDismissed() {
+                                                            showPremiumDialog = false
+                                                        }
+                                                        override fun onUserEarnedReward(rewardType: String, rewardAmount: Int) {
+                                                            // Trial hakkı ver
+                                                            showPremiumDialog = false
+                                                            showRewardDialog = true
+                                                            // StoreManager'da trial hakkı ver
+                                                            shouldGrantTrial = true
+                                                        }
+                                                        override fun onAdFailedToShow(error: String) {
+                                                            adError = error
+                                                        }
+                                                    })
+                                                } else {
+                                                    adError = "Reklam henüz yüklenmedi"
+                                                }
+                                            },
+                                            imageId = R.drawable.button_brown,
+                                            fontSize = 9.sp,
+                                            width = 200.dp,
+                                            height = 48.dp
+                                        )
+                                    }
                                 }
+                            }
+                        }
+                    }
+                }
+                
+                // Ödül başarı dialog'ı
+                if (showRewardDialog) {
+                    Dialog(onDismissRequest = { showRewardDialog = false }) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Image(
+                                painter = painterResource(id = R.drawable.alert_bg),
+                                contentDescription = null,
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier.fillMaxWidth().heightIn(250.dp, 350.dp)
+                            )
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.reward_title),
+                                    fontFamily = PixelFont,
+                                    color = Color(0xFF4CAF50),
+                                    fontSize = 18.sp
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                Text(
+                                    text = stringResource(id = R.string.reward_message),
+                                    fontFamily = PixelFont,
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                PixelArtButton(
+                                    text = stringResource(id = R.string.awesome),
+                                    onClick = { showRewardDialog = false },
+                                    imageId = R.drawable.button_red,
+                                    fontSize = 12.sp,
+                                    width = 120.dp,
+                                    height = 48.dp
+                                )
+                            }
+                        }
+                    }
+                }
+                
+                // Error dialog
+                adError?.let { error ->
+                    Dialog(onDismissRequest = { adError = null }) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Image(
+                                painter = painterResource(id = R.drawable.alert_bg),
+                                contentDescription = null,
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier.fillMaxWidth().heightIn(200.dp, 300.dp)
+                            )
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.error_title),
+                                    fontFamily = PixelFont,
+                                    color = Color(0xFFFF5722),
+                                    fontSize = 16.sp
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = error,
+                                    fontFamily = PixelFont,
+                                    color = Color.White,
+                                    fontSize = 10.sp,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                PixelArtButton(
+                                    text = stringResource(id = R.string.ok),
+                                    onClick = { adError = null },
+                                    imageId = R.drawable.button_gray,
+                                    fontSize = 10.sp,
+                                    width = 100.dp,
+                                    height = 40.dp
+                                )
                             }
                         }
                     }

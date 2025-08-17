@@ -53,16 +53,21 @@ import com.ee.vampirkoylu.ui.theme.PixelFont
 import com.ee.vampirkoylu.ui.theme.dark_gold
 import com.ee.vampirkoylu.viewmodel.GameViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import com.ee.vampirkoylu.StoreManager
 
 @Composable
 fun GameSetupScreen(
     settings: GameSettings,
     navController: NavController,
     isPlusUser: Boolean,
+    storeManager: StoreManager,
     onSettingsChange: (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> Unit,
     onStartGame: (List<String>) -> Unit,
     viewModel: GameViewModel = viewModel()
 ) {
+    val coroutineScope = rememberCoroutineScope()
     // State'leri viewModel değerlerine göre başlat
     val gameModes = remember(isPlusUser) {
         GameMode.values().filter { isPlusUser || !it.plusOnly }.toList()
@@ -1077,6 +1082,10 @@ fun GameSetupScreen(
                                 warningMessage = addWatcherSeerAutopsirWarning
                                 showWarning = true
                             } else {
+                                // Trial hakkını kullan (eğer aktifse)
+                                coroutineScope.launch {
+                                    storeManager.useTrialRight()
+                                }
                                 onStartGame(playerNames.toList())
                             }
                         },
@@ -1155,6 +1164,7 @@ fun PlayerNameInput(
     )
 }
 
+/*
 @Preview(showBackground = true,showSystemUi = true)
 @Composable
 fun GameSetupScreenPreview() {
@@ -1167,3 +1177,4 @@ fun GameSetupScreenPreview() {
         onStartGame = { _ -> }
     )
 }
+*/

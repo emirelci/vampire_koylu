@@ -4,6 +4,7 @@
     <!-- Ana Menü -->
     <string name="game_title">VAMPİR KÖYLÜ</string>
     <string name="start_game">OYUNA BAŞLA</string>
+    <string name="try_24_hours">🎬 TEK OYUN DENE!</string>
     <string name="rules">KURALLAR</string>
     <string name="developer">GELİŞTİRİCİ</string>
     
@@ -175,9 +176,17 @@
     <string name="premium">DAHA FAZLA\nROL İÇİN</string>
     <string name="premium_title">PLUS PAKETİ</string>
     <string name="premium_active">PREMIUM AKTİF</string>
+    <string name="trial_active">DENEME AKTİF</string>
+    <string name="trial_available">DENEME HAZIR</string>
     <string name="premium_description">Bu pakette ek olarak Sahtekar, Otopsir, Nöbetçi, Deli ve Büyücü rolleri mevcuttur.</string>
     <string name="upgrade">YÜKSELT</string>
     <string name="not_now">DAHA SONRA</string>
+    <string name="try_for_free">🎬 TEK OYUN DENE!</string>
+    <string name="reward_title">🎉 TEBRİKLER!</string>
+    <string name="reward_message">Tek oyun için Plus özelliklerini ücretsiz kullanabilirsiniz!</string>
+    <string name="awesome">HARIKA!</string>
+    <string name="error_title">HATA</string>
+    <string name="ok">TAMAM</string>
     
     <!-- Player Name -->
     <string name="player_name_label">Oyuncu %1$d</string>

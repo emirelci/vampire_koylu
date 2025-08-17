@@ -3,7 +3,8 @@
     
     <!-- Main Menu -->
     <string name="game_title">VAMPIRE\nVILLAGE</string>
-    <string name="start_game">START GAME</string>
+    <string name="start_game">OYUNA BAŞLA</string>
+    <string name="try_24_hours">🎬 TRY ONE GAME!</string>
     <string name="rules">RULES</string>
     <string name="developer">DEVELOPER</string>
     
@@ -175,9 +176,17 @@
     <string name="premium">FOR MORE\nROLES</string>
     <string name="premium_title">PLUS PACKAGE</string>
     <string name="premium_active">PREMIUM ACTIVE</string>
+    <string name="trial_active">TRIAL ACTIVE</string>
+    <string name="trial_available">TRIAL READY</string>
     <string name="premium_description">This package includes additional roles: Saboteur, Coroner, Veteran, Madman, and Wizard.</string>
     <string name="upgrade">UPGRADE</string>
     <string name="not_now">NOT NOW</string>
+    <string name="try_for_free">🎬 TRY ONE GAME!</string>
+    <string name="reward_title">🎉 CONGRATULATIONS!</string>
+    <string name="reward_message">You can use Plus features for free for one game!</string>
+    <string name="awesome">AWESOME!</string>
+    <string name="error_title">ERROR</string>
+    <string name="ok">OK</string>
     
     <!-- Player Name -->
     <string name="player_name_label">Player %1$d</string>
